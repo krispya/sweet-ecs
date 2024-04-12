@@ -1,0 +1,14 @@
+{
+	"name": "sweet-ecs",
+	"version": "1.0.0",
+	"private": true,
+	"scripts": {
+		"app": "npx tsx ./scripts/app.ts",
+		"sim": "npx tsx ./scripts/sim.ts"
+	},
+	"dependencies": {
+		"@types/node": "latest",
+		"tsx": "latest",
+		"typescript": "latest"
+	}
+}
