@@ -1,5 +1,5 @@
 import { Entity, World } from '@sweet-ecs/core';
-import { CONSTANTS, init as initSim } from '@sim/n-body-aos';
+import { CONSTANTS, init as initSim } from '@sim/n-body-soa';
 import { ThreeInstances } from '../components/ThreeObject';
 import * as THREE from 'three';
 import { scene } from '../scene';

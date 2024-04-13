@@ -1,5 +1,5 @@
 import { defineSystem, query } from '@bitecs/classic';
-import { Circle, Color, Position, bodyQuery } from '@sim/n-body-aos';
+import { Circle, Color, Position, bodyQuery } from '@sim/n-body-soa';
 import { ThreeInstances } from '../components/ThreeObject';
 import * as THREE from 'three';
 

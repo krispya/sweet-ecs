@@ -2,22 +2,44 @@ import { defineSystem } from '@bitecs/classic';
 import { bodyQuery } from '../queries/queries';
 import { Velocity } from '../components/Velocity';
 import { Mass } from '../components/Mass';
-import { computeGravitationalForce } from './computeGravitationalForce';
-import { World } from '@sweet-ecs/core';
+import { World } from '../world';
+import { Acceleration } from '../components/Acceleration';
+import { Position } from '../components/Position';
+import { CONSTANTS } from '../constants';
 
 export const updateGravity = defineSystem((world: World) => {
 	const eids = bodyQuery(world);
+	const { delta } = world.time;
 
 	const velocities = Velocity.store;
 	const masses = Mass.store;
+	const accelerations = Acceleration.store;
+	const positions = Position.store;
 
-	for (let i = 0; i < eids.length; i++) {
-		const eid = eids[i];
+	for (let j = 0; j < eids.length; j++) {
+		const meId = eids[j];
+		accelerations.x[meId] = 0;
+		accelerations.y[meId] = 0;
 
-		const { forceX, forceY } = computeGravitationalForce(world, eid);
+		for (let i = 0; i < eids.length; i++) {
+			const currentId = eids[i];
+			if (meId === currentId) continue; // Skip self
+
+			const dx = +positions.x[currentId] - +positions.x[meId];
+			const dy = +positions.y[currentId] - +positions.y[meId];
+			let distanceSquared = dx * dx + dy * dy;
+
+			if (distanceSquared < CONSTANTS.STICKY) distanceSquared = CONSTANTS.STICKY; // Apply stickiness
+
+			const distance = Math.sqrt(distanceSquared);
+			const forceMagnitude = (+masses.value[meId] * +masses.value[currentId]) / distanceSquared;
+
+			accelerations.x[meId] += (dx / distance) * forceMagnitude;
+			accelerations.y[meId] += (dy / distance) * forceMagnitude;
+		}
 
 		// Apply computed force to entity's velocity, adjusting for its mass
-		velocities.x[eid] += forceX / masses.value[eid];
-		velocities.y[eid] += forceY / masses.value[eid];
+		velocities.x[meId] += (accelerations.x[meId] * delta) / masses.value[meId];
+		velocities.y[meId] += (accelerations.y[meId] * delta) / masses.value[meId];
 	}
 });

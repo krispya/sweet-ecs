@@ -6,8 +6,9 @@ import {
 	setInitial,
 	updateColor,
 	updateGravity,
+	updateTime,
 	world,
-} from '@sim/n-body-aos';
+} from '@sim/n-body-soa';
 import { initStats } from '@app/bench-tools';
 import { scene } from './scene';
 import { pipe } from '@bitecs/classic';
@@ -55,7 +56,14 @@ window.addEventListener('resize', onWindowResize);
 camera.position.set(0, 0, 100);
 camera.lookAt(0, 0, 0);
 
-const pipeline = pipe(setInitial, updateGravity, moveBodies, updateColor, syncThreeObjects);
+const pipeline = pipe(
+	updateTime,
+	setInitial,
+	updateGravity,
+	moveBodies,
+	updateColor,
+	syncThreeObjects
+);
 
 // Init stats
 const { updateStats, measure } = initStats({ Bodies: () => CONSTANTS.NBODIES });

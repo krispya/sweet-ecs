@@ -33,9 +33,9 @@ importers:
       '@app/bench-tools':
         specifier: workspace:*
         version: link:../app-tools
-      '@sim/n-body-aos':
+      '@sim/n-body-soa':
         specifier: workspace:*
-        version: link:../../sims/n-body-aos-fast
+        version: link:../../sims/n-body-soa
       '@sweet-ecs/core':
         specifier: workspace:*
         version: link:../../../packages/core

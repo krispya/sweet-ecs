@@ -1,5 +1,5 @@
 {
-	"name": "@sim/n-body-aos",
+	"name": "@sim/n-body-aos-fast",
 	"private": true,
 	"version": "0.0.1",
 	"description": "N-Body simulation using BiteCS",
