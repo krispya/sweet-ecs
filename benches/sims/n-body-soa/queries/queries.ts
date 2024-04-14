@@ -1,4 +1,4 @@
-import { defineEnterQueue, defineQuery } from '@bitecs/classic';
+import { defineEnterQueue, defineQuery } from '@sweet-ecs/core';
 import { Position } from '../components/Position';
 import { Velocity } from '../components/Velocity';
 import { Mass } from '../components/Mass';

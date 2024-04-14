@@ -5,7 +5,7 @@ import { bodyQuery } from '../queries/bodyQuery';
 import { Acceleration, Mass, Position, Velocity } from '../components';
 import { updateGravityMain } from './updateGravity.main';
 import { updateTime } from './time';
-import { WorldMT } from '../world';
+import { World } from '../world';
 
 const updateGravity = updateGravityMain({
 	queries: { bodyQuery },
@@ -16,7 +16,7 @@ const updateGravity = updateGravityMain({
 	},
 });
 
-export const pipeline = async (world: WorldMT) => {
+export const pipeline = async (world: World) => {
 	updateTime(world);
 	setInitial(world);
 	await updateGravity(world);

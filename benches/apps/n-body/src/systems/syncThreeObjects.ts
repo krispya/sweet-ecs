@@ -1,14 +1,15 @@
-import { defineSystem, query } from '@bitecs/classic';
 import { Circle, Color, Position, bodyQuery } from '@sim/n-body-soa';
 import { ThreeInstances } from '../components/ThreeObject';
 import * as THREE from 'three';
+import { World } from '@sim/n-body-soa/world';
+import { query } from '@sweet-ecs/core';
 
 const normalize = (x: number, min: number, max: number) => (x - min) / (max - min);
 
 const dummy = new THREE.Object3D();
 const color = new THREE.Color();
 
-export const syncThreeObjects = defineSystem((world) => {
+export const syncThreeObjects = (world: World) => {
 	const eids = bodyQuery(world);
 	const instanceId = query(world, [ThreeInstances])[0];
 
@@ -37,4 +38,4 @@ export const syncThreeObjects = defineSystem((world) => {
 
 	instancedMesh.instanceMatrix.needsUpdate = true;
 	instancedMesh.instanceColor!.needsUpdate = true;
-});
+};

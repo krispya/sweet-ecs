@@ -1,4 +1,3 @@
-import { defineSystem } from '@bitecs/classic';
 import { bodyQuery } from '../queries/queries';
 import { Velocity } from '../components/Velocity';
 import { Mass } from '../components/Mass';
@@ -7,7 +6,7 @@ import { Acceleration } from '../components/Acceleration';
 import { Position } from '../components/Position';
 import { CONSTANTS } from '../constants';
 
-export const updateGravity = defineSystem((world: World) => {
+export const updateGravity = (world: World) => {
 	const eids = bodyQuery(world);
 	const { delta } = world.time;
 
@@ -42,4 +41,4 @@ export const updateGravity = defineSystem((world: World) => {
 		velocities.x[meId] += (accelerations.x[meId] * delta) / masses.value[meId];
 		velocities.y[meId] += (accelerations.y[meId] * delta) / masses.value[meId];
 	}
-});
+};

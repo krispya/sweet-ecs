@@ -1,6 +1,6 @@
-import { WorldMT } from '../world';
+import { World } from '../world';
 
-export const updateTime = (world: WorldMT) => {
+export const updateTime = (world: World) => {
 	const time = world.time;
 	const now = performance.now();
 	const delta = now - time.then;

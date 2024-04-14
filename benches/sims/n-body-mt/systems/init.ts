@@ -1,9 +1,9 @@
 import { CONSTANTS } from '../constants';
 import { Entity } from '@sweet-ecs/core';
-import { WorldMT } from '../world';
+import { World } from '../world';
 import { Circle, Color, IsCentralMass, Mass, Position, Velocity } from '..';
 
-export const init = (world: WorldMT) => {
+export const init = (world: World) => {
 	for (let i = 0; i < CONSTANTS.NBODIES; i++) {
 		const eid = Entity.in(world);
 

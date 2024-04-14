@@ -1,7 +1,7 @@
-import { Query } from '@bitecs/classic';
 import { UpdateGravityComponents } from './updateGravity.common.js';
 import { getThreadCount, Worker } from '@sim/bench-tools';
-import { WorldMT } from '../world.js';
+import { World } from '../world.js';
+import { Query } from '@sweet-ecs/core';
 
 export const updateGravityMain = ({
 	queries: { bodyQuery },
@@ -13,7 +13,7 @@ export const updateGravityMain = ({
 	components: UpdateGravityComponents;
 }) => {
 	const workerFile = 'updateGravity.worker.ts';
-	return async (world: WorldMT) => {
+	return async (world: World) => {
 		// initialize workers with components
 		// TODO: initialize max workers once and select system in worker?
 		if (!world.workers[workerFile]) {

@@ -1,10 +1,10 @@
-import { defineSystem } from '@bitecs/classic';
 import { bodyQuery } from '../queries/queries';
 import { Velocity } from '../components/Velocity';
 import { Color } from '../components/Color';
 import { colorFromSpeed } from '../utils/colorFromSpeed';
+import { World } from '@sweet-ecs/core';
 
-export const updateColor = defineSystem((world) => {
+export const updateColor = (world: World) => {
 	const eids = bodyQuery(world);
 
 	for (let i = 0; i < eids.length; i++) {
@@ -22,4 +22,4 @@ export const updateColor = defineSystem((world) => {
 	}
 
 	return world;
-});
+};

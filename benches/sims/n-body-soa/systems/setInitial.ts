@@ -5,9 +5,9 @@ import { Mass } from '../components/Mass';
 import { Circle } from '../components/Circle';
 import { randInRange } from '../utils/randInRange';
 import { enterBodyQuery, enterCentralMassQuery } from '../queries/queries';
-import { defineSystem } from '@bitecs/classic';
+import { World } from '../world';
 
-export const setInitial = defineSystem((world) => {
+export const setInitial = (world: World) => {
 	const eids = enterBodyQuery(world);
 	// We only allow there to be one central mass.
 	const centralMassIds = enterCentralMassQuery(world);
@@ -58,4 +58,4 @@ export const setInitial = defineSystem((world) => {
 
 		Circle.store.radius[eid] = CONSTANTS.MAX_RADIUS / 1.5;
 	}
-});
+};

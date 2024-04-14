@@ -1,9 +1,9 @@
-import { defineSystem } from '@bitecs/classic';
 import { bodyQuery } from '../queries/bodyQuery';
 import { Color, Velocity } from '../components';
 import { colorFromSpeed } from '../utils/colorFromSpeed';
+import { World } from '@sweet-ecs/core';
 
-export const updateColor = defineSystem((world) => {
+export const updateColor = (world: World) => {
 	const eids = bodyQuery(world);
 
 	const velocities = Velocity.store;
@@ -21,4 +21,4 @@ export const updateColor = defineSystem((world) => {
 	}
 
 	return world;
-});
+};
