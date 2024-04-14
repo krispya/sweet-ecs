@@ -53,6 +53,31 @@ importers:
         specifier: ^5.1.6
         version: 5.2.8(@types/node@20.12.4)
 
+  benches/apps/n-body-mt:
+    dependencies:
+      '@app/bench-tools':
+        specifier: workspace:*
+        version: link:../app-tools
+      '@sim/n-body-mt':
+        specifier: workspace:*
+        version: link:../../sims/n-body-mt
+      '@sweet-ecs/core':
+        specifier: workspace:*
+        version: link:../../../packages/core
+      three:
+        specifier: ^0.162.0
+        version: 0.162.0
+    devDependencies:
+      '@types/three':
+        specifier: ^0.162.0
+        version: 0.162.0
+      typescript:
+        specifier: ^5.2.2
+        version: 5.4.5
+      vite:
+        specifier: ^5.1.6
+        version: 5.2.8(@types/node@20.12.4)
+
   benches/sims/bench-tools:
     dependencies:
       web-worker:
@@ -1194,6 +1219,12 @@ packages:
 
   /typescript@5.4.4:
     resolution: {integrity: sha512-dGE2Vv8cpVvw28v8HCPqyb08EzbBURxDpuhJvTrusShUfGnhHBafDsLdS1EhhxyL6BJQE+2cT3dDPAv+MQ6oLw==}
+    engines: {node: '>=14.17'}
+    hasBin: true
+    dev: true
+
+  /typescript@5.4.5:
+    resolution: {integrity: sha512-vcI4UpRgg81oIRUFwR0WSIHKt11nJ7SAVlYNIu+QpqeyXP+gpQJy/Z4+F0aGxSE4MqwjyXvW/TzgkLAx2AGHwQ==}
     engines: {node: '>=14.17'}
     hasBin: true
     dev: true

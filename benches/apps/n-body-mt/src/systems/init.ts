@@ -1,8 +1,9 @@
-import { Entity, World } from '@sweet-ecs/core';
-import { CONSTANTS, init as initSim } from '@sim/n-body-soa';
+import { Entity } from '@sweet-ecs/core';
+import { CONSTANTS, init as initSim } from '@sim/n-body-mt';
 import { ThreeInstances } from '../components/ThreeInstances';
 import * as THREE from 'three';
 import { scene } from '../scene';
+import { World } from '@sim/n-body-mt/world';
 
 export function init(world: World) {
 	// Init the instances meshes for Three.
