@@ -39,5 +39,3 @@ export const syncThreeObjects = (world: World) => {
 	instancedMesh.instanceMatrix.needsUpdate = true;
 	instancedMesh.instanceColor!.needsUpdate = true;
 };
-
-console.log(Position.store);
