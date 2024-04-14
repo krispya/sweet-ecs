@@ -7,7 +7,7 @@ import {
 	deleteWorld,
 } from '@bitecs/classic';
 import { ResizeCallback } from './types';
-import { universeResizeCallbacks } from '../universe/universe';
+import { universe, universeResizeCallbacks } from '../universe/universe';
 
 export interface World extends bitWorld {}
 
@@ -16,6 +16,7 @@ export class World {
 
 	constructor(size?: number) {
 		createWorld(this, size);
+		universeResizeCallbacks.forEach((cb) => cb(this, universe.getSize()));
 	}
 
 	reset() {
@@ -33,7 +34,7 @@ export class World {
 	set size(size: number) {
 		this[SYMBOLS.$size] = size;
 		this.#resizeCallbacks.forEach((cb) => cb(this, size));
-		universeResizeCallbacks.forEach((cb) => cb(this, size));
+		universeResizeCallbacks.forEach((cb) => cb(this, universe.getSize()));
 	}
 
 	onResize(callback: ResizeCallback) {
@@ -46,5 +47,6 @@ export class World {
 
 	destroy() {
 		deleteWorld(this);
+		universeResizeCallbacks.forEach((cb) => cb(this, universe.getSize()));
 	}
 }
