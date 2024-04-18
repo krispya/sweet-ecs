@@ -2,7 +2,6 @@ import {
 	createWorld,
 	type World as bitWorld,
 	resetWorld,
-	Query,
 	SYMBOLS,
 	deleteWorld,
 	query as queryBit,
@@ -10,7 +9,6 @@ import {
 } from '@bitecs/classic';
 import { ResizeCallback } from './types';
 import { universe, universeResizeCallbacks } from '../universe/universe';
-import { Component } from '../component/component';
 import { ComponentConstructor } from '../component/types';
 
 export interface World extends bitWorld {}
