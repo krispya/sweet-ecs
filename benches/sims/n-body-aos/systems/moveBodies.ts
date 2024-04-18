@@ -1,11 +1,10 @@
-import { bodyQuery } from '../queries/queries';
 import { CONSTANTS } from '../constants';
 import { Velocity } from '../components/Velocity';
 import { Position } from '../components/Position';
 import { World } from '../world';
 
 export const moveBodies = (world: World) => {
-	const eids = bodyQuery(world);
+	const eids = world.query([Position, Velocity]);
 	const { delta } = world.time;
 
 	for (let i = 0; i < eids.length; i++) {

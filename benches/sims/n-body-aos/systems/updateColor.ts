@@ -1,11 +1,10 @@
-import { bodyQuery } from '../queries/queries';
 import { Velocity } from '../components/Velocity';
 import { Color } from '../components/Color';
 import { colorFromSpeed } from '../utils/colorFromSpeed';
 import { World } from '@sweet-ecs/core';
 
 export const updateColor = (world: World) => {
-	const eids = bodyQuery(world);
+	const eids = world.query([Velocity, Color]);
 
 	for (let i = 0; i < eids.length; i++) {
 		const eid = eids[i];

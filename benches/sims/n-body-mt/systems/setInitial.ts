@@ -1,14 +1,16 @@
 import { CONSTANTS } from '../constants';
 import { randInRange } from '../utils/randInRange';
-import { enterBodyQuery } from '../queries/bodyQuery';
-import { Position, Mass, Velocity, Circle } from '../components';
-import { enterCentralMassQuery } from '../queries/centralMassQuery';
+import { Position, Mass, Velocity, Circle, IsCentralMass } from '../components';
 import { World } from '../world';
+import { defineEnterQueue } from '@sweet-ecs/core';
+
+const body = [Position, Velocity, Mass, Circle];
+const enterBody = defineEnterQueue(body);
+const enterCentralMass = defineEnterQueue([...body, IsCentralMass]);
 
 export const setInitial = (world: World) => {
-	const eids = enterBodyQuery(world);
-	// We only allow there to be one central mass.store.
-	const centralMassIds = enterCentralMassQuery(world);
+	const eids = world.query(enterBody);
+	const centralMassIds = world.query(enterCentralMass);
 
 	for (let i = 0; i < eids.length; i++) {
 		const eid = eids[i];

@@ -1,8 +1,6 @@
 import './styles.css';
 import * as THREE from 'three';
 import {
-	// CONSTANTS,
-	bodyQuery,
 	moveBodies,
 	setInitial,
 	updateColor,
@@ -63,8 +61,8 @@ camera.position.set(0, 0, 100);
 camera.lookAt(0, 0, 0);
 
 const updateGravity = updateGravityMain({
-	queries: { bodyQuery },
-	partitionQuery: bodyQuery,
+	entityQuery: [Position, Mass, Velocity, Acceleration],
+	partitionQuery: [Position, Mass, Velocity, Acceleration],
 	components: {
 		read: { Position: Position.store, Mass: Mass.store },
 		write: { Velocity: Velocity.store, Acceleration: Acceleration.store },

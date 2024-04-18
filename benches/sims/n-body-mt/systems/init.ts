@@ -1,7 +1,7 @@
 import { CONSTANTS } from '../constants';
 import { Entity } from '@sweet-ecs/core';
 import { World } from '../world';
-import { Circle, Color, IsCentralMass, Mass, Position, Velocity } from '..';
+import { Acceleration, Circle, Color, IsCentralMass, Mass, Position, Velocity } from '..';
 
 export const init = (world: World) => {
 	for (let i = 0; i < CONSTANTS.NBODIES; i++) {
@@ -12,6 +12,7 @@ export const init = (world: World) => {
 		Entity.add(Mass, eid);
 		Entity.add(Circle, eid);
 		Entity.add(Color, eid);
+		Entity.add(Acceleration, eid);
 
 		if (i === 0) {
 			// Make the first entity the central mass.

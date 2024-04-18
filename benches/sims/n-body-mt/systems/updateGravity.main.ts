@@ -1,15 +1,15 @@
 import { UpdateGravityComponents } from './updateGravity.common.js';
 import { getThreadCount, Worker } from '@sim/bench-tools';
 import { World } from '../world.js';
-import { Query } from '@sweet-ecs/core';
+import { Component } from '@sweet-ecs/core';
 
 export const updateGravityMain = ({
-	queries: { bodyQuery },
+	entityQuery,
 	partitionQuery,
 	components,
 }: {
-	queries: { bodyQuery: Query };
-	partitionQuery: Query;
+	entityQuery: (typeof Component)[];
+	partitionQuery: (typeof Component)[];
 	components: UpdateGravityComponents;
 }) => {
 	const workerFile = 'updateGravity.worker.ts';
@@ -35,10 +35,11 @@ export const updateGravityMain = ({
 
 		// run worker
 		const workers = world.workers[workerFile];
-		const bodyEntities = bodyQuery(world);
-		const partitionEntities = partitionQuery(world);
+		const bodyEntities = world.query(entityQuery);
+		const partitionEntities = world.query(partitionQuery);
 		const numberOfPartitions = workers.length;
 		const entitiesPerPartition = Math.ceil(bodyEntities.length / numberOfPartitions);
+
 		// TODO: atomic wait/notify
 		await Promise.all(
 			workers.map(

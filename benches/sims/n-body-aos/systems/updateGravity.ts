@@ -1,4 +1,3 @@
-import { bodyQuery } from '../queries/queries';
 import { Velocity } from '../components/Velocity';
 import { Mass } from '../components/Mass';
 import { World } from '../world';
@@ -7,7 +6,7 @@ import { Position } from '../components/Position';
 import { CONSTANTS } from '../constants';
 
 export const updateGravity = (world: World) => {
-	const eids = bodyQuery(world);
+	const eids = world.query([Position, Mass, Acceleration, Velocity]);
 	const { delta } = world.time;
 
 	for (let j = 0; j < eids.length; j++) {

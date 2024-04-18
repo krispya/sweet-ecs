@@ -1,15 +1,14 @@
 import { setInitial } from './setInitial';
 import { moveBodies } from './moveBodies';
 import { updateColor } from './updateColor';
-import { bodyQuery } from '../queries/bodyQuery';
 import { Acceleration, Mass, Position, Velocity } from '../components';
 import { updateGravityMain } from './updateGravity.main';
 import { updateTime } from './time';
 import { World } from '../world';
 
 const updateGravity = updateGravityMain({
-	queries: { bodyQuery },
-	partitionQuery: bodyQuery,
+	entityQuery: [Position, Mass, Velocity, Acceleration],
+	partitionQuery: [Position, Mass, Velocity, Acceleration],
 	components: {
 		read: { Position: Position.store, Mass: Mass.store },
 		write: { Velocity: Velocity.store, Acceleration: Acceleration.store },
