@@ -1,11 +1,7 @@
 import { CONSTANTS } from '../constants';
-import { Position } from '../components/Position';
-import { Velocity } from '../components/Velocity';
-import { Mass } from '../components/Mass';
-import { Circle } from '../components/Circle';
 import { randInRange } from '../utils/randInRange';
 import { World, defineEnterQueue } from '@sweet-ecs/core';
-import { IsCentralMass } from '../components/IsCentralMass';
+import { Circle, Position, Velocity, Mass, IsCentralMass } from '@sim/n-body-aos';
 
 const body = [Position, Velocity, Mass, Circle];
 const enterBody = defineEnterQueue(body);

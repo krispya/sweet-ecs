@@ -4,7 +4,7 @@ import { updateColor } from './updateColor';
 import { Acceleration, Mass, Position, Velocity } from '../components';
 import { updateGravityMain } from './updateGravity.main';
 import { updateTime } from './time';
-import { World } from '../world';
+import { World } from '@sweet-ecs/core';
 
 const updateGravity = updateGravityMain({
 	entityQuery: [Position, Mass, Velocity, Acceleration],

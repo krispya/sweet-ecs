@@ -4,8 +4,7 @@ import { Velocity } from '../components/Velocity';
 import { Mass } from '../components/Mass';
 import { Circle } from '../components/Circle';
 import { randInRange } from '../utils/randInRange';
-import { World } from '../world';
-import { defineEnterQueue } from '@sweet-ecs/core';
+import { World, defineEnterQueue } from '@sweet-ecs/core';
 import { IsCentralMass } from '../components/IsCentralMass';
 
 const body = [Position, Velocity, Mass, Circle];

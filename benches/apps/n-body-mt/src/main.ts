@@ -15,9 +15,9 @@ import {
 import { initStats } from '@app/bench-tools';
 import { scene } from './scene';
 import { syncThreeObjects } from './systems/syncThreeObjects';
-import { World } from '@sim/n-body-mt/world';
 import { updateTime } from '@sim/n-body-mt/systems/time';
 import { init } from './systems/init';
+import { World } from '@sweet-ecs/core';
 
 // Configure the simulation
 // CONSTANTS.NBODIES = 2000;

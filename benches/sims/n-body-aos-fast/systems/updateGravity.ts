@@ -1,13 +1,10 @@
-import { Velocity } from '../components/Velocity';
-import { Mass } from '../components/Mass';
-import { World } from '../world';
-import { Acceleration } from '../components/Acceleration';
-import { Position } from '../components/Position';
+import { World } from '@sweet-ecs/core';
 import { CONSTANTS } from '../constants';
+import { Position, Velocity, Acceleration, Mass, Time } from '@sim/n-body-aos';
 
 export const updateGravity = (world: World) => {
 	const eids = world.query([Position, Mass, Acceleration, Velocity]);
-	const { delta } = world.time;
+	const { delta } = world.get(Time)!;
 
 	const velocities = Velocity.instances;
 	const masses = Mass.instances;

@@ -3,7 +3,7 @@ import { updateGravity } from './updateGravity';
 import { moveBodies } from './moveBodies';
 import { updateColor } from './updateColor';
 import { updateTime } from './updateTime';
-import { World } from '../world';
+import { World } from '@sweet-ecs/core';
 
 export const pipeline = (world: World) => {
 	updateTime(world);

@@ -8,12 +8,12 @@ import {
 	updateGravity,
 	updateTime,
 	world,
-} from '@sim/n-body-soa';
+} from '@sim/n-body-aos';
 import { initStats } from '@app/bench-tools';
 import { scene } from './scene';
 import { syncThreeObjects } from './systems/syncThreeObjects';
 import { init } from './systems/init';
-import { World } from '@sim/n-body-soa/world';
+import { World } from '@sweet-ecs/core';
 
 // Configure the simulation
 CONSTANTS.NBODIES = 2000;

@@ -1,11 +1,10 @@
+import { World } from '@sweet-ecs/core';
 import { CONSTANTS } from '../constants';
-import { Velocity } from '../components/Velocity';
-import { Position } from '../components/Position';
-import { World } from '../world';
+import { Position, Time, Velocity } from '@sim/n-body-aos';
 
 export const moveBodies = (world: World) => {
 	const eids = world.query([Position, Velocity]);
-	const { delta } = world.time;
+	const { delta } = world.get(Time)!;
 
 	const positions = Position.instances;
 	const velocities = Velocity.instances;

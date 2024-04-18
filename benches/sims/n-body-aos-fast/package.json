@@ -7,6 +7,7 @@
 	"main": "index.ts",
 	"dependencies": {
 		"@sim/bench-tools": "workspace:*",
+		"@sim/n-body-aos": "workspace:*",
 		"@sweet-ecs/core": "workspace:*"
 	},
 	"devDependencies": {

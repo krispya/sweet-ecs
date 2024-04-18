@@ -4,7 +4,7 @@
 import { measure, requestAnimationFrame } from '@sim/bench-tools';
 import { init } from './systems/init';
 import { pipeline } from './systems/pipeline';
-import { world } from './world';
+import { world } from '@sim/n-body-aos';
 
 // Start the simulation.
 const main = () => {

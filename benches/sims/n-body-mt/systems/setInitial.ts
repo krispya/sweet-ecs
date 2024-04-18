@@ -1,8 +1,7 @@
 import { CONSTANTS } from '../constants';
 import { randInRange } from '../utils/randInRange';
 import { Position, Mass, Velocity, Circle, IsCentralMass } from '../components';
-import { World } from '../world';
-import { defineEnterQueue } from '@sweet-ecs/core';
+import { World, defineEnterQueue } from '@sweet-ecs/core';
 
 const body = [Position, Velocity, Mass, Circle];
 const enterBody = defineEnterQueue(body);

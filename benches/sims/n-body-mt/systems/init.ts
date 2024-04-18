@@ -1,6 +1,5 @@
 import { CONSTANTS } from '../constants';
-import { Entity } from '@sweet-ecs/core';
-import { World } from '../world';
+import { Entity, World } from '@sweet-ecs/core';
 import { Acceleration, Circle, Color, IsCentralMass, Mass, Position, Velocity } from '..';
 
 export const init = (world: World) => {

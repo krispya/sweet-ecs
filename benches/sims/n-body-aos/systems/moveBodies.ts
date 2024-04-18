@@ -1,11 +1,12 @@
 import { CONSTANTS } from '../constants';
 import { Velocity } from '../components/Velocity';
 import { Position } from '../components/Position';
-import { World } from '../world';
+import { World } from '@sweet-ecs/core';
+import { Time } from '../components/Time';
 
 export const moveBodies = (world: World) => {
 	const eids = world.query([Position, Velocity]);
-	const { delta } = world.time;
+	const { delta } = world.get(Time)!;
 
 	for (let i = 0; i < eids.length; i++) {
 		const eid = eids[i];

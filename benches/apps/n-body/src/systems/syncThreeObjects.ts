@@ -1,8 +1,7 @@
-import { Circle, Color, Position, bodyQuery } from '@sim/n-body-soa';
+import { Circle, Color, Position } from '@sim/n-body-aos';
 import { ThreeInstances } from '../components/ThreeInstances';
 import * as THREE from 'three';
-import { World } from '@sim/n-body-soa/world';
-import { query } from '@sweet-ecs/core';
+import { World } from '@sweet-ecs/core';
 
 const normalize = (x: number, min: number, max: number) => (x - min) / (max - min);
 
@@ -10,8 +9,8 @@ const dummy = new THREE.Object3D();
 const color = new THREE.Color();
 
 export const syncThreeObjects = (world: World) => {
-	const eids = bodyQuery(world);
-	const instanceId = query(world, [ThreeInstances])[0];
+	const eids = world.query([Position, Circle, Color]);
+	const instanceId = world.query([ThreeInstances])[0];
 
 	const instancedMesh = ThreeInstances.instances[instanceId].value;
 	const positions = Position.store;

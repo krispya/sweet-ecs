@@ -1,13 +1,14 @@
 import { Velocity } from '../components/Velocity';
 import { Mass } from '../components/Mass';
-import { World } from '../world';
 import { Acceleration } from '../components/Acceleration';
 import { Position } from '../components/Position';
 import { CONSTANTS } from '../constants';
+import { World } from '@sweet-ecs/core';
+import { Time } from '../components/Time';
 
 export const updateGravity = (world: World) => {
 	const eids = world.query([Velocity, Mass, Position]);
-	const { delta } = world.time;
+	const { delta } = world.get(Time)!;
 
 	const velocities = Velocity.store;
 	const masses = Mass.store;

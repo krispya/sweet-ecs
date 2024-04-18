@@ -1,12 +1,14 @@
 import { CONSTANTS } from '../constants';
-import { IsCentralMass } from '../components/IsCentralMass';
-import { Position } from '../components/Position';
-import { Velocity } from '../components/Velocity';
-import { Mass } from '../components/Mass';
-import { Circle } from '../components/Circle';
-import { Color } from '../components/Color';
 import { Entity, World } from '@sweet-ecs/core';
-import { Acceleration } from '../components/Acceleration';
+import {
+	Circle,
+	Position,
+	Velocity,
+	Acceleration,
+	Color,
+	Mass,
+	IsCentralMass,
+} from '@sim/n-body-aos';
 
 export const init = (world: World) => {
 	for (let i = 0; i < CONSTANTS.NBODIES; i++) {
