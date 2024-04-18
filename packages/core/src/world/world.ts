@@ -5,9 +5,13 @@ import {
 	Query,
 	SYMBOLS,
 	deleteWorld,
+	query as queryBit,
+	Queue,
 } from '@bitecs/classic';
 import { ResizeCallback } from './types';
 import { universe, universeResizeCallbacks } from '../universe/universe';
+import { Component } from '../component/component';
+import { ComponentConstructor } from '../component/types';
 
 export interface World extends bitWorld {}
 
@@ -23,8 +27,10 @@ export class World {
 		resetWorld(this, this.size);
 	}
 
-	query(query: Query) {
-		return query(this);
+	query(components: ComponentConstructor[]): Uint32Array;
+	query(components: Queue): Uint32Array;
+	query(args: any) {
+		return queryBit(this, args);
 	}
 
 	get size() {
