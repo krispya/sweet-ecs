@@ -4,6 +4,7 @@ import { SYMBOLS } from '@bitecs/classic';
 import { Entity } from '../../entity/entity';
 import { getTotalWorldSize } from '../methods/getTotalWorldSize';
 import { universe } from '../../universe/universe';
+import { Component } from '../../component/component';
 
 describe('World', () => {
 	beforeEach(() => {
@@ -72,5 +73,33 @@ describe('World', () => {
 
 		expect(universe.worlds).not.toContain(world);
 		expect(universe.worlds).toHaveLength(0);
+	});
+
+	it('can add singletons', () => {
+		const world = new World();
+
+		class Time extends Component.define({ current: 0, delta: 0 }) {}
+
+		world.add(Time);
+		const time = world.get(Time);
+
+		expect(time).toBeDefined();
+		expect(time).toBeInstanceOf(Time);
+	});
+
+	it('can remove singletons', () => {
+		const world = new World();
+
+		class Time extends Component.define({ current: 0, delta: 0 }) {}
+
+		world.add(Time);
+		const time = world.get(Time);
+
+		expect(time).toBeDefined();
+		expect(time).toBeInstanceOf(Time);
+
+		world.remove(Time);
+
+		expect(world.get(Time)).toBeUndefined();
 	});
 });

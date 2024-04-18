@@ -6,6 +6,7 @@ import {
 	deleteWorld,
 	query as queryBit,
 	Queue,
+	Component,
 } from '@bitecs/classic';
 import { ResizeCallback } from './types';
 import { universe, universeResizeCallbacks } from '../universe/universe';
@@ -15,6 +16,7 @@ export interface World extends bitWorld {}
 
 export class World {
 	#resizeCallbacks: ResizeCallback[] = [];
+	#singletons = new Map<ComponentConstructor, Component>();
 
 	constructor(size?: number) {
 		createWorld(this, size);
@@ -52,5 +54,17 @@ export class World {
 	destroy() {
 		deleteWorld(this);
 		universeResizeCallbacks.forEach((cb) => cb(this, universe.getSize()));
+	}
+
+	add(component: ComponentConstructor) {
+		this.#singletons.set(component, new component());
+	}
+
+	get<T extends ComponentConstructor>(component: T): InstanceType<T> | undefined {
+		return this.#singletons.get(component);
+	}
+
+	remove(component: ComponentConstructor) {
+		this.#singletons.delete(component);
 	}
 }
