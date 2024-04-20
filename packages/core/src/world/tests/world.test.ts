@@ -82,9 +82,11 @@ describe('World', () => {
 
 		world.add(Time);
 		const time = world.get(Time);
+		if (time) time.current = 1;
 
 		expect(time).toBeDefined();
 		expect(time).toBeInstanceOf(Time);
+		expect(Time.store.current[world.id]).toBe(1);
 	});
 
 	it('can remove singletons', () => {

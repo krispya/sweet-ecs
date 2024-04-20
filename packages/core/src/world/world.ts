@@ -7,22 +7,32 @@ import {
 	query as queryBit,
 	Queue,
 	Component,
+	addEntity as addEntityBit,
+	removeEntity as removeEntityBit,
 } from '@bitecs/classic';
 import { ResizeCallback } from './types';
 import { universe, universeResizeCallbacks } from '../universe/universe';
-import { ComponentConstructor } from '../component/types';
+import { ComponentArgs, ComponentConstructor } from '../component/types';
+import { addComponent } from '../component/methods/add-component';
+import { removeComponent } from '../component/methods/remove-component';
 
 export interface World extends bitWorld {}
 
-let idCounter = 0;
+// This is a secret, low level world that is used to store singleton components.
+// Arbitrarly hardcoded to 10 max worlds.
+export const worldPrime = createWorld(10);
 
 export class World {
 	#resizeCallbacks: ResizeCallback[] = [];
-	#singletons = new Map<ComponentConstructor, Component>();
-	#id: number = idCounter++;
+	#id: number;
 
 	constructor(size?: number) {
 		createWorld(this, size);
+
+		// We use the low-level bitECS API to keep worldPrime secret.
+		this.#id = addEntityBit(worldPrime);
+
+		universe.worlds.push(this);
 		universeResizeCallbacks.forEach((cb) => cb(this, universe.getSize()));
 	}
 
@@ -64,18 +74,23 @@ export class World {
 
 	destroy() {
 		deleteWorld(this);
+		universe.worlds = universe.worlds.filter((world) => world !== this);
+
+		// Use the low-level bitECS API to remove the entity from worldPrime.
+		removeEntityBit(worldPrime, this.#id);
+
 		universeResizeCallbacks.forEach((cb) => cb(this, universe.getSize()));
 	}
 
-	add(component: ComponentConstructor) {
-		this.#singletons.set(component, new component());
+	add<T extends ComponentConstructor>(component: T, ...args: ComponentArgs<T>) {
+		addComponent(worldPrime as World, component, this.#id, ...args);
 	}
 
 	get<T extends ComponentConstructor>(component: T): InstanceType<T> | undefined {
-		return this.#singletons.get(component);
+		return component.get(this.#id);
 	}
 
-	remove(component: ComponentConstructor) {
-		this.#singletons.delete(component);
+	remove<T extends ComponentConstructor>(component: T) {
+		removeComponent(worldPrime as World, component, this.#id);
 	}
 }

@@ -70,3 +70,6 @@ export type Store<T extends Schema = any> = {
 		? InstanceType<T[P]>[]
 		: T[P][];
 };
+
+export type ComponentMap = Map<string, typeof Component>;
+export type ComponentToKeyMap = Map<typeof Component, string>;

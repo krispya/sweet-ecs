@@ -1,4 +1,4 @@
-import { addEntity } from '@bitecs/classic';
+import { addEntity, removeEntity } from '@bitecs/classic';
 import { addComponent } from '../component/methods/add-component';
 import { World } from '../world/world';
 import { hasComponent } from '../component/methods/has-component';
@@ -28,6 +28,10 @@ export class Entity {
 		return component.get(this.id);
 	}
 
+	destroy() {
+		removeEntity(this.world, this.id);
+	}
+
 	// Static methods
 
 	static in(world: World): number {
@@ -47,7 +51,7 @@ export class Entity {
 		return true;
 	}
 
-	static has(component: ComponentConstructor, id: number) {
+	static has(component: ComponentConstructor, id: number): boolean {
 		const world = this.worldMap[id];
 		if (!world) return false;
 		return hasComponent(world, component, id);
@@ -57,5 +61,12 @@ export class Entity {
 		const world = this.worldMap[id];
 		if (!world) return null;
 		return component.get(id);
+	}
+
+	static destory(id: number): boolean {
+		const world = this.worldMap[id];
+		if (!world) return false;
+		removeEntity(world, id);
+		return true;
 	}
 }
