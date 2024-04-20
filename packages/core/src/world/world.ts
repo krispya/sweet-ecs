@@ -14,9 +14,12 @@ import { ComponentConstructor } from '../component/types';
 
 export interface World extends bitWorld {}
 
+let idCounter = 0;
+
 export class World {
 	#resizeCallbacks: ResizeCallback[] = [];
 	#singletons = new Map<ComponentConstructor, Component>();
+	#id: number = idCounter++;
 
 	constructor(size?: number) {
 		createWorld(this, size);
@@ -41,6 +44,14 @@ export class World {
 		this[SYMBOLS.$size] = size;
 		this.#resizeCallbacks.forEach((cb) => cb(this, size));
 		universeResizeCallbacks.forEach((cb) => cb(this, universe.getSize()));
+	}
+
+	get id() {
+		return this.#id;
+	}
+
+	protected set id(id: number) {
+		this.#id = id;
 	}
 
 	onResize(callback: ResizeCallback) {

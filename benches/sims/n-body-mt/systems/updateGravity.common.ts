@@ -1,4 +1,6 @@
+import { Acceleration, Mass, Position, Velocity } from '../components';
 import { ThreadedComponents } from '../utils/threading';
+import { createDistributedSystem } from './updateGravity.main';
 
 export type UpdateGravityComponents = ThreadedComponents & {
 	read: {
@@ -13,6 +15,15 @@ export type UpdateGravityComponents = ThreadedComponents & {
 
 export type UpdateGravityInput = {
 	delta: number;
-	workerEntities: Uint32Array;
-	bodyEntities: Uint32Array;
+	partition: Uint32Array;
 };
+
+const body = [Position, Mass, Velocity, Acceleration];
+
+export const updateGravity = createDistributedSystem({
+	entities: { body },
+	read: { Position, Mass },
+	write: { Velocity, Acceleration },
+	url: new URL('./updateGravity.worker.ts', import.meta.url),
+	init: { queries: [body] },
+});

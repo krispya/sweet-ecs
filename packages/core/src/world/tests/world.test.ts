@@ -102,4 +102,11 @@ describe('World', () => {
 
 		expect(world.get(Time)).toBeUndefined();
 	});
+
+	it('has a unique id', () => {
+		const world1 = new World();
+		const world2 = new World();
+
+		expect(world1.id).not.toBe(world2.id);
+	});
 });
