@@ -1,26 +1,12 @@
 import './styles.css';
 import * as THREE from 'three';
-import {
-	moveBodies,
-	setInitial,
-	updateColor,
-	updateGravityMain,
-	world,
-	Position,
-	Mass,
-	Velocity,
-	Acceleration,
-	CONSTANTS,
-} from '@sim/n-body-mt';
+import { moveBodies, setInitial, updateColor, updateGravity, world, CONSTANTS } from '@sim/n-body-mt';
 import { initStats } from '@app/bench-tools';
 import { scene } from './scene';
 import { syncThreeObjects } from './systems/syncThreeObjects';
 import { updateTime } from '@sim/n-body-mt/systems/time';
 import { init } from './systems/init';
 import { World } from '@sweet-ecs/core';
-
-// Configure the simulation
-// CONSTANTS.NBODIES = 2000;
 
 // Renderer
 const renderer = new THREE.WebGLRenderer({
@@ -60,19 +46,10 @@ window.addEventListener('resize', onWindowResize);
 camera.position.set(0, 0, 100);
 camera.lookAt(0, 0, 0);
 
-const updateGravity = updateGravityMain({
-	entityQuery: [Position, Mass, Velocity, Acceleration],
-	partitionQuery: [Position, Mass, Velocity, Acceleration],
-	components: {
-		read: { Position: Position.store, Mass: Mass.store },
-		write: { Velocity: Velocity.store, Acceleration: Acceleration.store },
-	},
-});
-
 const pipeline = async (world: World) => {
 	updateTime(world);
 	setInitial(world);
-	await updateGravity(world);
+	await updateGravity.main(world);
 	moveBodies(world);
 	updateColor(world);
 	syncThreeObjects(world);
