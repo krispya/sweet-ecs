@@ -71,5 +71,15 @@ export type Store<T extends Schema = any> = {
 		: T[P][];
 };
 
+export type PropsFromSchema<T extends Schema> = {
+	[P in keyof T]: T[P] extends { type: infer Type }
+		? Type extends keyof SchemaTypeMap
+			? number
+			: never
+		: T[P] extends Constructor
+		? InstanceType<T[P]>
+		: T[P];
+};
+
 export type ComponentMap = Map<string, typeof Component>;
 export type ComponentToKeyMap = Map<typeof Component, string>;

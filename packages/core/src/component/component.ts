@@ -1,4 +1,11 @@
-import { ComponentConstructor, NormalizedSchema, OmitConstructor, Schema, Store } from './types';
+import {
+	ComponentConstructor,
+	NormalizedSchema,
+	OmitConstructor,
+	PropsFromSchema,
+	Schema,
+	Store,
+} from './types';
 import { createExtendedComponentString } from './utils/create-extended-component-string';
 import { createStore } from './utils/create-store';
 import { isWorker } from './utils/is-worker';
@@ -30,9 +37,7 @@ export class Component {
 	// compared to using `defineProperties` on the prototype. So we eval it. However, this
 	// requires all the functions and properties to be in the same scope so it is inlined.
 	static define<T = {}, TSchema extends Schema = {}>(schema: TSchema = {} as TSchema) {
-		type ComponentInstance = Component & {
-			[P in keyof TSchema]: TSchema[P];
-		} & T;
+		type ComponentInstance = Component & PropsFromSchema<TSchema> & T;
 
 		const component = eval(createExtendedComponentString(schema));
 		component.schema = schema;
