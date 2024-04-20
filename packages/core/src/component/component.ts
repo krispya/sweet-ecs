@@ -1,6 +1,7 @@
 import { ComponentConstructor, NormalizedSchema, OmitConstructor, Schema, Store } from './types';
 import { createExtendedComponentString } from './utils/create-extended-component-string';
 import { createStore } from './utils/create-store';
+import { isWorker } from './utils/is-worker';
 import { normalizeSchema } from './utils/normalize-schema';
 
 export class Component {
@@ -36,7 +37,8 @@ export class Component {
 		const component = eval(createExtendedComponentString(schema));
 		component.schema = schema;
 		component.normalizedSchema = normalizeSchema(schema);
-		component.store = createStore(schema);
+		// Don't create a store for workers. Instead, we hydrate.
+		if (!isWorker()) component.store = createStore(schema);
 
 		return component as unknown as (new () => ComponentInstance) &
 			Omit<OmitConstructor<typeof Component>, 'instances' | 'schema' | 'store'> & {
