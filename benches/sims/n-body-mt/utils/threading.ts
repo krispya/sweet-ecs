@@ -15,4 +15,5 @@ export type InitData = {
 		write: Record<string, Store>;
 	};
 	queryBuffers: Record<string, SharedArrayBuffer>;
+	worldId: number;
 };

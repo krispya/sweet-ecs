@@ -1,6 +1,6 @@
 import { Acceleration, Mass, Position, Velocity } from '../components';
 import { ThreadedComponents } from '../utils/threading';
-import { createDistributedSystem } from './updateGravity.main';
+import { createDistributedSystem } from '../utils/createDistributedSystem';
 
 export type UpdateGravityComponents = ThreadedComponents & {
 	read: {

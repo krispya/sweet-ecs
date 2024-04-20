@@ -1,8 +1,8 @@
 import { getThreadCount, Worker } from '@sim/bench-tools';
-import { Component, Store, World } from '@sweet-ecs/core';
+import { Component, hashComponentsByKey, Store, WorkerWorld, World } from '@sweet-ecs/core';
 import { Workers } from '../components/Workers.js';
 import { Time } from '../components/Time.js';
-import { InitData, ThreadedComponents } from '../utils/threading.js';
+import { InitData } from './threading.js';
 
 type DistributedSystemProps<
 	TEnt extends Record<string, (typeof Component)[]>,
@@ -71,7 +71,7 @@ function createMainSubsystem<
 			const queryBuffers: Record<string, SharedArrayBuffer> = {};
 			if (init?.queries) {
 				for (const query of init.queries) {
-					const hash = hashComponents(query);
+					const hash = hashComponentsByKey(query, componentToKeyMap);
 					const buffer = world.query(query).buffer as SharedArrayBuffer;
 					queryBuffers[hash] = buffer;
 				}
@@ -86,6 +86,7 @@ function createMainSubsystem<
 								type: 'init',
 								stores,
 								queryBuffers,
+								worldId: world.id,
 							});
 						})
 				)
@@ -141,7 +142,7 @@ function createMainSubsystem<
 
 const _self = self as unknown as WorkerGlobalScope & typeof globalThis;
 
-type WorkerProps<
+type WorkerUpdateProps<
 	TEnt extends Record<string, (typeof Component)[]>,
 	TRead extends Record<string, typeof Component>,
 	TWrite extends Record<string, typeof Component>
@@ -152,6 +153,7 @@ type WorkerProps<
 	read: TRead;
 	write: TWrite;
 	delta: number;
+	world: WorkerWorld;
 };
 
 function createWorkerSubsystem<
@@ -160,15 +162,22 @@ function createWorkerSubsystem<
 	TWrite extends Record<string, typeof Component>
 >(
 	props: DistributedSystemProps<TEnt, TRead, TWrite>
-): (update: (props: WorkerProps<TEnt, TRead, TWrite>) => void) => (event: MessageEvent) => void {
-	return (update: (props: WorkerProps<TEnt, TRead, TWrite>) => void) => {
+): (
+	update: (props: WorkerUpdateProps<TEnt, TRead, TWrite>) => void
+) => (event: MessageEvent) => void {
+	return (update: (props: WorkerUpdateProps<TEnt, TRead, TWrite>) => void) => {
 		const { read, write } = props;
+		let world: WorkerWorld = null!;
+
+		// Make sure the worker has access to the componentToKeyMap and queryBuffers.
+		_self.componentToKeyMap = new Map<typeof Component, string>();
+		_self.queryBuffers = {} as Record<string, SharedArrayBuffer>;
 
 		return (event: MessageEvent) => {
 			if (event.data.type === 'run') {
 				const data = event.data;
 
-				update({ ...data, read, write });
+				update({ ...data, read, write, world });
 				postMessage({ type: 'done' });
 				return;
 			}
@@ -189,10 +198,15 @@ function createWorkerSubsystem<
 					write[key].store = init.stores.write[key];
 				}
 
+				_self.componentToKeyMap = componentToKeyMap;
+
 				// Hydrate queries.
 				Object.entries(init.queryBuffers).forEach(([hash, buffer]) => {
 					_self.queryBuffers[hash] = buffer;
 				});
+
+				// Create worker world.
+				world = new WorkerWorld(init.worldId);
 
 				postMessage({ type: 'init-done' });
 			}
@@ -209,12 +223,3 @@ declare global {
 
 const extractStores = (components: Record<string, typeof Component>) =>
 	Object.fromEntries(Object.entries(components).map(([key, value]) => [key, value.store]));
-
-export function hashComponents(components: (typeof Component)[]) {
-	let hash = '';
-	for (const component of components) {
-		hash += componentToKeyMap.get(component) + '-';
-	}
-	hash = hash.slice(0, -1); // Remove the last dash
-	return hash;
-}
