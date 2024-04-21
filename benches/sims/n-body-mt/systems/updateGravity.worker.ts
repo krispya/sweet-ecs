@@ -9,6 +9,7 @@ onmessage = updateGravity.worker(
 		world,
 	}) => {
 		const otherIds = world.query([Position, Mass, Velocity, Acceleration]);
+		// Ideally this uses `world.get(Time)` too, but any instance based API needs more work to be usable in workers.
 		const delta = Time.store.delta[world.id];
 
 		const velocities = Velocity.store;
