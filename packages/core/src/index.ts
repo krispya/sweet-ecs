@@ -5,7 +5,3 @@ export { defineEnterQueue, defineExitQueue, type Query, type Queue } from '@bite
 
 // Types
 export * from './component/types';
-
-// Experimental
-export { hashComponentsByKey } from './component/utils/hash-components-by-key';
-export { WorkerWorld } from './world/worker/worker-world';

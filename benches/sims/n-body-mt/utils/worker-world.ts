@@ -1,9 +1,23 @@
-import { Queue, hashComponentsByKey } from '../..';
-import { ComponentConstructor } from '../../component/types';
-import { SweetWorkerScope } from '../types';
-import { World } from '../world';
+import { Queue } from '@sweet-ecs/core';
+import { ComponentConstructor } from '@sweet-ecs/core/src/component/types';
+import { SweetWorkerScope } from '@sweet-ecs/core/src/world/types';
+import { World } from '@sweet-ecs/core/src/world/world';
+import { hashComponentsByKey } from './hash-components-by-key';
 
-const _self = self as unknown as SweetWorkerScope;
+const getGlobal = () => {
+	if (typeof self !== 'undefined') {
+		return self;
+	} else if (typeof window !== 'undefined') {
+		return window;
+	} else if (typeof global !== 'undefined') {
+		return global;
+	} else {
+		// Undefined context, could throw an error or handle accordingly
+		throw new Error('Unknown context');
+	}
+};
+
+const _self = getGlobal() as unknown as SweetWorkerScope;
 
 export class WorkerWorld extends World {
 	constructor(id: number, size?: number) {

@@ -1,6 +1,9 @@
 import WorkerConstruct from 'web-worker';
+import { getGlobal } from './getGlobal.js';
+
+const global = getGlobal();
 
 const isNode =
 	typeof process !== 'undefined' && process.versions != null && process.versions.node != null;
 
-export const Worker = isNode ? WorkerConstruct.default : self.Worker;
+export const Worker = isNode ? WorkerConstruct.default : global.Worker;

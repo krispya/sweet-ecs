@@ -1,8 +1,9 @@
 import { getThreadCount, Worker } from '@sim/bench-tools';
-import { Component, hashComponentsByKey, Store, WorkerWorld, World } from '@sweet-ecs/core';
-import { Workers } from '../components/Workers.js';
-import { Time } from '../components/Time.js';
-import { InitData } from './threading.js';
+import { Component, Store, World } from '@sweet-ecs/core';
+import { Workers } from '../components/Workers';
+import { hashComponentsByKey } from './hash-components-by-key';
+import { WorkerWorld } from './worker-world';
+import { InitData } from './types';
 
 type DistributedSystemProps<
 	TEnt extends Record<string, (typeof Component)[]>,
@@ -51,7 +52,6 @@ function createMainSubsystem<
 >({ entities, read, write, url, init }: DistributedSystemProps<TEnt, TRead, TWrite>) {
 	return async (world: World) => {
 		const { registry } = world.get(Workers)!;
-		const { delta } = world.get(Time)!;
 
 		// Initialize workers using the URL as a key.
 		if (!registry[url.href]) {
@@ -131,7 +131,7 @@ function createMainSubsystem<
 							workerEntities[key] = partitionedEntities[key][0].subarray(start, end);
 						}
 
-						worker.postMessage({ type: 'run', entities: workerEntities, delta });
+						worker.postMessage({ type: 'run', entities: workerEntities });
 					})
 			)
 		);
@@ -207,6 +207,8 @@ function createWorkerSubsystem<
 
 				// Create worker world.
 				world = new WorkerWorld(init.worldId);
+
+				// And any singletons
 
 				postMessage({ type: 'init-done' });
 			}

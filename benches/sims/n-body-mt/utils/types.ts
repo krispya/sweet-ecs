@@ -1,13 +1,4 @@
-import { Store } from '@sweet-ecs/core';
-
-export type ThreadedComponents = {
-	read: {
-		[key: string]: Store;
-	};
-	write: {
-		[key: string]: Store;
-	};
-};
+import { Component, Store } from '@sweet-ecs/core';
 
 export type InitData = {
 	stores: {
@@ -17,3 +8,6 @@ export type InitData = {
 	queryBuffers: Record<string, SharedArrayBuffer>;
 	worldId: number;
 };
+
+export type ComponentMap = Map<string, typeof Component>;
+export type ComponentToKeyMap = Map<typeof Component, string>;

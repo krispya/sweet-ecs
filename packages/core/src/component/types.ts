@@ -80,6 +80,3 @@ export type PropsFromSchema<T extends Schema> = {
 		? InstanceType<T[P]>
 		: T[P];
 };
-
-export type ComponentMap = Map<string, typeof Component>;
-export type ComponentToKeyMap = Map<typeof Component, string>;

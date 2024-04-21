@@ -1,10 +1,17 @@
 import './styles.css';
 import * as THREE from 'three';
-import { moveBodies, setInitial, updateColor, updateGravity, world, CONSTANTS } from '@sim/n-body-mt';
+import {
+	moveBodies,
+	setInitial,
+	updateColor,
+	updateGravity,
+	world,
+	CONSTANTS,
+	updateTime,
+} from '@sim/n-body-mt';
 import { initStats } from '@app/bench-tools';
 import { scene } from './scene';
 import { syncThreeObjects } from './systems/syncThreeObjects';
-import { updateTime } from '@sim/n-body-mt/systems/time';
 import { init } from './systems/init';
 import { World } from '@sweet-ecs/core';
 

@@ -1,7 +1,7 @@
 import { setInitial } from './setInitial';
 import { moveBodies } from './moveBodies';
 import { updateColor } from './updateColor';
-import { updateTime } from './time';
+import { updateTime } from './updateTime';
 import { World } from '@sweet-ecs/core';
 import { updateGravity } from './updateGravity.common';
 

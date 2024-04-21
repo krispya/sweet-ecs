@@ -1,5 +1,5 @@
-import { Component } from '../component';
-import { ComponentToKeyMap } from '../types';
+import { Component } from '@sweet-ecs/core';
+import { ComponentToKeyMap } from './types';
 
 export function hashComponentsByKey(
 	components: (typeof Component)[],
