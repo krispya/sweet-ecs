@@ -1,9 +1,8 @@
-import { SYMBOLS } from '@bitecs/classic';
-import { universe } from '../../universe/universe';
+import { SYMBOLS, worlds } from '@bitecs/classic';
 
 export function getTotalWorldSize() {
 	let totalSize = 0;
-	for (const world of universe.worlds) {
+	for (const world of worlds) {
 		totalSize += world[SYMBOLS.$size];
 	}
 	return totalSize;
