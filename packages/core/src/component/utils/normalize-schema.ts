@@ -6,6 +6,11 @@ export function normalizeSchema(schema: Schema): NormalizedSchema {
 	for (const key in schema) {
 		if (typeof schema[key] === 'object' && (schema[key] as any)?.type) {
 			processedSchema[key] = schema[key] as any;
+
+			// TODO: This only covers numbers.
+			if (!(schema[key] as any)?.default) {
+				processedSchema[key].default = 0;
+			}
 		} else if (typeof schema[key] === 'number') {
 			processedSchema[key] = { type: 'number', default: schema[key] };
 		} else if (typeof schema[key] === 'string') {
