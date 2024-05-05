@@ -4,6 +4,7 @@ import { Workers } from '../components/Workers';
 import { hashComponentsByKey } from './hash-components-by-key';
 import { WorkerWorld } from './worker-world';
 import { InitData } from './types';
+import { getGlobal } from '@sim/bench-tools/src/getGlobal';
 
 type DistributedSystemProps<
 	TEnt extends Record<string, (typeof Component)[]>,
@@ -112,14 +113,14 @@ function createMainSubsystem<
 				(worker, i) =>
 					new Promise<void>((resolve) => {
 						worker.onmessage = (event) => {
-							if (event.data.type === 'query') {
-								// Reconstruct an array from the hash and get the buffer.
-								const keys = (event.data.hash as string).split('-');
-								const components = keys.map((key) => componentMap.get(key)!);
-								const buffer = world.query(components).buffer;
+							// if (event.data.type === 'query') {
+							// 	// Reconstruct an array from the hash and get the buffer.
+							// 	const keys = (event.data.hash as string).split('-');
+							// 	const components = keys.map((key) => componentMap.get(key)!);
+							// 	const buffer = world.query(components).buffer;
 
-								worker.postMessage({ type: 'query', buffer, hash: event.data.hash });
-							}
+							// 	worker.postMessage({ type: 'query', buffer, hash: event.data.hash });
+							// }
 
 							if (event.data.type === 'done') resolve();
 						};
@@ -140,7 +141,7 @@ function createMainSubsystem<
 	};
 }
 
-const _self = self as unknown as WorkerGlobalScope & typeof globalThis;
+const _self = getGlobal() as unknown as WorkerGlobalScope & typeof globalThis;
 
 type WorkerUpdateProps<
 	TEnt extends Record<string, (typeof Component)[]>,
@@ -182,10 +183,10 @@ function createWorkerSubsystem<
 				return;
 			}
 
-			if (event.data.type === 'query') {
-				_self.queryBuffers[event.data.hash] = event.data.buffer;
-				return;
-			}
+			// if (event.data.type === 'query') {
+			// 	_self.queryBuffers[event.data.hash] = event.data.buffer;
+			// 	return;
+			// }
 
 			if (event.data.type === 'init') {
 				const init = event.data as InitData;

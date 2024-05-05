@@ -33,9 +33,9 @@ importers:
       '@app/bench-tools':
         specifier: workspace:*
         version: link:../app-tools
-      '@sim/n-body-aos':
+      '@sim/n-body-soa':
         specifier: workspace:*
-        version: link:../../sims/n-body-aos
+        version: link:../../sims/n-body-soa
       '@sweet-ecs/core':
         specifier: workspace:*
         version: link:../../../packages/core
@@ -138,6 +138,22 @@ importers:
       tsx:
         specifier: latest
         version: 4.7.2
+
+  benches/sims/n-body-mt-exp:
+    dependencies:
+      '@sim/bench-tools':
+        specifier: workspace:*
+        version: link:../bench-tools
+      '@sweet-ecs/core':
+        specifier: workspace:*
+        version: link:../../../packages/core
+    devDependencies:
+      tsconfig:
+        specifier: workspace:*
+        version: link:../../../packages/tsconfig
+      tsx:
+        specifier: latest
+        version: 4.9.1
 
   benches/sims/n-body-soa:
     dependencies:
@@ -801,6 +817,11 @@ packages:
     engines: {node: '>=18.0.0'}
     hasBin: true
 
+  tsx@4.9.1:
+    resolution: {integrity: sha512-CqSJaYyZ6GEqnGtPuMPQHvUwRGU6VHSVF+RDxoOmRg/XD4aF0pD973tKhoUYGQtdcoCHcSOGk34ioFaP+vYcMQ==}
+    engines: {node: '>=18.0.0'}
+    hasBin: true
+
   type-detect@4.0.8:
     resolution: {integrity: sha512-0fr/mIH1dlO+x7TlcMy+bIDqKPsw/70tVyeHW787goQjhmqaZe10uwLujubK9q9Lg6Fiho1KUKDYz0Z7k7g5/g==}
     engines: {node: '>=4'}
@@ -1409,6 +1430,13 @@ snapshots:
   tsx@4.7.2:
     dependencies:
       esbuild: 0.19.12
+      get-tsconfig: 4.7.3
+    optionalDependencies:
+      fsevents: 2.3.3
+
+  tsx@4.9.1:
+    dependencies:
+      esbuild: 0.20.2
       get-tsconfig: 4.7.3
     optionalDependencies:
       fsevents: 2.3.3

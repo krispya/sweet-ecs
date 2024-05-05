@@ -1,4 +1,4 @@
-import { Circle, Color, Position } from '@sim/n-body-aos';
+import { Circle, Color, Position } from '@sim/n-body-soa';
 import { ThreeInstances } from '../components/ThreeInstances';
 import * as THREE from 'three';
 import { World } from '@sweet-ecs/core';

@@ -56,7 +56,7 @@ camera.lookAt(0, 0, 0);
 const pipeline = async (world: World) => {
 	updateTime(world);
 	setInitial(world);
-	await updateGravity.main(world);
+	await updateGravity(world);
 	moveBodies(world);
 	updateColor(world);
 	syncThreeObjects(world);

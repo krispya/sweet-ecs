@@ -3,12 +3,12 @@ import { moveBodies } from './moveBodies';
 import { updateColor } from './updateColor';
 import { updateTime } from './updateTime';
 import { World } from '@sweet-ecs/core';
-import { updateGravity } from './updateGravity.main';
+import { updateGravity } from './updateGravity.common';
 
 export const pipeline = async (world: World) => {
 	updateTime(world);
 	setInitial(world);
-	await updateGravity(world);
+	await updateGravity.main(world);
 	moveBodies(world);
 	updateColor(world);
 };

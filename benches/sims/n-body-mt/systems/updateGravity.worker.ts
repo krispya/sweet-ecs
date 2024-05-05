@@ -1,47 +1,49 @@
-import { CONSTANTS } from '../constants';
-import { updateGravity } from './updateGravity.common.js';
+import { UpdateGravityComponents, UpdateGravityInput } from './updateGravity.common';
+const STICKY = 10000;
 
-onmessage = updateGravity.worker(
-	async ({
-		entities,
-		read: { Position, Mass, Time },
-		write: { Velocity, Acceleration },
-		world,
-	}) => {
-		const otherIds = world.query([Position, Mass, Velocity, Acceleration]);
-		// Ideally this uses `world.get(Time)` too, but any instance based API needs more work to be usable in workers.
-		const delta = Time.store.delta[world.id];
+function updateGravityWorker({
+	delta,
+	workerEntities,
+	bodyEntities,
+	read: { Position, Mass },
+	write: { Velocity, Acceleration },
+}: UpdateGravityInput & UpdateGravityComponents) {
+	for (let j = 0; j < workerEntities.length; j++) {
+		const meId = workerEntities[j];
+		Acceleration.x[meId] = 0;
+		Acceleration.y[meId] = 0;
 
-		const velocities = Velocity.store;
-		const masses = Mass.store;
-		const accelerations = Acceleration.store;
-		const positions = Position.store;
+		for (let i = 0; i < bodyEntities.length; i++) {
+			const currentId = bodyEntities[i];
+			if (meId === currentId) continue; // Skip self
 
-		for (let j = 0; j < entities.body.length; j++) {
-			const meId = entities.body[j];
-			accelerations.x[meId] = 0;
-			accelerations.y[meId] = 0;
+			const dx = +Position.x[currentId] - +Position.x[meId];
+			const dy = +Position.y[currentId] - +Position.y[meId];
+			let distanceSquared = dx * dx + dy * dy;
 
-			for (let i = 0; i < otherIds.length; i++) {
-				const otherId = otherIds[i];
-				if (meId === otherId) continue; // Skip self
+			if (distanceSquared < STICKY) distanceSquared = STICKY; // Apply stickiness
 
-				const dx = +positions.x[otherId] - +positions.x[meId];
-				const dy = +positions.y[otherId] - +positions.y[meId];
-				let distanceSquared = dx * dx + dy * dy;
+			const distance = Math.sqrt(distanceSquared);
+			const forceMagnitude = (+Mass.value[meId] * +Mass.value[currentId]) / distanceSquared;
 
-				if (distanceSquared < CONSTANTS.STICKY) distanceSquared = CONSTANTS.STICKY; // Apply stickiness
-
-				const distance = Math.sqrt(distanceSquared);
-				const forceMagnitude =
-					(+masses.value[meId] * +masses.value[otherId]) / distanceSquared;
-
-				accelerations.x[meId] += (dx / distance) * forceMagnitude;
-				accelerations.y[meId] += (dy / distance) * forceMagnitude;
-			}
-
-			velocities.x[meId] += (accelerations.x[meId] * delta) / +masses.value[meId];
-			velocities.y[meId] += (accelerations.y[meId] * delta) / +masses.value[meId];
+			Acceleration.x[meId] += (dx / distance) * forceMagnitude;
+			Acceleration.y[meId] += (dy / distance) * forceMagnitude;
 		}
+
+		Velocity.x[meId] += (Acceleration.x[meId] * delta) / +Mass.value[meId];
+		Velocity.y[meId] += (Acceleration.y[meId] * delta) / +Mass.value[meId];
 	}
-);
+}
+
+let components: UpdateGravityComponents;
+
+onmessage = (event: MessageEvent<UpdateGravityComponents | UpdateGravityInput>) => {
+	if ('read' in event.data && 'write' in event.data) {
+		components = event.data as UpdateGravityComponents;
+		postMessage('init-done');
+	} else {
+		const data = event.data as UpdateGravityInput;
+		updateGravityWorker({ ...data, ...components });
+		postMessage('system-done');
+	}
+};

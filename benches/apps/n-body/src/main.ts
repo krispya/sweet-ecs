@@ -8,7 +8,7 @@ import {
 	updateGravity,
 	updateTime,
 	world,
-} from '@sim/n-body-aos';
+} from '@sim/n-body-soa';
 import { initStats } from '@app/bench-tools';
 import { scene } from './scene';
 import { syncThreeObjects } from './systems/syncThreeObjects';
