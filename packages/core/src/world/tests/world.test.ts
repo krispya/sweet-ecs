@@ -8,7 +8,7 @@ import { Component } from '../../component/component';
 
 describe('World', () => {
 	beforeEach(() => {
-		universe.worlds.length = 0;
+		universe.reset();
 	});
 
 	it('creates a world instance', () => {
@@ -27,11 +27,13 @@ describe('World', () => {
 		const world = new World();
 		Entity.in(world);
 
-		expect(world[SYMBOLS.$entityArray]).toHaveLength(1);
+		// All worlds have an entity for themselves, so we expect 2.
+		expect(world[SYMBOLS.$entityArray]).toHaveLength(2);
 
 		world.reset();
 
-		expect(world[SYMBOLS.$entityArray]).toHaveLength(0);
+		// On reset we expect 1 entity, the world itself.
+		expect(world[SYMBOLS.$entityArray]).toHaveLength(1);
 	});
 
 	it('can get total world size', () => {

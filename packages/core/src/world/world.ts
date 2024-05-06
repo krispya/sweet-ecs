@@ -6,9 +6,8 @@ import {
 	deleteWorld,
 	query as queryBit,
 	Queue,
-	Component,
-	addEntity as addEntityBit,
 	removeEntity as removeEntityBit,
+	addPrefab,
 } from '@bitecs/classic';
 import { ResizeCallback } from './types';
 import { universe, universeResizeCallbacks } from '../universe/universe';
@@ -18,10 +17,6 @@ import { removeComponent } from '../component/methods/remove-component';
 
 export interface World extends bitWorld {}
 
-// This is a secret, low level world that is used to store singleton components.
-// Arbitrarly hardcoded to 10 max worlds.
-export const worldPrime = createWorld(10);
-
 export class World {
 	#resizeCallbacks: ResizeCallback[] = [];
 	#id: number;
@@ -29,15 +24,15 @@ export class World {
 	constructor(size?: number) {
 		createWorld(this, size);
 
-		// We use the low-level bitECS API to keep worldPrime secret.
-		this.#id = addEntityBit(worldPrime);
+		// A Prefab is ignored by queries, so we make one here for the world.
+		this.#id = addPrefab(this);
 
-		universe.worlds.push(this);
 		universeResizeCallbacks.forEach((cb) => cb(this, universe.getSize()));
 	}
 
 	reset() {
 		resetWorld(this, this.size);
+		this.#id = addPrefab(this);
 	}
 
 	query(components: ComponentConstructor[]): Uint32Array;
@@ -74,16 +69,11 @@ export class World {
 
 	destroy() {
 		deleteWorld(this);
-		universe.worlds = universe.worlds.filter((world) => world !== this);
-
-		// Use the low-level bitECS API to remove the entity from worldPrime.
-		removeEntityBit(worldPrime, this.#id);
-
 		universeResizeCallbacks.forEach((cb) => cb(this, universe.getSize()));
 	}
 
 	add<T extends ComponentConstructor>(component: T, ...args: ComponentArgs<T>) {
-		addComponent(worldPrime as World, component, this.#id, ...args);
+		addComponent(this, component, this.#id, ...args);
 	}
 
 	get<T extends ComponentConstructor>(component: T): InstanceType<T> | undefined {
@@ -91,6 +81,6 @@ export class World {
 	}
 
 	remove<T extends ComponentConstructor>(component: T) {
-		removeComponent(worldPrime as World, component, this.#id);
+		removeComponent(this, component, this.#id);
 	}
 }

@@ -1,3 +1,4 @@
+import { worlds } from '@bitecs/classic';
 import { getTotalWorldSize } from '../world/methods/getTotalWorldSize';
 import { ResizeCallback } from '../world/types';
 import { World } from '../world/world';
@@ -5,9 +6,12 @@ import { World } from '../world/world';
 export const universeResizeCallbacks: ResizeCallback[] = [];
 
 export const universe = {
-	worlds: [] as World[],
+	worlds,
 	getSize: getTotalWorldSize,
 	onResize,
+	reset: () => {
+		worlds.length = 0;
+	},
 };
 
 function onResize(callback: ResizeCallback) {
