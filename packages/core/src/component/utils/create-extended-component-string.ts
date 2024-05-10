@@ -7,9 +7,8 @@ export function createExtendedComponentString(schema: Schema) {
 	  static store = {};
 	  static instances = [];
 
-	  constructor(entityId) {
-		super(entityId);
-
+	  constructor() {
+		super();
 		Object.keys(this.constructor.schema).forEach(key => {
 		  this[key] = this.constructor.schema[key];
 		});
@@ -20,11 +19,11 @@ export function createExtendedComponentString(schema: Schema) {
 	for (const key of Object.keys(schema)) {
 		classDefinition += `
 	  get ${key}() {
-		return this.constructor.store['${key}'][this.#entityId];
+		return this.constructor.store['${key}'][this.getEntityId()];
 	  }
 
 	  set ${key}(value) {
-		this.constructor.store['${key}'][this.#entityId] = value;
+		this.constructor.store['${key}'][this.getEntityId()] = value;
 	  }
 	`;
 	}

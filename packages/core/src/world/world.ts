@@ -6,7 +6,6 @@ import {
 	deleteWorld,
 	query as queryBit,
 	Queue,
-	removeEntity as removeEntityBit,
 	addPrefab,
 } from '@bitecs/classic';
 import { ResizeCallback } from './types';
@@ -14,6 +13,7 @@ import { universe, universeResizeCallbacks } from '../universe/universe';
 import { ComponentArgs, ComponentConstructor } from '../component/types';
 import { addComponent } from '../component/methods/add-component';
 import { removeComponent } from '../component/methods/remove-component';
+import { hasComponent } from '../component/methods/has-component';
 
 export interface World extends bitWorld {}
 
@@ -82,5 +82,13 @@ export class World {
 
 	remove<T extends ComponentConstructor>(component: T) {
 		removeComponent(this, component, this.#id);
+	}
+
+	has<T extends ComponentConstructor>(component: T) {
+		return hasComponent(this, component, this.#id);
+	}
+
+	getEntities() {
+		return this[SYMBOLS.$entityArray];
 	}
 }
