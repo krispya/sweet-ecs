@@ -1,41 +1,34 @@
-import { Suspense, use, useEffect, useRef } from 'react';
-import reactLogo from './assets/react.svg';
-import viteLogo from '/vite.svg';
+/** @jsxImportSource @sweet-ecs/react */
+
+import { Suspense, useEffect, useRef, useState } from 'react';
 import './App.css';
 import Sweet, { useWorld } from '@sweet-ecs/react';
 import { Entity, universe } from '@sweet-ecs/core';
 import { Mass, Position, Time, Velocity, world } from './globals';
 
 export function App() {
+	const [, setCount] = useState(0);
+
 	useEffect(() => {
 		console.log('App useEffect run');
 		console.log(universe.worlds);
+
+		setTimeout(() => {
+			setCount((v) => v + 1);
+		}, 1000);
 	}, []);
 
 	return (
 		<>
 			<Suspense>
 				<Sweet.World value={world} size={500} resources={[Time]}>
-					{/* <Suspending /> */}
 					<Body />
-				</Sweet.World>
-			</Suspense>
 
-			<div>
-				<a href="https://vitejs.dev" target="_blank">
-					<img src={viteLogo} className="logo" alt="Vite logo" />
-				</a>
-				<a href="https://react.dev" target="_blank">
-					<img src={reactLogo} className="logo react" alt="React logo" />
-				</a>
-			</div>
-			<h1>Vite + React</h1>
-			<div className="card">
-				<p>
-					Edit <code>src/App.tsx</code> and save to test HMR
-				</p>
-			</div>
-			<p className="read-the-docs">Click on the Vite and React logos to learn more</p>
+					<p className="read-the-docs">Click on the Vite and React logos to learn more</p>
+				</Sweet.World>
+
+				{/* <Suspending /> */}
+			</Suspense>
 		</>
 	);
 }
@@ -55,23 +48,22 @@ function Body() {
 
 	return (
 		<>
-			<Sweet.Entity ref={ref}>
-				<Suspending />
+			<entity ref={ref}>
 				<Sweet.Component ref={posRef} key="p" type={Position} />
 				<Sweet.Component key="v" type={Velocity} />
 				<Sweet.Component key="m" type={Mass} />
-			</Sweet.Entity>
+			</entity>
 		</>
 	);
 }
 
-const promise = new Promise((resolve) => {
-	setTimeout(() => {
-		resolve('hello');
-	}, 1000);
-});
+// const promise = new Promise((resolve) => {
+// 	setTimeout(() => {
+// 		resolve('hello');
+// 	}, 1000);
+// });
 
-function Suspending() {
-	use(promise);
-	return null;
-}
+// function Suspending() {
+// 	use(promise);
+// 	return null;
+// }

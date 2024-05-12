@@ -19,10 +19,8 @@ export function Entity({ children, ref }: Props) {
 	useLayoutEffect(() => {
 		// Activate the entity when mounted.
 		EntityCore.activate(entity);
-		console.log('activating entity', entity.id);
 
 		return () => {
-			console.log('deactivating entity', entity.id);
 			// When unmounted, destroy the entity and reset internal state.
 			EntityCore.deactive(entity);
 		};
