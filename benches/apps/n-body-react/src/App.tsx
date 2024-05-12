@@ -1,5 +1,3 @@
-/** @jsxImportSource @sweet-ecs/react */
-
 import { Suspense, useEffect, useRef, useState } from 'react';
 import './App.css';
 import Sweet, { useWorld } from '@sweet-ecs/react';
