@@ -47,13 +47,11 @@ function Body() {
 	});
 
 	return (
-		<>
-			<entity ref={ref}>
-				<Sweet.Component ref={posRef} key="p" type={Position} />
-				<Sweet.Component key="v" type={Velocity} />
-				<Sweet.Component key="m" type={Mass} />
-			</entity>
-		</>
+		<entity ref={ref}>
+			<Sweet.Component ref={posRef} key="p" type={Position} />
+			<Sweet.Component key="v" type={Velocity} />
+			<Sweet.Component key="m" type={Mass} />
+		</entity>
 	);
 }
 

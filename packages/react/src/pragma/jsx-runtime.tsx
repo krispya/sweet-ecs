@@ -1,5 +1,4 @@
 import React from 'react';
-import { World } from '../world/world';
 import { injectWorldIntoChildren } from './utils/inject-world-into-children';
 import { wrapRef } from './utils/wrap-ref';
 import { Entity } from '../entity/entity';
@@ -39,20 +38,32 @@ export const jsx = (type: any, props: Record<string, any>, maybeKey?: React.Key)
 		world: undefined!,
 	};
 
-	// // If we are rendering `World`, start passing the world object down.
-	if (type === World) {
+	// If we are rendering `World`, start passing the world object down.
+	if (type?.name === 'World') {
 		node.world = node.props.value;
-		// // Inject the world object into the children.
+		// Inject the world object into the children.
 		if (node.props.children) injectWorldIntoChildren(node, node.world);
 	}
 
-	if (type === 'entity') {
-		console.log('entity!');
-		node.type = Entity;
-	}
+	// Handle `entity` intrinsic element.
+	if (type === 'entity') node.type = Entity;
 
 	// Wrap the ref and merge it.
 	node.props = { ref: wrapRef(ref, node), ...node.props };
+
+	// If it is a functional component, we wrap it and inject the world into its results.
+	if (typeof type === 'function' && type?.name !== 'World') {
+		node.type = (props: Record<string, any>) => {
+			const result = type(props);
+
+			if (typeof result === 'object' && result !== null) {
+				result.world = node.world;
+				if (node.props.children) injectWorldIntoChildren(node, node.world);
+			}
+
+			return result;
+		};
+	}
 
 	console.log(node);
 
