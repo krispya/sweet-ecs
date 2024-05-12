@@ -65,7 +65,5 @@ export const jsx = (type: any, props: Record<string, any>, maybeKey?: React.Key)
 		};
 	}
 
-	console.log(node);
-
 	return node;
 };
