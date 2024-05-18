@@ -3,7 +3,15 @@ import { SweetNode } from '../types/types';
 
 export function wrapRef(ref: React.Ref<any>, node: SweetNode): React.RefCallback<any> {
 	return (instance: any) => {
-		if (node.entityId === -1) node.entityId = Entity.in(node.world);
+		if (node.world.isRegistered) {
+			if (node.entityId === -1) node.entityId = Entity.in(node.world);
+			console.log('jsx: registering right away', node.entityId, instance);
+		} else {
+			node.world.onRegister(() => {
+				if (node.entityId === -1) node.entityId = Entity.in(node.world);
+				console.log('jsx: registering on world registration', node.entityId, instance);
+			});
+		}
 
 		let cleanup: any;
 
@@ -16,7 +24,9 @@ export function wrapRef(ref: React.Ref<any>, node: SweetNode): React.RefCallback
 		}
 
 		return () => {
-			Entity.destory(node.entityId);
+			console.log('jsx: destroying', node.entityId);
+			if (node.world.isRegistered) Entity.destroy(node.entityId);
+			node.entityId = -1;
 			if (cleanup) cleanup();
 		};
 	};

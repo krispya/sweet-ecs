@@ -113,4 +113,30 @@ describe('World', () => {
 
 		expect(world1.id).not.toBe(world2.id);
 	});
+
+	it('can define without side effects', () => {
+		const world = World.define();
+
+		expect(universe.worlds).toHaveLength(0);
+		expect(world.isRegistered).toBe(false);
+	});
+
+	it('can manually register after defined', () => {
+		const world = World.define();
+		world.register();
+
+		expect(universe.worlds).toHaveLength(1);
+		expect(world.isRegistered).toBe(true);
+	});
+
+	it('destroys all entities when itself is destroyed', () => {
+		const world = new World();
+		const entityA = new Entity(world);
+		const entityB = new Entity(world);
+
+		world.destroy();
+
+		expect(entityA.isRegistered).toBe(false);
+		expect(entityB.isRegistered).toBe(false);
+	});
 });

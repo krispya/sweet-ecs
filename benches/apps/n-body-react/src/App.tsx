@@ -11,23 +11,21 @@ export function App() {
 		console.log('App useEffect run');
 		console.log(universe.worlds);
 
-		setTimeout(() => {
-			setCount((v) => v + 1);
-		}, 1000);
+		// setTimeout(() => {
+		// 	setCount((v) => v + 1);
+		// }, 1000);
 	}, []);
 
 	return (
-		<>
-			<Suspense>
-				<Sweet.World value={world} size={500} resources={[Time]}>
-					<Body />
+		<Suspense>
+			<world size={500} resources={[Time]}>
+				<Body />
 
-					<p className="read-the-docs">Click on the Vite and React logos to learn more</p>
-				</Sweet.World>
+				<p className="read-the-docs">Click on the Vite and React logos to learn more</p>
+			</world>
 
-				{/* <Suspending /> */}
-			</Suspense>
-		</>
+			{/* <Suspending /> */}
+		</Suspense>
 	);
 }
 
@@ -36,19 +34,19 @@ function Body() {
 	const posRef = useRef<Position>(null!);
 	const world = useWorld();
 
-	console.log(world.getEntities());
-
 	useEffect(() => {
+		console.log('Body useEffect run');
+		console.log(world.getEntities());
 		console.log(ref.current, ref.current.id);
-		console.log(ref.current.id, ref.current.getAll());
-		console.log(posRef.current);
+		// console.log(ref.current.id, ref.current.getAll());
+		// console.log(posRef.current);
 	});
 
 	return (
 		<entity ref={ref}>
-			<Sweet.Component ref={posRef} key="p" type={Position} />
+			{/* <Sweet.Component ref={posRef} key="p" type={Position} />
 			<Sweet.Component key="v" type={Velocity} />
-			<Sweet.Component key="m" type={Mass} />
+			<Sweet.Component key="m" type={Mass} /> */}
 		</entity>
 	);
 }

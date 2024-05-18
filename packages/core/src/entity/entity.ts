@@ -6,19 +6,22 @@ import { ComponentArgs, ComponentConstructor } from '../component/types';
 import { removeComponent } from '../component/methods/remove-component';
 
 export class Entity {
-	static worldMap = [] as World[];
+	static worldMap: World[] = [];
+	static instances: Entity[] = [];
 
 	world: World;
 	id: number;
-	#onActiveCallbacks: (() => void)[] = [];
+	#onRegisterCallbacks: (() => void)[] = [];
 
-	constructor(world: World, empty = false) {
-		if (empty) {
+	constructor(world: World);
+	constructor(world: World, pure = false) {
+		if (pure) {
 			this.world = world;
 			this.id = -1;
 		} else {
 			this.world = world;
 			this.id = addEntity(world);
+			(this.constructor as typeof Entity).instances[this.id] = this;
 		}
 	}
 
@@ -46,22 +49,36 @@ export class Entity {
 
 	destroy() {
 		removeEntity(this.world, this.id);
+		this.#onRegisterCallbacks = [];
 		this.id = -1;
+		delete (this.constructor as typeof Entity).instances[this.id];
 	}
 
-	get isActive() {
+	get isRegistered() {
 		return this.id !== -1;
 	}
 
-	onActive(callback: () => void) {
-		this.#onActiveCallbacks.push(callback);
+	onRegister(callback: () => void) {
+		this.#onRegisterCallbacks.push(callback);
 
 		return () => {
-			this.#onActiveCallbacks = this.#onActiveCallbacks.filter((cb) => cb !== callback);
+			this.#onRegisterCallbacks = this.#onRegisterCallbacks.filter((cb) => cb !== callback);
 		};
 	}
 
+	register() {
+		if (this.id !== -1) return false;
+		this.id = addEntity(this.world);
+		this.#onRegisterCallbacks.forEach((cb) => cb());
+		(this.constructor as typeof Entity).instances[this.id] = this;
+		return true;
+	}
+
 	// Static methods
+	static define(world: World): Entity {
+		// @ts-expect-error
+		return new Entity(world, true);
+	}
 
 	static in(world: World): number {
 		const id = addEntity(world);
@@ -99,24 +116,17 @@ export class Entity {
 		return true;
 	}
 
-	static destory(id: number): boolean {
-		const world = this.worldMap[id];
-		if (!world) return false;
-		removeEntity(world, id);
-		return true;
-	}
-
-	static activate(entity: Entity): boolean {
-		if (entity.id !== -1) return false;
-		entity.id = addEntity(entity.world);
-		entity.#onActiveCallbacks.forEach((cb) => cb());
-		return true;
-	}
-
-	static deactive(entity: Entity): boolean {
-		if (entity.id === -1) return false;
-		removeEntity(entity.world, entity.id);
-		entity.id = -1;
-		return true;
+	static destroy(id: number): boolean {
+		// Clean up the entity object if it exists.
+		if (this.instances[id]) {
+			this.instances[id].destroy();
+			return true;
+		} else {
+			const world = this.worldMap[id];
+			if (!world) return false;
+			removeEntity(world, id);
+			delete this.worldMap[id];
+			return true;
+		}
 	}
 }

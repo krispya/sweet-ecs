@@ -1,5 +1,5 @@
 import { Entity as EntityCore } from '@sweet-ecs/core';
-import { useImperativeHandle, useLayoutEffect, useMemo } from 'react';
+import React, { useImperativeHandle, useLayoutEffect, useMemo } from 'react';
 import { useWorld } from '../world/use-world';
 import { EntityContext } from './entity-context';
 
@@ -13,18 +13,39 @@ type Props = {
 
 export function Entity({ children, ref }: Props) {
 	const world = useWorld();
-	const entity = useMemo(() => new EntityCore(world, true), [world]);
+	const entity = useMemo(() => EntityCore.define(world), [world]);
 	useImperativeHandle(ref, () => entity);
 
 	useLayoutEffect(() => {
+		let unsub: () => void;
+
 		// Activate the entity when mounted.
-		EntityCore.activate(entity);
+		if (world.isRegistered) {
+			console.log('Entity: registering right away');
+			if (!entity.isRegistered) entity.register();
+		} else {
+			unsub = world.onRegister(() => {
+				if (!entity.isRegistered) entity.register();
+				console.log('Entity: registering on world registration', entity.id);
+			});
+		}
 
 		return () => {
 			// When unmounted, destroy the entity and reset internal state.
-			EntityCore.deactive(entity);
+			console.log('Entity: destroying', entity.id, world.isRegistered);
+			unsub?.();
+			if (entity.isRegistered) entity.destroy();
 		};
 	}, [world]);
+
+	// Merge entity prop into children props.
+	// const childrenWithEntity = React.Children.map(children, (child) => {
+	// 	console.log('child', child);
+	// 	if (React.isValidElement(child)) {
+	// 		return React.cloneElement<any>(child, { entity });
+	// 	}
+	// 	return child;
+	// });
 
 	return <EntityContext.Provider value={entity}>{children}</EntityContext.Provider>;
 }

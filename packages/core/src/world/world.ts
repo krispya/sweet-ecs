@@ -7,6 +7,8 @@ import {
 	query as queryBit,
 	Queue,
 	addPrefab,
+	defineWorld,
+	registerWorld,
 } from '@bitecs/classic';
 import { ResizeCallback } from './types';
 import { universe, universeResizeCallbacks } from '../universe/universe';
@@ -14,20 +16,34 @@ import { ComponentArgs, ComponentConstructor } from '../component/types';
 import { addComponent } from '../component/methods/add-component';
 import { removeComponent } from '../component/methods/remove-component';
 import { hasComponent } from '../component/methods/has-component';
+import { Entity } from '../entity/entity';
 
 export interface World extends bitWorld {}
 
 export class World {
 	#resizeCallbacks: ResizeCallback[] = [];
 	#id: number;
+	#onRegisterCallbacks: (() => void)[] = [];
+	#isRegistered: boolean;
+	#size?: number;
 
-	constructor(size?: number) {
-		createWorld(this, size);
+	constructor(size?: number);
+	constructor(size?: number, pure = false) {
+		this.#size = size;
 
-		// A Prefab is ignored by queries, so we make one here for the world.
-		this.#id = addPrefab(this);
+		if (pure) {
+			defineWorld(this, size);
+			this.#isRegistered = false;
+			this.#id = -1;
+		} else {
+			createWorld(this, size);
+			this.#isRegistered = true;
 
-		universeResizeCallbacks.forEach((cb) => cb(this, universe.getSize()));
+			// A Prefab is ignored by queries, so we make one here for the world.
+			this.#id = addPrefab(this);
+
+			universeResizeCallbacks.forEach((cb) => cb(this, universe.getSize()));
+		}
 	}
 
 	reset() {
@@ -47,6 +63,7 @@ export class World {
 
 	set size(size: number) {
 		this[SYMBOLS.$size] = size;
+		this.#size = size;
 		this.#resizeCallbacks.forEach((cb) => cb(this, size));
 		universeResizeCallbacks.forEach((cb) => cb(this, universe.getSize()));
 	}
@@ -59,6 +76,10 @@ export class World {
 		this.#id = id;
 	}
 
+	get isRegistered() {
+		return this.#isRegistered;
+	}
+
 	onResize(callback: ResizeCallback) {
 		this.#resizeCallbacks.push(callback);
 
@@ -68,7 +89,18 @@ export class World {
 	}
 
 	destroy() {
+		// Destroy all the entities.
+		const entities = [...this.getEntities()];
+		for (let i = 0; i < entities.length; i++) {
+			Entity.destroy(entities[i]);
+		}
+
+		// Destroy the world.
 		deleteWorld(this);
+		this.#isRegistered = false;
+		this.#resizeCallbacks = [];
+		this.#onRegisterCallbacks = [];
+		this.#id = -1;
 		universeResizeCallbacks.forEach((cb) => cb(this, universe.getSize()));
 	}
 
@@ -90,5 +122,35 @@ export class World {
 
 	getEntities() {
 		return this[SYMBOLS.$entityArray];
+	}
+
+	onRegister(callback: () => void) {
+		this.#onRegisterCallbacks.push(callback);
+
+		return () => {
+			this.#onRegisterCallbacks = this.#onRegisterCallbacks.filter((cb) => cb !== callback);
+		};
+	}
+
+	register() {
+		// Ensure the world has all the necessary properties.
+		// The get wiped if destroy is called.
+		defineWorld(this, this.#size);
+
+		// Register to connect it to the universe.
+		registerWorld(this);
+
+		// Reset all the Sweet ECS properties.
+		this.#id = addPrefab(this);
+		this.#isRegistered = true;
+
+		// Call all the callbacks.
+		this.#onRegisterCallbacks.forEach((cb) => cb());
+		universeResizeCallbacks.forEach((cb) => cb(this, universe.getSize()));
+	}
+
+	static define(size?: number): World {
+		// @ts-expect-error
+		return new World(size, true);
 	}
 }

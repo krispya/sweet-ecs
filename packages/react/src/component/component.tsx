@@ -19,8 +19,8 @@ export function Component<T extends ComponentConstructor>({
 	useLayoutEffect(() => {
 		let unsub: () => void;
 
-		if (!entity.isActive) {
-			unsub = entity.onActive(() => {
+		if (!entity.isRegistered) {
+			unsub = entity.onRegister(() => {
 				entity.add(type, ...args);
 				componentRef.current = entity.get(type)!;
 				if (ref) ref.current = componentRef.current;
@@ -33,7 +33,7 @@ export function Component<T extends ComponentConstructor>({
 
 		return () => {
 			unsub?.();
-			if (entity.isActive) entity.remove(type);
+			if (entity.isRegistered) entity.remove(type);
 		};
 	}, [entity]);
 

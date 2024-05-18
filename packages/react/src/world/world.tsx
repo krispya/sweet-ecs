@@ -1,16 +1,39 @@
 import { Component, World as WorldCore } from '@sweet-ecs/core';
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useImperativeHandle, useLayoutEffect, useMemo, useRef } from 'react';
 import { WorldContext } from './world-context';
 
 type Props = {
 	size?: number;
 	children?: React.ReactNode;
 	resources?: (typeof Component)[];
-	value: WorldCore;
+	src?: WorldCore;
+	ref?: React.RefObject<WorldCore>;
 };
 
-export function World({ size = 10000, children, resources = [], value: world }: Props) {
+export function World({
+	size = 10000,
+	children,
+	resources = [],
+	src,
+	ref,
+}: Props): React.ReactElement<any, any> {
 	const memoizedResources = useRef(resources);
+	const world = useMemo(() => src ?? WorldCore.define(), [src]);
+	useImperativeHandle(ref, () => world);
+	const hasSrc = src !== undefined;
+
+	// If we are making the world ourselves, register and destroy it.
+	useLayoutEffect(() => {
+		if (hasSrc) return;
+		console.log('--registering world');
+		if (!world.isRegistered) world.register();
+		console.log('--registering world end', world.id);
+
+		return () => {
+			console.log('destroying world', world.id);
+			world.destroy();
+		};
+	}, [world]);
 
 	// Add world resources.
 	useEffect(() => {

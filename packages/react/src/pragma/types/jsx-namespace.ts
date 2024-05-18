@@ -1,5 +1,9 @@
 import 'react';
-import { Entity as EntityCore } from '@sweet-ecs/core';
+import {
+	Component as ComponentCore,
+	Entity as EntityCore,
+	World as WorldCore,
+} from '@sweet-ecs/core';
 
 // Unpack all here to avoid infinite self-referencing when defining our own JSX namespace
 type ReactJSXElement = JSX.Element;
@@ -15,6 +19,16 @@ type ReactJSXIntrinsicElements = JSX.IntrinsicElements;
 // https://github.com/DefinitelyTyped/DefinitelyTyped/blob/3197efc097d522c4bf02b94e1a0766d007d6cdeb/types/react/index.d.ts#LL3204C13-L3204C13
 type ReactJSXElementType = React.ElementType;
 
+interface SweetIntrinsicElements {
+	entity: React.ClassAttributes<EntityCore> & { children?: React.ReactNode };
+	world: React.ClassAttributes<WorldCore> & {
+		children?: React.ReactNode;
+		size?: number;
+		resources?: (typeof ComponentCore)[];
+		src?: WorldCore;
+	};
+}
+
 export namespace SweetJSX {
 	export type ElementType = ReactJSXElementType;
 	export interface Element extends ReactJSXElement {}
@@ -29,15 +43,11 @@ export namespace SweetJSX {
 
 	export type IntrinsicElements = {
 		[K in keyof ReactJSXIntrinsicElements]: ReactJSXIntrinsicElements[K];
-	} & {
-		entity: React.ClassAttributes<EntityCore> & { children?: React.ReactNode };
-	};
+	} & SweetIntrinsicElements;
 }
 
 declare module 'react' {
 	namespace JSX {
-		interface IntrinsicElements {
-			entity: React.ClassAttributes<EntityCore> & { children?: React.ReactNode };
-		}
+		interface IntrinsicElements extends SweetIntrinsicElements {}
 	}
 }

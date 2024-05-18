@@ -38,6 +38,32 @@ describe('Entity', () => {
 			expect(test).toBeDefined();
 			expect(test).toBeInstanceOf(Test);
 		});
+
+		it('can define without side effects', () => {
+			const entity = Entity.define(world);
+
+			expect(world.getEntities()).toHaveLength(1);
+			expect(entity.isRegistered).toBe(false);
+		});
+
+		it('can manually register after defined', () => {
+			const entity = Entity.define(world);
+			entity.register();
+
+			expect(world.getEntities()).toHaveLength(2);
+			expect(entity.isRegistered).toBe(true);
+		});
+
+		it('destroying entity by ID also destroys object', () => {
+			const entity = new Entity(world);
+
+			expect(Entity.instances[entity.id]).toBeDefined();
+
+			Entity.destroy(entity.id);
+
+			expect(Entity.instances[entity.id]).toBeUndefined();
+			expect(entity.isRegistered).toBe(false);
+		});
 	});
 
 	describe('without objects', () => {
