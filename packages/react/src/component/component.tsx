@@ -25,11 +25,17 @@ export function Component<T extends ComponentConstructor>({
 				entity.add(type, ...args);
 				componentRef.current = entity.get(type)!;
 				if (ref) ref.current = componentRef.current;
+
+				// Apply props.
+				Object.assign(componentRef.current, props);
 			});
 		} else {
 			entity.add(type, ...args);
 			componentRef.current = entity.get(type)!;
 			if (ref) ref.current = componentRef.current;
+
+			// Apply props.
+			Object.assign(componentRef.current, props);
 		}
 
 		return () => {
@@ -38,8 +44,11 @@ export function Component<T extends ComponentConstructor>({
 		};
 	}, [entity]);
 
-	// TODO: Implement prop merging.
-	console.log('props', type.name, props);
+	// TODO: Improve prop merging with applyProps.
+	// Apply props.
+	useLayoutEffect(() => {
+		if (componentRef.current) Object.assign(componentRef.current, props);
+	});
 
 	return null;
 }
