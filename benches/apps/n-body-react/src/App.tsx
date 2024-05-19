@@ -1,6 +1,6 @@
-import { Suspense, useEffect, useRef, useState } from 'react';
+import { Suspense, use, useEffect, useRef, useState } from 'react';
 import './App.css';
-import Sweet, { useWorld } from '@sweet-ecs/react';
+import Sweet, { WorldContext, useWorld } from '@sweet-ecs/react';
 import { Entity, universe } from '@sweet-ecs/core';
 import { Mass, Position, Time, Velocity, world } from './globals';
 
@@ -24,7 +24,7 @@ export function App() {
 				<p className="read-the-docs">Click on the Vite and React logos to learn more</p>
 			</world>
 
-			{/* <Suspending /> */}
+			<Suspending />
 		</Suspense>
 	);
 }
@@ -37,27 +37,38 @@ function Body() {
 	useEffect(() => {
 		console.log('Body useEffect run');
 		console.log(world.getEntities());
-		console.log(ref.current, ref.current.id);
-		// console.log(ref.current.id, ref.current.getAll());
+		if (ref.current) console.log(ref.current, ref.current.id);
+		if (ref.current) console.log(ref.current.id, ref.current.getAll());
 		// console.log(posRef.current);
 	});
 
+	// console.log('ents', world.getEntities());
+	console.log('Body render');
+
+	// return null;
+
+	// return <p>Body</p>;
+
 	return (
 		<entity ref={ref}>
-			{/* <Sweet.Component ref={posRef} key="p" type={Position} />
-			<Sweet.Component key="v" type={Velocity} />
-			<Sweet.Component key="m" type={Mass} /> */}
+			{/* <Sweet.Component ref={posRef} key="p" type={Position} /> */}
+			{/* <Sweet.Component key="v" type={Velocity} /> */}
+			{/* <Sweet.Component key="m" type={Mass} value={1} /> */}
+			<Mass.Component />
+			<Position.Component />
+			<Velocity.Component />
+			<p>Body</p>
 		</entity>
 	);
 }
 
-// const promise = new Promise((resolve) => {
-// 	setTimeout(() => {
-// 		resolve('hello');
-// 	}, 1000);
-// });
+const promise = new Promise((resolve) => {
+	setTimeout(() => {
+		resolve('hello');
+	}, 1000);
+});
 
-// function Suspending() {
-// 	use(promise);
-// 	return null;
-// }
+function Suspending() {
+	use(promise);
+	return null;
+}

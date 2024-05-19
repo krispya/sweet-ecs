@@ -1,7 +1,9 @@
 import { Component } from './component';
 
-export type ComponentConstructor = OmitConstructor<typeof Component> &
-	(new (...args: any[]) => Component);
+export type ComponentConstructor<T extends Component = Component> = OmitConstructor<
+	typeof Component
+> &
+	(new (...args: any[]) => T);
 
 export type ComponentArgs<T extends ComponentConstructor> = ConstructorParameters<T> extends []
 	? []
@@ -10,18 +12,6 @@ export type ComponentArgs<T extends ComponentConstructor> = ConstructorParameter
 export type ComponentProps<T extends typeof Component | Component> = T extends typeof Component
 	? Partial<InstanceType<T>>
 	: Partial<T>;
-
-interface MutableRefObject<T> {
-	current: T;
-}
-
-export type JSXType<T extends Component> = T extends { hasJSX: true }
-	? (
-			props: {
-				ref?: MutableRefObject<T>;
-			} & Partial<T>
-	  ) => null
-	: unknown;
 
 export type OmitConstructor<T> = {
 	[K in keyof T]: T[K] extends new (...args: any[]) => any ? never : T[K];
@@ -80,3 +70,15 @@ export type PropsFromSchema<T extends Schema> = {
 		? InstanceType<T[P]>
 		: T[P];
 };
+
+type IsCallable<T> = T extends { (props: any): any } ? true : false;
+
+export interface ComponentJSXType<T extends Component> {}
+
+export type RecosntructedComponent<T extends Component, TSchema extends Schema> = (new () => T) &
+	Omit<OmitConstructor<typeof Component>, 'instances' | 'schema' | 'store'> & {
+		store: Store<TSchema>;
+		schema: TSchema;
+		instances: T[];
+		Component: IsCallable<ComponentJSXType<T>> extends false ? never : ComponentJSXType<T>;
+	};

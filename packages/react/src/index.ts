@@ -1,3 +1,5 @@
+import './component/patch-core';
+
 import { World } from './world/world';
 import { useWorld } from './world/use-world';
 import { WorldContext } from './world/world-context';

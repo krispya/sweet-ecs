@@ -6,12 +6,13 @@ type Props<T extends ComponentConstructor> = {
 	type: T;
 	ref?: React.RefObject<InstanceType<T>>;
 	args?: ComponentArgs<T>;
-};
+} & Partial<InstanceType<T>>;
 
 export function Component<T extends ComponentConstructor>({
 	type,
 	ref,
 	args = [] as ComponentArgs<T>,
+	...props
 }: Props<T>) {
 	const entity = useEntity();
 	const componentRef = useRef<InstanceType<T>>(null!);
@@ -36,6 +37,9 @@ export function Component<T extends ComponentConstructor>({
 			if (entity.isRegistered) entity.remove(type);
 		};
 	}, [entity]);
+
+	// TODO: Implement prop merging.
+	console.log('props', type.name, props);
 
 	return null;
 }

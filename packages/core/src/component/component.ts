@@ -1,8 +1,8 @@
 import {
 	ComponentConstructor,
 	NormalizedSchema,
-	OmitConstructor,
 	PropsFromSchema,
+	RecosntructedComponent,
 	Schema,
 	Store,
 } from './types';
@@ -45,11 +45,6 @@ export class Component {
 		// Don't create a store for workers. Instead, we hydrate.
 		if (!isWorker()) component.store = createStore(schema);
 
-		return component as unknown as (new () => ComponentInstance) &
-			Omit<OmitConstructor<typeof Component>, 'instances' | 'schema' | 'store'> & {
-				store: Store<TSchema>;
-				schema: TSchema;
-				instances: ComponentInstance[];
-			};
+		return component as unknown as RecosntructedComponent<ComponentInstance, TSchema>;
 	}
 }
