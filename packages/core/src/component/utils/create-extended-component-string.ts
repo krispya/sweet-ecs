@@ -19,11 +19,11 @@ export function createExtendedComponentString(schema: Schema) {
 	for (const key of Object.keys(schema)) {
 		classDefinition += `
 	  get ${key}() {
-		return this.constructor.store['${key}'][this.getEntityId()];
+		return this.constructor.store['${key}'][this.#entityId];
 	  }
 
 	  set ${key}(value) {
-		this.constructor.store['${key}'][this.getEntityId()] = value;
+		this.constructor.store['${key}'][this.#entityId] = value;
 	  }
 	`;
 	}
