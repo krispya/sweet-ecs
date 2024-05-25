@@ -1,4 +1,5 @@
 import { jsx } from './jsx-runtime';
+import '../component/patch-core';
 
 export { Fragment } from 'react';
 export { jsx };
