@@ -1,4 +1,4 @@
-import { Entity as EntityCore } from '@sweet-ecs/core';
+import { Component as ComponentCore, Entity as EntityCore } from '@sweet-ecs/core';
 import React, { useImperativeHandle, useLayoutEffect, useMemo } from 'react';
 import { useWorld } from '../world/use-world';
 import { EntityContext } from './entity-context';
@@ -6,14 +6,16 @@ import { EntityContext } from './entity-context';
 type Props = {
 	children?: React.ReactNode;
 	ref?: React.RefObject<EntityCore>;
+	components?: (typeof ComponentCore)[];
+	entityId?: number;
 };
 
 // We create an entity object speculatively but don't commit it until the component is mounted.
 // This mirrors React's expectations with DOM elements.
 
-export function Entity({ children, ref }: Props) {
+export function Entity({ children, ref, components, entityId }: Props) {
 	const world = useWorld();
-	const entity = useMemo(() => EntityCore.define(world), [world]);
+	const entity = useMemo(() => EntityCore.define(world, entityId), [world]);
 	useImperativeHandle(ref, () => entity);
 
 	useLayoutEffect(() => {
@@ -35,14 +37,14 @@ export function Entity({ children, ref }: Props) {
 		};
 	}, [world]);
 
-	// Merge entity prop into children props.
-	// const childrenWithEntity = React.Children.map(children, (child) => {
-	// 	console.log('child', child);
-	// 	if (React.isValidElement(child)) {
-	// 		return React.cloneElement<any>(child, { entity });
-	// 	}
-	// 	return child;
-	// });
+	useLayoutEffect(() => {
+		if (!components || !entity.isRegistered) return;
+		components.forEach((component) => entity.add(component));
+
+		return () => {
+			components.forEach((component) => entity.remove(component));
+		};
+	}, [components]);
 
 	return <EntityContext.Provider value={entity}>{children}</EntityContext.Provider>;
 }

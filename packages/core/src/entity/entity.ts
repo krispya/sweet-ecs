@@ -75,9 +75,14 @@ export class Entity {
 	}
 
 	// Static methods
-	static define(world: World): Entity {
+	static define(world: World, id?: number): Entity {
 		// @ts-expect-error
-		return new Entity(world, true);
+		const entity = new Entity(world, true);
+
+		// If an ID is provided, define the entity object for the existing ID.
+		if (id !== undefined) entity.id = id;
+
+		return entity;
 	}
 
 	static in(world: World): number {
