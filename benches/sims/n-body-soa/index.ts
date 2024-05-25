@@ -5,6 +5,7 @@ export { Mass } from './components/Mass';
 export { Color } from './components/Color';
 export { IsCentralMass } from './components/IsCentralMass';
 export { Time } from './components/Time';
+export { Acceleration } from './components/Acceleration';
 
 export { updateColor } from './systems/updateColor';
 export { updateGravity } from './systems/updateGravity';
@@ -16,3 +17,5 @@ export { updateTime } from './systems/updateTime';
 export { world } from './world';
 export { pipeline } from './systems/pipeline';
 export { CONSTANTS } from './constants';
+
+export { randInRange } from './utils/randInRange';
