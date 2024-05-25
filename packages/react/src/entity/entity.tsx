@@ -21,18 +21,15 @@ export function Entity({ children, ref }: Props) {
 
 		// Activate the entity when mounted.
 		if (world.isRegistered) {
-			console.log('Entity: registering right away');
 			if (!entity.isRegistered) entity.register();
 		} else {
 			unsub = world.onRegister(() => {
 				if (!entity.isRegistered) entity.register();
-				console.log('Entity: registering on world registration', entity.id);
 			});
 		}
 
 		return () => {
 			// When unmounted, destroy the entity and reset internal state.
-			console.log('Entity: destroying', entity.id, world.isRegistered);
 			unsub?.();
 			if (entity.isRegistered) entity.destroy();
 		};

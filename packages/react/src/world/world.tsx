@@ -25,12 +25,9 @@ export function World({
 	// If we are making the world ourselves, register and destroy it.
 	useLayoutEffect(() => {
 		if (hasSrc) return;
-		console.log('--registering world');
 		if (!world.isRegistered) world.register();
-		console.log('--registering world end', world.id);
 
 		return () => {
-			console.log('destroying world', world.id);
 			world.destroy();
 		};
 	}, [world]);
