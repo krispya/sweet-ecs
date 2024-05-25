@@ -1,5 +1,5 @@
 {
-	"name": "@app/n-body-react",
+	"name": "@app/n-body-react-first",
 	"private": true,
 	"version": "0.0.0",
 	"type": "module",
@@ -10,18 +10,15 @@
 		"preview": "vite preview"
 	},
 	"dependencies": {
-		"@react-three/fiber": "^9.0.0-alpha.7",
 		"@sim/n-body-soa": "workspace:*",
 		"@sweet-ecs/core": "workspace:*",
 		"@sweet-ecs/react": "workspace:*",
 		"react": "19.0.0-beta-6946ebe620-20240508",
-		"react-dom": "19.0.0-beta-6946ebe620-20240508",
-		"three": "^0.162.0"
+		"react-dom": "19.0.0-beta-6946ebe620-20240508"
 	},
 	"devDependencies": {
 		"@types/react": "npm:types-react@beta",
 		"@types/react-dom": "npm:types-react-dom@beta",
-		"@types/three": "^0.162.0",
 		"@typescript-eslint/eslint-plugin": "^7.2.0",
 		"@typescript-eslint/parser": "^7.2.0",
 		"@vitejs/plugin-react": "^4.2.1",
