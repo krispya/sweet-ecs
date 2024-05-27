@@ -11,7 +11,7 @@ type Props = {
 };
 
 export function World({
-	size = 10000,
+	size,
 	children,
 	resources = [],
 	src,
@@ -50,6 +50,7 @@ export function World({
 	}, [resources]);
 
 	useEffect(() => {
+		if (!size) return;
 		if (size === world.size) return;
 		world.size = size;
 	}, [size]);
