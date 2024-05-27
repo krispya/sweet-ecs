@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { Component } from '../component';
 import { World } from '../../world/world';
 import { Entity } from '../../entity/entity';
-import { addComponent } from '../methods/add-component';
+import { addComponent, addComponentInstance } from '../methods/add-component';
 import { hasComponent } from '../methods/has-component';
 import exp from 'constants';
 import { removeComponent } from '../methods/remove-component';
@@ -107,17 +107,30 @@ describe('Component', () => {
 		expect(Test.store.f64.length).toBe(200);
 	});
 
-	it('adds with constructor args', () => {
+	it('throws when adding a component with constructor args', () => {
 		class Test extends Component {
-			constructor(public number: number, public string: string = 'hello') {
+			constructor(public number: number) {
 				super();
 			}
 		}
 
 		const eid = Entity.in(world);
-		addComponent(world, Test, eid, [11]);
 
-		expect(Test.get(eid)!.number).toBe(11);
-		expect(Test.get(eid)!.string).toBe('hello');
+		expect(() => addComponent(world, Test, eid)).toThrow();
+	});
+
+	it('adds a component instance to an entity', () => {
+		class Test extends Component.define() {
+			constructor(public number: number) {
+				super();
+			}
+		}
+
+		const eid = Entity.in(world);
+		const instance = new Test(1);
+		addComponentInstance(world, instance, eid);
+
+		expect(hasComponent(world, Test, eid)).toBe(true);
+		expect(Test.get(eid)).toBe(instance);
 	});
 });

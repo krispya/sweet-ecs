@@ -1,11 +1,4 @@
-import {
-	ComponentConstructor,
-	NormalizedSchema,
-	PropsFromSchema,
-	RecosntructedComponent,
-	Schema,
-	Store,
-} from './types';
+import { NormalizedSchema, PropsFromSchema, RecosntructedComponent, Schema, Store } from './types';
 import { createExtendedComponentString } from './utils/create-extended-component-string';
 import { createStore } from './utils/create-store';
 import { isWorker } from './utils/is-worker';
@@ -16,6 +9,9 @@ export class Component {
 	static normalizedSchema: NormalizedSchema = {};
 	static store: Store = {};
 	static instances: Component[] = [];
+
+	// This is so typeof Component extends any derived constructor.
+	constructor(...args: any[]) {}
 
 	#entityId: number = 0;
 
@@ -28,7 +24,7 @@ export class Component {
 		return this;
 	}
 
-	static get<T extends ComponentConstructor>(this: T, entityId: number): InstanceType<T> {
+	static get<T extends typeof Component>(this: T, entityId: number): InstanceType<T> {
 		const instance = this.instances[entityId] as InstanceType<T>;
 		return instance;
 	}

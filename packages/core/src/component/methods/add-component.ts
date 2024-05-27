@@ -1,18 +1,23 @@
 import { addComponent as addComponentBit } from '@bitecs/classic';
 import { World } from '../../world/world';
-import { ComponentArgs, ComponentConstructor } from '../types';
+import { Component } from '../component';
 
-export function addComponent<T extends ComponentConstructor>(
+export function addComponent<T extends typeof Component>(
 	world: World,
 	component: T,
-	entityId: number,
-	...args: ComponentArgs<T>
+	entityId: number
 ) {
+	// If the constructor requires arguments, throw an error.
+	if (component.length > 0) {
+		throw new Error(
+			`Cannot add component "${component.name}" to entity ${entityId} because it requires arguments.`
+		);
+	}
+
 	addComponentBit(world, component, entityId);
 
 	// Create instance.
-	const _args = args[0] || [];
-	component.instances[entityId] = new component(..._args).setEntityId(entityId);
+	component.instances[entityId] = new component().setEntityId(entityId);
 
 	// Set default values.
 	for (const key in component.normalizedSchema) {
@@ -22,4 +27,17 @@ export function addComponent<T extends ComponentConstructor>(
 			component.store[key][entityId] = component.normalizedSchema[key].default;
 		}
 	}
+}
+
+export function addComponentInstance<T extends Component>(
+	world: World,
+	instance: T,
+	entityId: number
+) {
+	const component = instance.constructor as typeof Component;
+	addComponentBit(world, component, entityId);
+
+	// Set instance.
+	instance.setEntityId(entityId);
+	component.instances[entityId] = instance;
 }

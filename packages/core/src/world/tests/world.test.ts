@@ -77,7 +77,7 @@ describe('World', () => {
 		expect(universe.worlds).toHaveLength(0);
 	});
 
-	it('can add singletons', () => {
+	it('can add resources', () => {
 		const world = new World();
 
 		class Time extends Component.define({ current: 0, delta: 0 }) {}
@@ -91,7 +91,18 @@ describe('World', () => {
 		expect(Time.store.current[world.id]).toBe(1);
 	});
 
-	it('can remove singletons', () => {
+	it('can add resources instances', () => {
+		const world = new World();
+
+		class Time extends Component.define({ current: 0, delta: 0 }) {}
+
+		const time = new Time();
+		world.add(time);
+
+		expect(world.get(Time)).toBe(time);
+	});
+
+	it('can remove resources', () => {
 		const world = new World();
 
 		class Time extends Component.define({ current: 0, delta: 0 }) {}

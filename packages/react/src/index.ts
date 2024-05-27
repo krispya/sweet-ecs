@@ -1,10 +1,9 @@
-import './component/patch-core';
-
 import { World } from './world/world';
 import { useWorld } from './world/use-world';
 import { WorldContext } from './world/world-context';
 import { Entity } from './entity/entity';
 import { Component } from './component/component';
+import { useEntity } from './entity/use-entity';
 
 const Sweet = {
 	World,
@@ -12,6 +11,7 @@ const Sweet = {
 	useWorld,
 	Entity,
 	Component,
+	useEntity,
 };
 
 export default Sweet;

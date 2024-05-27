@@ -12,11 +12,11 @@ import {
 } from '@bitecs/classic';
 import { ResizeCallback } from './types';
 import { universe, universeResizeCallbacks } from '../universe/universe';
-import { ComponentArgs, ComponentConstructor } from '../component/types';
-import { addComponent } from '../component/methods/add-component';
+import { addComponent, addComponentInstance } from '../component/methods/add-component';
 import { removeComponent } from '../component/methods/remove-component';
 import { hasComponent } from '../component/methods/has-component';
 import { Entity } from '../entity/entity';
+import { Component } from '../component/component';
 
 export interface World extends bitWorld {}
 
@@ -51,7 +51,7 @@ export class World {
 		this.#id = addPrefab(this);
 	}
 
-	query(components: ComponentConstructor[]): Uint32Array;
+	query(components: (typeof Component)[]): Uint32Array;
 	query(components: Queue): Uint32Array;
 	query(args: any) {
 		return queryBit(this, args);
@@ -104,19 +104,23 @@ export class World {
 		universeResizeCallbacks.forEach((cb) => cb(this, universe.getSize()));
 	}
 
-	add<T extends ComponentConstructor>(component: T, ...args: ComponentArgs<T>) {
-		addComponent(this, component, this.#id, ...args);
+	add<T extends typeof Component>(component: T | InstanceType<T>) {
+		if (typeof component === 'function') {
+			addComponent(this, component, this.id);
+		} else {
+			addComponentInstance(this, component, this.id);
+		}
 	}
 
-	get<T extends ComponentConstructor>(component: T): InstanceType<T> | undefined {
+	get<T extends typeof Component>(component: T): InstanceType<T> | undefined {
 		return component.get(this.#id);
 	}
 
-	remove<T extends ComponentConstructor>(component: T) {
+	remove<T extends typeof Component>(component: T) {
 		removeComponent(this, component, this.#id);
 	}
 
-	has<T extends ComponentConstructor>(component: T) {
+	has<T extends typeof Component>(component: T) {
 		return hasComponent(this, component, this.#id);
 	}
 

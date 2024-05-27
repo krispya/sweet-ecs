@@ -1,11 +1,6 @@
 import { Component } from './component';
 
-export type ComponentConstructor<T extends Component = Component> = OmitConstructor<
-	typeof Component
-> &
-	(new (...args: any[]) => T);
-
-export type ComponentArgs<T extends ComponentConstructor> = ConstructorParameters<T> extends []
+export type ComponentArgs<T extends typeof Component> = ConstructorParameters<T> extends []
 	? []
 	: [ConstructorParameters<T>];
 
@@ -71,14 +66,9 @@ export type PropsFromSchema<T extends Schema> = {
 		: T[P];
 };
 
-type IsCallable<T> = T extends { (props: any): any } ? true : false;
-
-export interface ComponentJSXType<T extends Component> {}
-
 export type RecosntructedComponent<T extends Component, TSchema extends Schema> = (new () => T) &
 	Omit<OmitConstructor<typeof Component>, 'instances' | 'schema' | 'store'> & {
 		store: Store<TSchema>;
 		schema: TSchema;
 		instances: T[];
-		Component: IsCallable<ComponentJSXType<T>> extends false ? never : ComponentJSXType<T>;
 	};

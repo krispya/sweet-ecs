@@ -1,19 +1,31 @@
 import { Component as ComponentCore, Entity as EntityCore } from '@sweet-ecs/core';
 import React, { useImperativeHandle, useLayoutEffect, useMemo } from 'react';
 import { useWorld } from '../world/use-world';
-import { EntityContext } from './entity-context';
 
-type Props = {
+type ComponentsProp<T extends typeof ComponentCore> = (
+	| T
+	| InstanceType<T>
+	| null
+	| undefined
+	| false
+)[];
+
+type Props<T extends typeof ComponentCore> = {
 	children?: React.ReactNode;
 	ref?: React.RefObject<EntityCore>;
-	components?: (typeof ComponentCore)[];
+	components?: ComponentsProp<T>;
 	entityId?: number;
 };
 
 // We create an entity object speculatively but don't commit it until the component is mounted.
 // This mirrors React's expectations with DOM elements.
 
-export function Entity({ children, ref, components, entityId }: Props) {
+export function Entity<T extends typeof ComponentCore>({
+	children,
+	ref,
+	components,
+	entityId,
+}: Props<T>) {
 	const world = useWorld();
 	const entity = useMemo(() => EntityCore.define(world, entityId), [world]);
 	useImperativeHandle(ref, () => entity);
@@ -38,13 +50,31 @@ export function Entity({ children, ref, components, entityId }: Props) {
 	}, [world]);
 
 	useLayoutEffect(() => {
-		if (!components || !entity.isRegistered) return;
-		components.forEach((component) => entity.add(component));
+		if (!components) return;
+		let unsub: () => void;
+
+		if (entity.isRegistered) {
+			addComponentProps(entity, components);
+		} else {
+			unsub = entity.onRegister(() => {
+				addComponentProps(entity, components);
+			});
+		}
 
 		return () => {
-			components.forEach((component) => entity.remove(component));
+			unsub?.();
 		};
-	}, [components]);
+	}, [components, entity]);
 
-	return <EntityContext.Provider value={entity}>{children}</EntityContext.Provider>;
+	return children;
+}
+
+function addComponentProps<T extends typeof ComponentCore>(
+	entity: EntityCore,
+	components: ComponentsProp<T>
+) {
+	for (const component of components) {
+		if (!component) continue;
+		entity.add(component);
+	}
 }

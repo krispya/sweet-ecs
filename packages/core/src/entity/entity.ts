@@ -1,9 +1,9 @@
 import { addEntity, getEntityComponents, removeEntity } from '@bitecs/classic';
-import { addComponent } from '../component/methods/add-component';
+import { addComponent, addComponentInstance } from '../component/methods/add-component';
 import { World } from '../world/world';
 import { hasComponent } from '../component/methods/has-component';
-import { ComponentArgs, ComponentConstructor } from '../component/types';
 import { removeComponent } from '../component/methods/remove-component';
+import { Component } from '../component/component';
 
 export class Entity {
 	static worldMap: World[] = [];
@@ -25,16 +25,20 @@ export class Entity {
 		}
 	}
 
-	add<T extends ComponentConstructor>(component: T, ...args: ComponentArgs<T>): this {
-		addComponent(this.world, component, this.id, ...args);
+	add<T extends typeof Component>(component: T | InstanceType<T>): this {
+		if (typeof component === 'function') {
+			addComponent(this.world, component, this.id);
+		} else {
+			addComponentInstance(this.world, component, this.id);
+		}
 		return this;
 	}
 
-	has(component: ComponentConstructor) {
+	has(component: typeof Component) {
 		return hasComponent(this.world, component, this.id);
 	}
 
-	get<T extends ComponentConstructor>(component: T): InstanceType<T> | null {
+	get<T extends typeof Component>(component: T): InstanceType<T> | null {
 		return component.get(this.id);
 	}
 
@@ -42,7 +46,7 @@ export class Entity {
 		return getEntityComponents(this.world, this.id);
 	}
 
-	remove<T extends ComponentConstructor>(component: T): this {
+	remove<T extends typeof Component>(component: T): this {
 		removeComponent(this.world, component, this.id);
 		return this;
 	}
@@ -91,30 +95,30 @@ export class Entity {
 		return id;
 	}
 
-	static add<T extends ComponentConstructor>(
-		component: T,
-		id: number,
-		...args: ComponentArgs<T>
-	): boolean {
+	static add<T extends typeof Component>(component: T | InstanceType<T>, id: number): boolean {
 		const world = this.worldMap[id];
 		if (!world) return false;
-		addComponent(world, component, id, ...args);
+		if (typeof component === 'function') {
+			addComponent(world, component, id);
+		} else {
+			addComponentInstance(world, component, id);
+		}
 		return true;
 	}
 
-	static has(component: ComponentConstructor, id: number): boolean {
+	static has(component: typeof Component, id: number): boolean {
 		const world = this.worldMap[id];
 		if (!world) return false;
 		return hasComponent(world, component, id);
 	}
 
-	static get<T extends ComponentConstructor>(component: T, id: number): InstanceType<T> | null {
+	static get<T extends typeof Component>(component: T, id: number): InstanceType<T> | null {
 		const world = this.worldMap[id];
 		if (!world) return null;
 		return component.get(id);
 	}
 
-	static remove<T extends ComponentConstructor>(component: T, id: number): boolean {
+	static remove<T extends typeof Component>(component: T, id: number): boolean {
 		const world = this.worldMap[id];
 		if (!world) return false;
 		removeComponent(world, component, id);

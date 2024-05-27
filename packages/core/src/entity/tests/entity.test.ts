@@ -28,6 +28,18 @@ describe('Entity', () => {
 			expect(entity.has(Test)).toBe(true);
 		});
 
+		it('adds a component instance', () => {
+			class Test extends Component {
+				constructor(public number: number) {
+					super();
+				}
+			}
+			const entity = new Entity(world).add(new Test(11));
+
+			expect(entity.has(Test)).toBe(true);
+			expect(entity.get(Test)!.number).toBe(11);
+		});
+
 		it('gets a component', () => {
 			class Test extends Component {
 				public number = 0;
