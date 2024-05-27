@@ -1,23 +1,30 @@
-import { Canvas, useThree } from '@react-three/fiber';
+import { Canvas, useFrame } from '@react-three/fiber';
 import {
 	Acceleration,
+	CONSTANTS,
 	Circle,
 	Color,
 	Mass,
 	Position,
 	Velocity,
 	init,
+	moveBodies,
 	setInitial,
 	updateColor,
 	updateGravity,
 	updateTime,
 	world,
 } from '@sim/n-body-soa';
-import { Component } from '@sweet-ecs/core';
+import { Component, Entity } from '@sweet-ecs/core';
 import Sweet, { useWorld } from '@sweet-ecs/react';
-import { useEffect, useRef } from 'react';
-import { useEntity } from '../../../../packages/react/src/entity/use-entity';
+import { useEffect, useLayoutEffect, useMemo, useRef } from 'react';
+import * as THREE from 'three';
+import { ThreeInstances } from './components/ThreeInstances';
+import { syncThreeObjects } from './systems/syncThreeObjects';
 
+// Simulate having a schedule.
+const schedule = [init, updateTime, setInitial, updateGravity, moveBodies, updateColor];
+// Body defintion.
 const body = [Position, Mass, Velocity, Color, Circle, Acceleration];
 
 export function App() {
@@ -25,7 +32,7 @@ export function App() {
 	const aspect = window.innerWidth / window.innerHeight;
 
 	return (
-		<>
+		<Sweet.World src={world}>
 			<Simulation />
 			<Canvas
 				orthographic
@@ -39,54 +46,80 @@ export function App() {
 					position: [0, 0, 100],
 				}}
 			>
-				<Sweet.World src={world}>{spawn(Body, body)}</Sweet.World>
-				{/* <Camera /> */}
+				{/* <Sweet.World src={world}>{spawn(Body, body)}</Sweet.World> */}
+				<Bodies />
 			</Canvas>
-		</>
+		</Sweet.World>
 	);
 }
 
-console.log(Position.store);
+function Bodies() {
+	const world = useWorld();
+	const geo = useMemo(() => new THREE.CircleGeometry(CONSTANTS.MAX_RADIUS / 1.5, 12), []);
+	const mat = useMemo(() => new THREE.MeshBasicMaterial(), []);
 
-function Body() {
-	const entity = useEntity();
-	const position = Position.get(entity.id);
+	// Simulate adding and removing syncThreeObjects from the schedule.
+	useLayoutEffect(() => {
+		schedule.push(syncThreeObjects);
+		return () => {
+			const index = schedule.indexOf(syncThreeObjects);
+			schedule.splice(index, 1);
+		};
+	}, []);
 
 	return (
-		<mesh position={[position.x, position.y, 0]}>
-			<circleGeometry args={[10, 12]} />
+		<instancedMesh
+			ref={(node) => {
+				if (!node) return;
+				const eid = Entity.in(world);
+				Entity.add(new ThreeInstances(node), eid);
+
+				return () => {
+					Entity.destroy(eid);
+				};
+			}}
+			args={[geo, mat, CONSTANTS.NBODIES]}
+		/>
+	);
+}
+
+function Body({ entityId }: { entityId: number }) {
+	const ref = useRef<THREE.Mesh>(null);
+	const radius = normalize(Circle.get(entityId).radius, 0, 60);
+
+	useFrame(() => {
+		if (!ref.current) return;
+
+		// Set position
+		ref.current.position.x = Position.store.x[entityId];
+		ref.current.position.y = Position.store.y[entityId];
+
+		// Set color
+		const color = Color.get(entityId);
+		(ref.current.material as THREE.MeshBasicMaterial).color.setRGB(
+			normalize(color.r, 0, 255),
+			normalize(color.g, 0, 255),
+			normalize(color.b, 0, 255)
+		);
+	});
+
+	return (
+		<mesh ref={ref} scale={radius}>
+			<circleGeometry args={[CONSTANTS.MAX_RADIUS / 1.5, 12]} />
+			{/* @ts-expect-error - R3F bug */}
 			<meshBasicMaterial color="red" />
 		</mesh>
 	);
 }
 
-// function Camera() {
-// 	const ref = useRef<THREE.OrthographicCamera>(null!);
-// 	const set = useThree(({ set }) => set);
-// 	const aspect = window.innerWidth / window.innerHeight;
-// 	const frustumSize = 8000;
-
-// 	useLayoutEffect(() => {
-// 		set({ camera: ref.current });
-// 		ref.current.lookAt(0, 0, 0);
-// 		ref.current.updateProjectionMatrix();
-// 	}, [set]);
-
-// 	return <orthographicCamera ref={ref} near={0.01} far={500} zoom={1} position={[0, 0, 100]} />;
-// }
-
 // Simulation runs a schedule.
 function Simulation() {
 	const rafRef = useRef<number>(0);
+	const world = useWorld();
 
 	useEffect(() => {
 		const loop = () => {
-			init(world);
-			updateTime(world);
-			setInitial(world);
-			updateGravity(world);
-			// moveBodies(world);
-			updateColor(world);
+			for (const fn of schedule) fn(world);
 			rafRef.current = requestAnimationFrame(loop);
 		};
 		loop();
@@ -94,32 +127,34 @@ function Simulation() {
 		return () => {
 			cancelAnimationFrame(rafRef.current);
 		};
-	}, []);
+	}, [world]);
 
 	return null;
 }
 
-function spawn(Element: React.FunctionComponent, signature: (typeof Component)[], initial?: number) {
+function spawn(
+	Element: (props: { entityId: number }) => JSX.Element,
+	signature: (typeof Component)[],
+	initial?: number
+) {
 	return <Spawn Element={Element} signature={signature} initial={initial} />;
 }
 
 type SpawnProps = {
-	Element: React.FunctionComponent;
+	Element: (props: { entityId: number }) => JSX.Element;
 	signature: (typeof Component)[];
 	initial?: number;
 };
 
 function Spawn({ Element, signature }: SpawnProps) {
-	const scene = useThree().scene;
-	console.log(scene);
 	const world = useWorld();
 	const eids = world.query(signature);
 
-	console.log('eids', eids.length);
-
 	return Array.from({ length: eids.length }, (_, i) => (
 		<Sweet.Entity key={eids[i]} entityId={eids[i]}>
-			<Element />
+			<Element entityId={eids[i]} />
 		</Sweet.Entity>
 	));
 }
+
+const normalize = (x: number, min: number, max: number) => (x - min) / (max - min);
