@@ -4,6 +4,10 @@ import './stats.css';
 type Stats = Record<string, () => any>;
 
 export function initStats(extras?: Stats) {
+	// If the stats element already exists, remove it.
+	const existingStats = document.querySelector('.stats');
+	if (existingStats) existingStats.remove();
+
 	const statsEle = document.createElement('div');
 	document.body.appendChild(statsEle);
 	statsEle.classList.add('stats');
@@ -25,16 +29,17 @@ export function initStats(extras?: Stats) {
 		updates.push(update);
 	}
 
-	function updateStats() {
+	const updateStats = () => {
 		getFPS(fpsRef);
 		for (const update of updates) {
 			update();
 		}
-	}
+	};
 
 	return {
 		updateStats,
 		measure: async (fn: (...args: any[]) => any) => await measure(fn, measurementRef),
+		destroy: () => statsEle.remove(),
 	};
 }
 
