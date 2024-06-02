@@ -21,6 +21,7 @@ import { useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 import * as THREE from 'three';
 import { ThreeInstances } from './components/ThreeInstances';
 import { syncThreeObjects } from './systems/syncThreeObjects';
+import { initStats } from '@app/bench-tools';
 
 // Simulate having a schedule.
 const schedule = [init, updateTime, setInitial, updateGravity, moveBodies, updateColor];
@@ -116,16 +117,23 @@ function Body({ entityId }: { entityId: number }) {
 function Simulation() {
 	const rafRef = useRef<number>(0);
 	const world = useWorld();
+	const statsAPI = useRef<ReturnType<typeof initStats>>(null);
 
 	useEffect(() => {
+		statsAPI.current = initStats({ Bodies: () => CONSTANTS.NBODIES });
+
 		const loop = () => {
-			for (const fn of schedule) fn(world);
+			statsAPI.current!.measure(() => {
+				for (const fn of schedule) fn(world);
+			});
+			statsAPI.current!.updateStats();
 			rafRef.current = requestAnimationFrame(loop);
 		};
 		loop();
 
 		return () => {
 			cancelAnimationFrame(rafRef.current);
+			statsAPI.current!.destroy();
 		};
 	}, [world]);
 

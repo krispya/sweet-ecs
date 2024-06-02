@@ -10,6 +10,7 @@
 		"preview": "vite preview"
 	},
 	"dependencies": {
+		"@app/bench-tools": "workspace:*",
 		"@react-three/fiber": "^9.0.0-alpha.7",
 		"@sim/n-body-soa": "workspace:*",
 		"@sweet-ecs/core": "workspace:*",
