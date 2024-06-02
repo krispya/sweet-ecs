@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { World } from '../world';
-import { SYMBOLS } from '@bitecs/classic';
+import { SYMBOLS } from 'bitecs';
 import { Entity } from '../../entity/entity';
 import { getTotalWorldSize } from '../methods/getTotalWorldSize';
 import { universe } from '../../universe/universe';

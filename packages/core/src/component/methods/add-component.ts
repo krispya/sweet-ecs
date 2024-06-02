@@ -1,4 +1,4 @@
-import { addComponent as addComponentBit } from '@bitecs/classic';
+import { addComponent as addComponentBit } from 'bitecs';
 import { World } from '../../world/world';
 import { Component } from '../component';
 

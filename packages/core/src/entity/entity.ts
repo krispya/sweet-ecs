@@ -1,4 +1,4 @@
-import { addEntity, getEntityComponents, removeEntity } from '@bitecs/classic';
+import { addEntity, getEntityComponents, removeEntity } from 'bitecs';
 import { addComponent, addComponentInstance } from '../component/methods/add-component';
 import { World } from '../world/world';
 import { hasComponent } from '../component/methods/has-component';

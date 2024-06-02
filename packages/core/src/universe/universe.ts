@@ -1,4 +1,4 @@
-import { worlds } from '@bitecs/classic';
+import { worlds } from 'bitecs';
 import { getTotalWorldSize } from '../world/methods/getTotalWorldSize';
 import { ResizeCallback } from '../world/types';
 

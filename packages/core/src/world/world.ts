@@ -9,7 +9,7 @@ import {
 	addPrefab,
 	defineWorld,
 	registerWorld,
-} from '@bitecs/classic';
+} from 'bitecs';
 import { ResizeCallback } from './types';
 import { universe, universeResizeCallbacks } from '../universe/universe';
 import { addComponent, addComponentInstance } from '../component/methods/add-component';

@@ -1,4 +1,4 @@
-import { SYMBOLS, worlds } from '@bitecs/classic';
+import { SYMBOLS, worlds } from 'bitecs';
 
 export function getTotalWorldSize() {
 	let totalSize = 0;

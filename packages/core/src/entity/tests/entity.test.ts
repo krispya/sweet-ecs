@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { Entity } from '../entity';
 import { World } from '../../world/world';
-import { SYMBOLS } from '@bitecs/classic';
+import { SYMBOLS } from 'bitecs';
 import { Component } from '../../component/component';
 
 describe('Entity', () => {

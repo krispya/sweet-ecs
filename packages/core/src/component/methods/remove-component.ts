@@ -1,4 +1,4 @@
-import { removeComponent as removeComponentBit } from '@bitecs/classic';
+import { removeComponent as removeComponentBit } from 'bitecs';
 import { World } from '../../world/world';
 import { Component } from '../component';
 

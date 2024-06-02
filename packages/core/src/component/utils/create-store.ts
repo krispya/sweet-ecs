@@ -1,4 +1,4 @@
-import { isSabSupported } from '@bitecs/utils';
+import { isSabSupported } from 'bitecs/utils';
 import { NormalizedSchemaField, Schema, Store } from '../types';
 import { universe } from '../../universe/universe';
 import { normalizeSchema } from './normalize-schema';
