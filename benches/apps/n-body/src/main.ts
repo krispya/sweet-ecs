@@ -6,7 +6,7 @@ import { init } from './systems/init';
 import { pipeline } from './systems/pipeline';
 
 // Configure the simulation
-CONSTANTS.NBODIES = 2000;
+// CONSTANTS.NBODIES = 2000;
 
 // Renderer
 export const renderer = new THREE.WebGLRenderer({
