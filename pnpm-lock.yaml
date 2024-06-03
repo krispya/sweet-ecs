@@ -39,6 +39,9 @@ importers:
       '@sweet-ecs/core':
         specifier: workspace:*
         version: link:../../../packages/core
+      directed:
+        specifier: github:pmndrs/directed#v0.0.1-alpha.2
+        version: https://codeload.github.com/pmndrs/directed/tar.gz/10d4dc6c965ab2d1d6d3dc0e5ca7bf16eb5ad326
       three:
         specifier: ^0.162.0
         version: 0.162.0
@@ -212,25 +215,9 @@ importers:
       '@sweet-ecs/core':
         specifier: workspace:*
         version: link:../../../packages/core
-    devDependencies:
-      tsconfig:
-        specifier: workspace:*
-        version: link:../../../packages/tsconfig
-      tsx:
-        specifier: latest
-        version: 4.10.0
-
-  benches/sims/n-body-aos-fast:
-    dependencies:
-      '@sim/bench-tools':
-        specifier: workspace:*
-        version: link:../bench-tools
-      '@sim/n-body-aos':
-        specifier: workspace:*
-        version: link:../n-body-aos
-      '@sweet-ecs/core':
-        specifier: workspace:*
-        version: link:../../../packages/core
+      directed:
+        specifier: github:pmndrs/directed#v0.0.1-alpha.2
+        version: https://codeload.github.com/pmndrs/directed/tar.gz/10d4dc6c965ab2d1d6d3dc0e5ca7bf16eb5ad326
     devDependencies:
       tsconfig:
         specifier: workspace:*
@@ -247,6 +234,9 @@ importers:
       '@sweet-ecs/core':
         specifier: workspace:*
         version: link:../../../packages/core
+      directed:
+        specifier: github:pmndrs/directed#v0.0.1-alpha.2
+        version: https://codeload.github.com/pmndrs/directed/tar.gz/10d4dc6c965ab2d1d6d3dc0e5ca7bf16eb5ad326
     devDependencies:
       tsconfig:
         specifier: workspace:*
@@ -263,6 +253,9 @@ importers:
       '@sweet-ecs/core':
         specifier: workspace:*
         version: link:../../../packages/core
+      directed:
+        specifier: github:pmndrs/directed#v0.0.1-alpha.2
+        version: https://codeload.github.com/pmndrs/directed/tar.gz/10d4dc6c965ab2d1d6d3dc0e5ca7bf16eb5ad326
     devDependencies:
       tsconfig:
         specifier: workspace:*
@@ -1084,6 +1077,10 @@ packages:
   dir-glob@3.0.1:
     resolution: {integrity: sha512-WkrWp9GR4KXfKGYzOLmTuGVi1UWFfws377n9cc55/tb6DuqyF6pcQ5AbiHEshaDpY9v6oaSr2XCDidGmMwdzIA==}
     engines: {node: '>=8'}
+
+  directed@https://codeload.github.com/pmndrs/directed/tar.gz/10d4dc6c965ab2d1d6d3dc0e5ca7bf16eb5ad326:
+    resolution: {tarball: https://codeload.github.com/pmndrs/directed/tar.gz/10d4dc6c965ab2d1d6d3dc0e5ca7bf16eb5ad326}
+    version: 0.0.1-alpha.1
 
   doctrine@3.0.0:
     resolution: {integrity: sha512-yS+Q5i3hBf7GBkd4KG8a7eBNNWNGLTaEwwYWUijIYM7zrlYDM0BFXHjjPWlWZ1Rg7UaddZeIDmi9jF3HmqiQ2w==}
@@ -2541,6 +2538,8 @@ snapshots:
   dir-glob@3.0.1:
     dependencies:
       path-type: 4.0.0
+
+  directed@https://codeload.github.com/pmndrs/directed/tar.gz/10d4dc6c965ab2d1d6d3dc0e5ca7bf16eb5ad326: {}
 
   doctrine@3.0.0:
     dependencies:

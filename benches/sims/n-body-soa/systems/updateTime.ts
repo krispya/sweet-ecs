@@ -1,7 +1,7 @@
 import { World } from '@sweet-ecs/core';
 import { Time } from '../components/Time';
 
-export const updateTime = (world: World) => {
+export const updateTime = ({ world }: { world: World }) => {
 	const time = world.get(Time)!;
 	const now = performance.now();
 	const delta = now - time.then;

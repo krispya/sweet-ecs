@@ -4,7 +4,7 @@ import { Position } from '../components/Position';
 import { World } from '@sweet-ecs/core';
 import { Time } from '../components/Time';
 
-export const moveBodies = (world: World) => {
+export const moveBodies = ({ world }: { world: World }) => {
 	const { delta } = world.get(Time)!;
 	const eids = world.query([Position, Velocity]);
 

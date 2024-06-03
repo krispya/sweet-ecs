@@ -11,7 +11,7 @@ const body = [Position, Velocity, Mass, Circle];
 const enterBody = defineEnterQueue(body);
 const enterCentralMass = defineEnterQueue([...body, IsCentralMass]);
 
-export const setInitial = (world: World) => {
+export const setInitial = ({ world }: { world: World }) => {
 	const eids = world.query(enterBody);
 	const centralMassIds = world.query(enterCentralMass);
 

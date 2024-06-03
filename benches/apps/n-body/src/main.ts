@@ -1,9 +1,10 @@
 import { initStats } from '@app/bench-tools';
-import { CONSTANTS, world } from '@sim/n-body-soa';
+import { CONSTANTS, schedule, world } from '@sim/n-body-soa';
 import * as THREE from 'three';
 import './styles.css';
 import { init } from './systems/init';
-import { pipeline } from './systems/pipeline';
+import { syncThreeObjects } from './systems/syncThreeObjects';
+import { render } from './systems/render';
 
 // Configure the simulation
 // CONSTANTS.NBODIES = 2000;
@@ -46,13 +47,17 @@ window.addEventListener('resize', onWindowResize);
 camera.position.set(0, 0, 100);
 camera.lookAt(0, 0, 0);
 
+// Add view systems to the schedule
+schedule.add(syncThreeObjects, { after: 'update', before: render });
+schedule.add(render);
+
 // Init stats
 const { updateStats, measure } = initStats({ Bodies: () => CONSTANTS.NBODIES });
 
 // Run the simulation
 const main = () => {
 	measure(() => {
-		pipeline(world);
+		schedule.run({ world });
 		updateStats();
 	});
 	requestAnimationFrame(main);

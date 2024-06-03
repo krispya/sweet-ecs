@@ -6,7 +6,7 @@ import { CONSTANTS } from '../constants';
 import { World } from '@sweet-ecs/core';
 import { Time } from '../components/Time';
 
-export const updateGravity = (world: World) => {
+export const updateGravity = ({ world }: { world: World }) => {
 	const eids = world.query([Velocity, Mass, Position]);
 	const { delta } = world.get(Time)!;
 
