@@ -4,14 +4,6 @@ import './stats.css';
 type Stats = Record<string, () => any>;
 
 export function initStats(extras?: Stats) {
-	// If the stats element already exists, remove it.
-	const existingStats = document.querySelector('.stats');
-	if (existingStats) existingStats.remove();
-
-	const statsEle = document.createElement('div');
-	document.body.appendChild(statsEle);
-	statsEle.classList.add('stats');
-
 	const measurementRef = { current: { delta: 0, average: 0 } as Measurement };
 	const fpsRef = { current: 0 };
 
@@ -23,11 +15,19 @@ export function initStats(extras?: Stats) {
 		...extras,
 	};
 
-	for (const [label, value] of Object.entries(stats)) {
-		const { div, update } = createStat(label, value);
-		statsEle.appendChild(div);
-		updates.push(update);
-	}
+	let ele: HTMLElement | null = null;
+
+	const create = () => {
+		ele = document.createElement('div');
+		document.body.appendChild(ele);
+		ele.classList.add('stats');
+
+		for (const [label, value] of Object.entries(stats)) {
+			const { div, update } = createStat(label, value);
+			ele.appendChild(div);
+			updates.push(update);
+		}
+	};
 
 	const updateStats = () => {
 		getFPS(fpsRef);
@@ -39,7 +39,8 @@ export function initStats(extras?: Stats) {
 	return {
 		updateStats,
 		measure: async (fn: (...args: any[]) => any) => await measure(fn, measurementRef),
-		destroy: () => statsEle.remove(),
+		destroy: () => ele?.remove(),
+		create,
 	};
 }
 
