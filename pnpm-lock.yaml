@@ -98,6 +98,9 @@ importers:
       '@sweet-ecs/react':
         specifier: workspace:*
         version: link:../../../packages/react
+      directed:
+        specifier: github:pmndrs/directed#v0.0.1-alpha.2
+        version: https://codeload.github.com/pmndrs/directed/tar.gz/10d4dc6c965ab2d1d6d3dc0e5ca7bf16eb5ad326
       react:
         specifier: 19.0.0-beta-6946ebe620-20240508
         version: 19.0.0-beta-6946ebe620-20240508
@@ -234,9 +237,6 @@ importers:
       '@sweet-ecs/core':
         specifier: workspace:*
         version: link:../../../packages/core
-      directed:
-        specifier: github:pmndrs/directed#v0.0.1-alpha.2
-        version: https://codeload.github.com/pmndrs/directed/tar.gz/10d4dc6c965ab2d1d6d3dc0e5ca7bf16eb5ad326
     devDependencies:
       tsconfig:
         specifier: workspace:*

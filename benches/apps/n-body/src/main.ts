@@ -2,9 +2,9 @@ import { initStats } from '@app/bench-tools';
 import { CONSTANTS, schedule, world } from '@sim/n-body-soa';
 import * as THREE from 'three';
 import './styles.css';
-import { init } from './systems/init';
 import { syncThreeObjects } from './systems/syncThreeObjects';
 import { render } from './systems/render';
+import { init } from './systems/init';
 
 // Configure the simulation
 // CONSTANTS.NBODIES = 2000;
@@ -50,6 +50,7 @@ camera.lookAt(0, 0, 0);
 // Add view systems to the schedule
 schedule.add(syncThreeObjects, { after: 'update', before: render });
 schedule.add(render);
+schedule.add(init, { tag: 'init' });
 
 // Init stats
 const { updateStats, measure } = initStats({ Bodies: () => CONSTANTS.NBODIES });
@@ -62,8 +63,5 @@ const main = () => {
 	});
 	requestAnimationFrame(main);
 };
-
-// Initialize all entities
-init(world);
 
 requestAnimationFrame(main);

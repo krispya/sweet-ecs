@@ -7,5 +7,4 @@ export const updateTime = ({ world }: { world: World }) => {
 	const delta = now - time.then;
 	time.delta = delta / 100;
 	time.then = now;
-	return world;
 };

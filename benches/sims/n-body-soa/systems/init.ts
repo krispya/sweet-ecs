@@ -10,7 +10,7 @@ import { Acceleration } from '../components/Acceleration';
 
 let inited = false;
 
-export const init = (world: World) => {
+export const init = ({ world }: { world: World }) => {
 	if (inited) return;
 
 	for (let i = 0; i < CONSTANTS.NBODIES; i++) {

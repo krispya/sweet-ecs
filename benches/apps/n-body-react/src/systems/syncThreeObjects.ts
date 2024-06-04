@@ -8,7 +8,7 @@ const normalize = (x: number, min: number, max: number) => (x - min) / (max - mi
 const dummy = new THREE.Object3D();
 const color = new THREE.Color();
 
-export const syncThreeObjects = (world: World) => {
+export const syncThreeObjects = ({ world }: { world: World }) => {
 	const eids = world.query([Position, Circle, Color]);
 	const instanceId = world.query([ThreeInstances])[0];
 
@@ -18,6 +18,8 @@ export const syncThreeObjects = (world: World) => {
 	const positions = Position.store;
 	const circles = Circle.store;
 	const colors = Color.store;
+
+	console.log(instancedMesh);
 
 	for (let i = 0; i < eids.length; i++) {
 		const eid = eids[i];
