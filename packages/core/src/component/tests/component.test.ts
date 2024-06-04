@@ -55,6 +55,8 @@ describe('Component', () => {
 
 		expect(test.number).toBe(11);
 		expect(test.instance).toBeInstanceOf(Foo);
+		expect(Test.store.number[eid]).toBe(11);
+		expect(Test.store.instance[eid]).toBeInstanceOf(Foo);
 	});
 
 	it('supports SoA', () => {
@@ -66,6 +68,7 @@ describe('Component', () => {
 		Test.store.number[eid] = 11;
 
 		expect(Test.store.number[eid]).toBe(11);
+		expect(Test.get(eid)!.number).toBe(11);
 	});
 
 	it('adds to an entity', () => {
