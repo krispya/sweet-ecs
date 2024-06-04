@@ -3,10 +3,11 @@ import { Canvas } from '@react-three/fiber';
 import { CONSTANTS, schedule, world } from '@sim/n-body-soa';
 import { Entity } from '@sweet-ecs/core';
 import Sweet, { useWorld } from '@sweet-ecs/react';
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo } from 'react';
 import * as THREE from 'three';
 import { ThreeInstances } from './components/ThreeInstances';
 import { syncThreeObjects } from './systems/syncThreeObjects';
+import { useRaf } from './use-raf';
 
 // Add view systems to the schedule
 schedule.add(syncThreeObjects, { after: 'update' });
@@ -59,27 +60,20 @@ function Bodies() {
 
 // Simulation runs a schedule.
 function Simulation() {
-	const rafRef = useRef<number>(0);
+	const statsAPI = useMemo(() => initStats({ Bodies: () => CONSTANTS.NBODIES }), []);
 	const world = useWorld();
-	const statsAPI = useRef<ReturnType<typeof initStats>>(null);
 
 	useEffect(() => {
-		statsAPI.current = initStats({ Bodies: () => CONSTANTS.NBODIES });
+		statsAPI.create();
+		return () => statsAPI.destroy();
+	});
 
-		const loop = () => {
-			statsAPI.current!.measure(() => {
-				schedule.run({ world });
-			});
-			statsAPI.current!.updateStats();
-			rafRef.current = requestAnimationFrame(loop);
-		};
-		loop();
-
-		return () => {
-			cancelAnimationFrame(rafRef.current);
-			statsAPI.current!.destroy();
-		};
-	}, [world]);
+	useRaf(() => {
+		statsAPI.measure(() => {
+			schedule.run({ world });
+		});
+		statsAPI.updateStats();
+	}, [world, statsAPI]);
 
 	return null;
 }
