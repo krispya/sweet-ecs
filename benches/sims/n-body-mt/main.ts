@@ -2,17 +2,13 @@
 // https://github.com/SanderMertens/ecs_nbody
 
 import { measure, requestAnimationFrame } from '@sim/bench-tools';
-import { init } from './systems/init';
-import { pipeline } from './systems/pipeline';
 import { world } from './world';
+import { schedule } from './systems/schedule';
 
 // Start the simulation.
 const main = () => {
-	measure(() => pipeline(world));
+	measure(async () => await schedule.run({ world }));
 	requestAnimationFrame(main);
 };
-
-// Initialize all entities.
-init(world);
 
 requestAnimationFrame(main);

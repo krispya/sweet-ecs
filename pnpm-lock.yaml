@@ -40,8 +40,8 @@ importers:
         specifier: workspace:*
         version: link:../../../packages/core
       directed:
-        specifier: github:pmndrs/directed#v0.0.1-alpha.2
-        version: https://codeload.github.com/pmndrs/directed/tar.gz/10d4dc6c965ab2d1d6d3dc0e5ca7bf16eb5ad326
+        specifier: github:pmndrs/directed#v0.0.1-alpha.3
+        version: https://codeload.github.com/pmndrs/directed/tar.gz/a1ea0a393e75bb1b8999d56fbefe766c1273115b
       three:
         specifier: ^0.162.0
         version: 0.162.0
@@ -99,8 +99,8 @@ importers:
         specifier: workspace:*
         version: link:../../../packages/react
       directed:
-        specifier: github:pmndrs/directed#v0.0.1-alpha.2
-        version: https://codeload.github.com/pmndrs/directed/tar.gz/10d4dc6c965ab2d1d6d3dc0e5ca7bf16eb5ad326
+        specifier: github:pmndrs/directed#v0.0.1-alpha.3
+        version: https://codeload.github.com/pmndrs/directed/tar.gz/a1ea0a393e75bb1b8999d56fbefe766c1273115b
       react:
         specifier: 19.0.0-beta-6946ebe620-20240508
         version: 19.0.0-beta-6946ebe620-20240508
@@ -219,8 +219,8 @@ importers:
         specifier: workspace:*
         version: link:../../../packages/core
       directed:
-        specifier: github:pmndrs/directed#v0.0.1-alpha.2
-        version: https://codeload.github.com/pmndrs/directed/tar.gz/10d4dc6c965ab2d1d6d3dc0e5ca7bf16eb5ad326
+        specifier: github:pmndrs/directed#v0.0.1-alpha.3
+        version: https://codeload.github.com/pmndrs/directed/tar.gz/a1ea0a393e75bb1b8999d56fbefe766c1273115b
     devDependencies:
       tsconfig:
         specifier: workspace:*
@@ -237,6 +237,9 @@ importers:
       '@sweet-ecs/core':
         specifier: workspace:*
         version: link:../../../packages/core
+      directed:
+        specifier: github:pmndrs/directed#v0.0.1-alpha.3
+        version: https://codeload.github.com/pmndrs/directed/tar.gz/a1ea0a393e75bb1b8999d56fbefe766c1273115b
     devDependencies:
       tsconfig:
         specifier: workspace:*
@@ -254,8 +257,8 @@ importers:
         specifier: workspace:*
         version: link:../../../packages/core
       directed:
-        specifier: github:pmndrs/directed#v0.0.1-alpha.2
-        version: https://codeload.github.com/pmndrs/directed/tar.gz/10d4dc6c965ab2d1d6d3dc0e5ca7bf16eb5ad326
+        specifier: github:pmndrs/directed#v0.0.1-alpha.3
+        version: https://codeload.github.com/pmndrs/directed/tar.gz/a1ea0a393e75bb1b8999d56fbefe766c1273115b
     devDependencies:
       tsconfig:
         specifier: workspace:*
@@ -1078,8 +1081,8 @@ packages:
     resolution: {integrity: sha512-WkrWp9GR4KXfKGYzOLmTuGVi1UWFfws377n9cc55/tb6DuqyF6pcQ5AbiHEshaDpY9v6oaSr2XCDidGmMwdzIA==}
     engines: {node: '>=8'}
 
-  directed@https://codeload.github.com/pmndrs/directed/tar.gz/10d4dc6c965ab2d1d6d3dc0e5ca7bf16eb5ad326:
-    resolution: {tarball: https://codeload.github.com/pmndrs/directed/tar.gz/10d4dc6c965ab2d1d6d3dc0e5ca7bf16eb5ad326}
+  directed@https://codeload.github.com/pmndrs/directed/tar.gz/a1ea0a393e75bb1b8999d56fbefe766c1273115b:
+    resolution: {tarball: https://codeload.github.com/pmndrs/directed/tar.gz/a1ea0a393e75bb1b8999d56fbefe766c1273115b}
     version: 0.0.1-alpha.1
 
   doctrine@3.0.0:
@@ -2539,7 +2542,7 @@ snapshots:
     dependencies:
       path-type: 4.0.0
 
-  directed@https://codeload.github.com/pmndrs/directed/tar.gz/10d4dc6c965ab2d1d6d3dc0e5ca7bf16eb5ad326: {}
+  directed@https://codeload.github.com/pmndrs/directed/tar.gz/a1ea0a393e75bb1b8999d56fbefe766c1273115b: {}
 
   doctrine@3.0.0:
     dependencies:

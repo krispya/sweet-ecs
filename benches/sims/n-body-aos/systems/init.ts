@@ -8,6 +8,8 @@ import { Color } from '../components/Color';
 import { Entity, World } from '@sweet-ecs/core';
 import { Acceleration } from '../components/Acceleration';
 
+let inited = false;
+
 export const init = (world: World) => {
 	for (let i = 0; i < CONSTANTS.NBODIES; i++) {
 		const eid = Entity.in(world);
@@ -24,4 +26,6 @@ export const init = (world: World) => {
 			Entity.add(IsCentralMass, eid);
 		}
 	}
+
+	inited = true;
 };

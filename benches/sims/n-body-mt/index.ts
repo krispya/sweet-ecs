@@ -8,5 +8,5 @@ export { init } from './systems/init';
 export { updateTime } from './systems/updateTime';
 
 export { world } from './world';
-export { pipeline } from './systems/pipeline';
 export { CONSTANTS } from './constants';
+export { schedule } from './systems/schedule';

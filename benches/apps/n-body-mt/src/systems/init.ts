@@ -1,10 +1,14 @@
+import { CONSTANTS } from '@sim/n-body-mt';
 import { Entity, World } from '@sweet-ecs/core';
-import { CONSTANTS, init as initSim } from '@sim/n-body-mt';
-import { ThreeInstances } from '../components/ThreeInstances';
 import * as THREE from 'three';
+import { ThreeInstances } from '../components/ThreeInstances';
 import { scene } from '../scene';
 
-export function init(world: World) {
+let inited = false;
+
+export function init({ world }: { world: World }) {
+	if (inited) return;
+
 	// Init the instances meshes for Three.
 	const eid = Entity.in(world);
 
@@ -17,5 +21,5 @@ export function init(world: World) {
 
 	Entity.add(new ThreeInstances(instancedMesh), eid);
 
-	initSim(world);
+	inited = true;
 }

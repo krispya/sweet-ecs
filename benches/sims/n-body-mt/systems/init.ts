@@ -2,7 +2,11 @@ import { CONSTANTS } from '../constants';
 import { Entity, World } from '@sweet-ecs/core';
 import { Acceleration, Circle, Color, IsCentralMass, Mass, Position, Velocity } from '..';
 
-export const init = (world: World) => {
+let inited = false;
+
+export const init = ({ world }: { world: World }) => {
+	if (inited) return;
+
 	for (let i = 0; i < CONSTANTS.NBODIES; i++) {
 		const eid = Entity.in(world);
 
@@ -18,4 +22,6 @@ export const init = (world: World) => {
 			Entity.add(IsCentralMass, eid);
 		}
 	}
+
+	inited = true;
 };

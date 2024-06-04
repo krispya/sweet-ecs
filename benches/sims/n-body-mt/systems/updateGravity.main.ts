@@ -15,7 +15,8 @@ export const updateGravityMain = ({
 	components: UpdateGravityComponents;
 }) => {
 	const workerFile = 'updateGravity.worker.ts';
-	return async (world: World) => {
+
+	return async ({ world }: { world: World }) => {
 		const { workers } = world.get(Workers)!;
 		const { delta } = world.get(Time)!;
 
@@ -58,8 +59,6 @@ export const updateGravityMain = ({
 					})
 			)
 		);
-
-		return world;
 	};
 };
 

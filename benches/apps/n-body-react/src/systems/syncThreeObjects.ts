@@ -19,8 +19,6 @@ export const syncThreeObjects = ({ world }: { world: World }) => {
 	const circles = Circle.store;
 	const colors = Color.store;
 
-	console.log(instancedMesh);
-
 	for (let i = 0; i < eids.length; i++) {
 		const eid = eids[i];
 		dummy.position.set(positions.x[eid], positions.y[eid], 0);

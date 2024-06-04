@@ -1,9 +1,10 @@
 import { initStats } from '@app/bench-tools';
-import { CONSTANTS, world } from '@sim/n-body-mt';
+import { CONSTANTS, schedule, world } from '@sim/n-body-mt';
 import * as THREE from 'three';
 import './styles.css';
 import { init } from './systems/init';
-import { pipeline } from './systems/pipeline';
+import { syncThreeObjects } from './systems/syncThreeObjects';
+import { render } from './systems/render';
 
 // Renderer
 export const renderer = new THREE.WebGLRenderer({
@@ -48,16 +49,18 @@ const { updateStats, measure } = initStats({
 	Threads: () => window.navigator.hardwareConcurrency,
 });
 
+// Add view systems to the schedule
+schedule.add(syncThreeObjects, { after: 'update', before: render });
+schedule.add(render);
+schedule.add(init, { tag: 'init' });
+
 // Run the simulation
 const main = async () => {
 	await measure(async () => {
-		await pipeline(world);
+		await schedule.run({ world });
 		updateStats();
 	});
 	requestAnimationFrame(main);
 };
-
-// Initialize all entities
-init(world);
 
 main();

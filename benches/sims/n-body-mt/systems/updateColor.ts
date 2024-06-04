@@ -2,7 +2,7 @@ import { Color, Velocity } from '../components';
 import { colorFromSpeed } from '../utils/colorFromSpeed';
 import { World } from '@sweet-ecs/core';
 
-export const updateColor = (world: World) => {
+export const updateColor = ({ world }: { world: World }) => {
 	const eids = world.query([Velocity, Color]);
 
 	const velocities = Velocity.store;
@@ -18,6 +18,4 @@ export const updateColor = (world: World) => {
 		colors.b[eid] = b;
 		colors.a[eid] = a;
 	}
-
-	return world;
 };
