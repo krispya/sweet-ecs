@@ -37,7 +37,18 @@ export function addComponentInstance<T extends Component>(
 	const component = instance.constructor as typeof Component;
 	addComponentBit(world, component, entityId);
 
+	// Make a snapshot of the current values.
+	const snapshot: Record<string, any> = {};
+	for (const key in component.normalizedSchema) {
+		snapshot[key] = instance[key as keyof T];
+	}
+
 	// Set instance.
 	instance.setEntityId(entityId);
 	component.instances[entityId] = instance;
+
+	// Set snapshot values.
+	for (const key in snapshot) {
+		component.store[key][entityId] = snapshot[key];
+	}
 }

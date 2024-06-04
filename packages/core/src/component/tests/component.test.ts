@@ -122,10 +122,11 @@ describe('Component', () => {
 		expect(() => addComponent(world, Test, eid)).toThrow();
 	});
 
-	it('adds a component instance to an entity', () => {
-		class Test extends Component.define() {
-			constructor(public number: number) {
+	it.only('adds a component instance to an entity', () => {
+		class Test extends Component.define({ number: 11 }) {
+			constructor(number: number) {
 				super();
+				this.number = number;
 			}
 		}
 
@@ -135,5 +136,6 @@ describe('Component', () => {
 
 		expect(hasComponent(world, Test, eid)).toBe(true);
 		expect(Test.get(eid)).toBe(instance);
+		expect(instance.number).toBe(1);
 	});
 });
