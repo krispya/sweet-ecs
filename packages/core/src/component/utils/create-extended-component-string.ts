@@ -13,7 +13,7 @@ export function createExtendedComponentString(schema: Schema) {
 		  this[key] = this.constructor.schema[key];
 		});
 	  }
-  `;
+  	`;
 
 	// Dynamically add getters and setters for each schema property.
 	for (const key of Object.keys(schema)) {
@@ -28,10 +28,9 @@ export function createExtendedComponentString(schema: Schema) {
 	`;
 	}
 
-	// Close the class definition
 	classDefinition += `};
-  ExtendedComponent;
-  `;
+  	ExtendedComponent;
+  	`;
 
 	return classDefinition;
 }
