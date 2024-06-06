@@ -1,4 +1,4 @@
-import { CONSTANTS } from '@sim/n-body-soa';
+import { CONSTANTS } from '@sim/n-body';
 import { Entity, World } from '@sweet-ecs/core';
 import * as THREE from 'three';
 import { ThreeInstances } from '../components/ThreeInstances';

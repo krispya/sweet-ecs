@@ -1,5 +1,5 @@
 import { initStats } from '@app/bench-tools';
-import { CONSTANTS, schedule, world } from '@sim/n-body-soa';
+import { CONSTANTS, schedule, world } from '@sim/n-body';
 import * as THREE from 'three';
 import './styles.css';
 import { syncThreeObjects } from './systems/syncThreeObjects';
@@ -53,7 +53,8 @@ schedule.add(render);
 schedule.add(init, { tag: 'init' });
 
 // Init stats
-const { updateStats, measure } = initStats({ Bodies: () => CONSTANTS.NBODIES });
+const { updateStats, measure, create } = initStats({ Bodies: () => CONSTANTS.NBODIES });
+create();
 
 // Run the simulation
 const main = () => {
