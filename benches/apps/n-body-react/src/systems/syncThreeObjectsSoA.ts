@@ -8,32 +8,31 @@ const normalize = (x: number, min: number, max: number) => (x - min) / (max - mi
 const dummy = new THREE.Object3D();
 const dummyColor = new THREE.Color();
 
-// AoS version. Compatible with all component formats.
+// SoA version. Technically fastest though it's not noticeable here.
 
 export const syncThreeObjects = ({ world }: { world: World }) => {
 	const eids = world.query([Position, Circle, Color]);
 	const instanceId = world.query([ThreeInstances])[0];
 
 	const instancedMesh = ThreeInstances.instances[instanceId].value;
+	const positions = Position.store;
+	const circles = Circle.store;
+	const colors = Color.store;
 
 	for (let i = 0; i < eids.length; i++) {
 		const eid = eids[i];
-		const position = Position.get(eid);
-		const circle = Circle.get(eid);
-		const color = Color.get(eid);
+		dummy.position.set(positions.x[eid], positions.y[eid], 0);
 
-		dummy.position.set(position.x, position.y, 0);
-
-		const radius = normalize(circle.radius, 0, 60);
+		const radius = normalize(circles.radius[eid], 0, 60);
 		dummy.scale.set(radius, radius, radius);
 
 		dummy.updateMatrix();
 
 		instancedMesh.setMatrixAt(eid, dummy.matrix);
 
-		const r = normalize(color.r, 0, 255);
-		const g = normalize(color.g, 0, 255);
-		const b = normalize(color.b, 0, 255);
+		const r = normalize(colors.r[eid], 0, 255);
+		const g = normalize(colors.g[eid], 0, 255);
+		const b = normalize(colors.b[eid], 0, 255);
 		dummyColor.setRGB(r, g, b);
 		instancedMesh.setColorAt(eid, dummyColor);
 	}

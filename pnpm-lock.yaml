@@ -89,9 +89,9 @@ importers:
       '@react-three/fiber':
         specifier: ^9.0.0-alpha.7
         version: 9.0.0-alpha.7(react-dom@19.0.0-beta-6946ebe620-20240508(react@19.0.0-beta-6946ebe620-20240508))(react@19.0.0-beta-6946ebe620-20240508)(three@0.162.0)(types-react@19.0.0-beta.2)
-      '@sim/n-body-soa':
-        specifier: workspace:*
-        version: link:../../sims/n-body-soa
+      '@sim/n-body':
+        specifier: workspace:@sim/n-body-aos@*
+        version: link:../../sims/n-body-aos
       '@sweet-ecs/core':
         specifier: workspace:*
         version: link:../../../packages/core

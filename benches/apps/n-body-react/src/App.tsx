@@ -1,6 +1,6 @@
 import { initStats } from '@app/bench-tools';
 import { Canvas } from '@react-three/fiber';
-import { CONSTANTS, schedule, world } from '@sim/n-body-soa';
+import { CONSTANTS, schedule, world } from '@sim/n-body';
 import { Entity } from '@sweet-ecs/core';
 import Sweet, { useWorld } from '@sweet-ecs/react';
 import { useEffect, useMemo } from 'react';
