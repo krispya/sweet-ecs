@@ -9,6 +9,7 @@ import {
 	addPrefab,
 	defineWorld,
 	registerWorld,
+	setRemovedRecycleThreshold,
 } from 'bitecs';
 import { ResizeCallback } from './types';
 import { universe, universeResizeCallbacks } from '../universe/universe';
@@ -19,6 +20,8 @@ import { Entity } from '../entity/entity';
 import { Component } from '../component/component';
 
 export interface World extends bitWorld {}
+
+setRemovedRecycleThreshold(0);
 
 export class World {
 	#resizeCallbacks: ResizeCallback[] = [];
