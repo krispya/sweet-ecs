@@ -1,3 +1,6 @@
 import { Component } from '@sweet-ecs/core';
 
-export class Position extends Component.define({ x: 0, y: 0 }) {}
+export class Position extends Component {
+	x = 0;
+	y = 0;
+}

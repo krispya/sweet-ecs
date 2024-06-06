@@ -8,15 +8,14 @@ export const moveBodies = ({ world }: { world: World }) => {
 	const eids = world.query([Position, Velocity]);
 	const { delta } = world.get(Time)!;
 
+	const positions = Position.instances as Position[];
+	const velocities = Velocity.instances as Velocity[];
+
 	for (let i = 0; i < eids.length; i++) {
 		const eid = eids[i];
-		const position = Position.get(eid);
-		const velocity = Velocity.get(eid);
 
 		// Update position based on velocity and the global SPEED factor
-		position.x += CONSTANTS.SPEED * velocity.x * delta;
-		position.y += CONSTANTS.SPEED * velocity.y * delta;
+		positions[eid].x += CONSTANTS.SPEED * velocities[eid].x * delta;
+		positions[eid].y += CONSTANTS.SPEED * velocities[eid].y * delta;
 	}
-
-	return world;
 };

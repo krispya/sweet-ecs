@@ -6,19 +6,18 @@ import { World } from '@sweet-ecs/core';
 export const updateColor = ({ world }: { world: World }) => {
 	const eids = world.query([Velocity, Color]);
 
+	const colors = Color.instances as Color[];
+	const velocities = Velocity.instances as Velocity[];
+
 	for (let i = 0; i < eids.length; i++) {
 		const eid = eids[i];
-		const velocity = Velocity.get(eid);
-		const color = Color.get(eid);
 
-		const speed = Math.sqrt(velocity.x ** 2 + velocity.y ** 2);
+		const speed = Math.sqrt(velocities[eid].x ** 2 + velocities[eid].y ** 2);
 		const { r, g, b, a } = colorFromSpeed(speed);
 
-		color.r = r;
-		color.g = g;
-		color.b = b;
-		color.a = a;
+		colors[eid].r = r;
+		colors[eid].g = g;
+		colors[eid].b = b;
+		colors[eid].a = a;
 	}
-
-	return world;
 };

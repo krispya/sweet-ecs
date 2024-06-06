@@ -10,38 +10,36 @@ export const updateGravity = ({ world }: { world: World }) => {
 	const eids = world.query([Position, Mass, Acceleration, Velocity]);
 	const { delta } = world.get(Time)!;
 
+	const accelerations = Acceleration.instances as Acceleration[];
+	const velocities = Velocity.instances as Velocity[];
+	const masses = Mass.instances as Mass[];
+	const positions = Position.instances as Position[];
+
 	for (let j = 0; j < eids.length; j++) {
 		const meId = eids[j];
-		const acceleration = Acceleration.get(meId);
-		const velocity = Velocity.get(meId);
-		const mass = Mass.get(meId);
-		const position = Position.get(meId);
 
-		acceleration.x = 0;
-		acceleration.y = 0;
+		accelerations[meId].x = 0;
+		accelerations[meId].y = 0;
 
 		for (let i = 0; i < eids.length; i++) {
 			const currentId = eids[i];
 			if (meId === currentId) continue; // Skip self
 
-			const otherPosition = Position.get(currentId);
-			const otherMass = Mass.get(currentId);
-
-			const dx = +otherPosition.x - +position.x;
-			const dy = +otherPosition.y - +position.y;
+			const dx = +positions[currentId].x - +positions[meId].x;
+			const dy = +positions[currentId].y - +positions[meId].y;
 			let distanceSquared = dx * dx + dy * dy;
 
 			if (distanceSquared < CONSTANTS.STICKY) distanceSquared = CONSTANTS.STICKY; // Apply stickiness
 
 			const distance = Math.sqrt(distanceSquared);
-			const forceMagnitude = (+mass.value * +otherMass.value) / distanceSquared;
+			const forceMagnitude = (+masses[meId].value * +masses[currentId].value) / distanceSquared;
 
-			acceleration.x += (dx / distance) * forceMagnitude;
-			acceleration.y += (dy / distance) * forceMagnitude;
+			accelerations[meId].x += (dx / distance) * forceMagnitude;
+			accelerations[meId].y += (dy / distance) * forceMagnitude;
 		}
 
 		// Apply computed force to entity's velocity, adjusting for its mass
-		velocity.x += (acceleration.x * delta) / mass.value;
-		velocity.y += (acceleration.y * delta) / mass.value;
+		velocities[meId].x += (accelerations[meId].x * delta) / masses[meId].value;
+		velocities[meId].y += (accelerations[meId].y * delta) / masses[meId].value;
 	}
 };
