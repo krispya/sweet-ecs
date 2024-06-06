@@ -13,7 +13,7 @@ import {
 	schedule,
 	setInitial,
 	world,
-} from '@sim/n-body-soa';
+} from '@sim/n-body';
 import { Component, Entity } from '@sweet-ecs/core';
 import Sweet, { useWorld } from '@sweet-ecs/react';
 import { useEffect, useMemo } from 'react';
