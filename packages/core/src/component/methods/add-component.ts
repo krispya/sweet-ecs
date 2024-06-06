@@ -16,6 +16,11 @@ export function addComponent<T extends typeof Component>(
 
 	addComponentBit(world, component, entityId);
 
+	// Create instances array if it doesn't exist.
+	if (Object.hasOwn(component, 'instances') === false) {
+		component.instances = [];
+	}
+
 	// Create instance.
 	component.instances[entityId] = new component().setEntityId(entityId);
 
@@ -41,6 +46,11 @@ export function addComponentInstance<T extends Component>(
 	const snapshot: Record<string, any> = {};
 	for (const key in component.normalizedSchema) {
 		snapshot[key] = instance[key as keyof T];
+	}
+
+	// Create instances array if it doesn't exist.
+	if (Object.hasOwn(component, 'instances') === false) {
+		component.instances = [];
 	}
 
 	// Set instance.
