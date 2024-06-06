@@ -122,7 +122,7 @@ describe('Component', () => {
 		expect(() => addComponent(world, Test, eid)).toThrow();
 	});
 
-	it.only('adds a component instance to an entity', () => {
+	it('adds a component instance to an entity', () => {
 		class Test extends Component.define({ number: 11 }) {
 			constructor(number: number) {
 				super();
