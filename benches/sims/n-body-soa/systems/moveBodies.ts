@@ -18,6 +18,4 @@ export const moveBodies = ({ world }: { world: World }) => {
 		positions.x[eid] += CONSTANTS.SPEED * velocities.x[eid] * delta;
 		positions.y[eid] += CONSTANTS.SPEED * velocities.y[eid] * delta;
 	}
-
-	return world;
 };

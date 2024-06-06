@@ -19,6 +19,4 @@ export const updateColor = ({ world }: { world: World }) => {
 		colors.b[eid] = b;
 		colors.a[eid] = a;
 	}
-
-	return world;
 };
