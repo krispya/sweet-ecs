@@ -1,6 +1,7 @@
 import { addComponent as addComponentBit } from 'bitecs';
 import { World } from '../../world/world';
 import { Component } from '../component';
+import { isInitialized } from '../symbols';
 
 export function addComponent<T extends typeof Component>(
 	world: World,
@@ -16,10 +17,8 @@ export function addComponent<T extends typeof Component>(
 
 	addComponentBit(world, component, entityId);
 
-	// Create instances array if it doesn't exist.
-	if (Object.hasOwn(component, 'instances') === false) {
-		component.instances = [];
-	}
+	// Initialize component.
+	initialize(component);
 
 	// Create instance.
 	component.instances[entityId] = new component().setEntityId(entityId);
@@ -48,10 +47,8 @@ export function addComponentInstance<T extends Component>(
 		snapshot[key] = instance[key as keyof T];
 	}
 
-	// Create instances array if it doesn't exist.
-	if (Object.hasOwn(component, 'instances') === false) {
-		component.instances = [];
-	}
+	// Initialize component.
+	initialize(component);
 
 	// Set instance.
 	instance.setEntityId(entityId);
@@ -60,5 +57,12 @@ export function addComponentInstance<T extends Component>(
 	// Set snapshot values.
 	for (const key in snapshot) {
 		component.store[key][entityId] = snapshot[key];
+	}
+}
+
+function initialize(component: typeof Component) {
+	if (Object.hasOwn(component, isInitialized) === false) {
+		component.instances = [];
+		component[isInitialized] = true;
 	}
 }
