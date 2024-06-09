@@ -1,4 +1,5 @@
 import { Schema } from '../types';
+import { isInitialized, hierarchy } from '../symbols';
 
 export function createExtendedComponentString(schema: Schema) {
 	let classDefinition = `
@@ -6,6 +7,8 @@ export function createExtendedComponentString(schema: Schema) {
 	  static schema = {};
 	  static store = {};
 	  static instances = [];
+	  static [isInitialized] = true;
+	  static [hierarchy] = [];
 
 	  constructor() {
 		super();

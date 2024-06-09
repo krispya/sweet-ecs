@@ -1,7 +1,7 @@
-import { addComponent as addComponentBit } from 'bitecs';
+import { addComponent as addComponentBit, IsA } from 'bitecs';
 import { World } from '../../world/world';
 import { Component } from '../component';
-import { isInitialized } from '../symbols';
+import { isInitialized, hierarchy } from '../symbols';
 
 export function addComponent<T extends typeof Component>(
 	world: World,
@@ -15,10 +15,8 @@ export function addComponent<T extends typeof Component>(
 		);
 	}
 
-	addComponentBit(world, component, entityId);
-
-	// Initialize component.
 	initialize(component);
+	addComponentBit(world, component, entityId);
 
 	// Create instance.
 	component.instances[entityId] = new component().setEntityId(entityId);
@@ -39,6 +37,8 @@ export function addComponentInstance<T extends Component>(
 	entityId: number
 ) {
 	const component = instance.constructor as typeof Component;
+
+	initialize(component);
 	addComponentBit(world, component, entityId);
 
 	// Make a snapshot of the current values.
@@ -46,9 +46,6 @@ export function addComponentInstance<T extends Component>(
 	for (const key in component.normalizedSchema) {
 		snapshot[key] = instance[key as keyof T];
 	}
-
-	// Initialize component.
-	initialize(component);
 
 	// Set instance.
 	instance.setEntityId(entityId);
@@ -64,5 +61,11 @@ function initialize(component: typeof Component) {
 	if (Object.hasOwn(component, isInitialized) === false) {
 		component.instances = [];
 		component[isInitialized] = true;
+
+		let proto = Object.getPrototypeOf(component);
+		while (Object.hasOwn(proto, isInitialized) === true && proto !== Component) {
+			component[hierarchy].push(proto);
+			proto = Object.getPrototypeOf(proto);
+		}
 	}
 }

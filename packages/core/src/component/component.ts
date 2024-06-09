@@ -3,7 +3,7 @@ import { createExtendedComponentString } from './utils/create-extended-component
 import { createStore } from './utils/create-store';
 import { isWorker } from './utils/is-worker';
 import { normalizeSchema } from './utils/normalize-schema';
-import { isInitialized } from './symbols';
+import { isInitialized, hierarchy } from './symbols';
 
 export class Component {
 	static schema: Schema = {};
@@ -11,6 +11,7 @@ export class Component {
 	static store: Store = {};
 	static instances: Component[] = [];
 	static [isInitialized] = false;
+	static [hierarchy]: (typeof Component)[] = [];
 
 	// This is so typeof Component extends any derived constructor.
 	constructor(...args: any[]) {}

@@ -139,7 +139,7 @@ describe('Component', () => {
 		expect(instance.number).toBe(1);
 	});
 
-	it('can access instances after initializing', () => {
+	it('initializes properties on add', () => {
 		class Test extends Component {
 			number = 11;
 		}
@@ -151,4 +151,16 @@ describe('Component', () => {
 
 		expect(Object.hasOwn(Test, 'instances')).toBe(true);
 	});
+
+	// it('has a hierarchy of components', () => {
+	// 	class Test extends Component {}
+
+	// 	const eid = Entity.in(world);
+	// 	addComponent(world, Test, eid);
+
+	// 	class Test2 extends Test {}
+
+	// 	const eid2 = Entity.in(world);
+	// 	addComponent(world, Test2, eid2);
+	// });
 });
