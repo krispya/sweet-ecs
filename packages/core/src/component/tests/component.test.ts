@@ -138,4 +138,17 @@ describe('Component', () => {
 		expect(Test.get(eid)).toBe(instance);
 		expect(instance.number).toBe(1);
 	});
+
+	it('can access instances after initializing', () => {
+		class Test extends Component {
+			number = 11;
+		}
+
+		expect(Object.hasOwn(Test, 'instances')).toBe(false);
+
+		const eid = Entity.in(world);
+		addComponent(world, Test, eid);
+
+		expect(Object.hasOwn(Test, 'instances')).toBe(true);
+	});
 });
