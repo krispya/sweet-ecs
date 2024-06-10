@@ -26,16 +26,34 @@
 	"dependencies": {
 		"@sweet-ecs/core": "workspace:*"
 	},
-	"peerDependencies": {
-		"react": "^19.0.0",
-		"react-dom": "^19.0.0"
-	},
 	"devDependencies": {
-		"@types/react": "npm:types-react@beta",
-		"@types/react-dom": "npm:types-react-dom@beta",
-		"react": "19.0.0-beta-6946ebe620-20240508",
-		"react-dom": "19.0.0-beta-6946ebe620-20240508",
+		"@types/react": "npm:types-react@rc",
+		"@types/react-dom": "npm:types-react-dom@rc",
+		"@types/three": "^0.159.0",
+		"react": "19.0.0-rc-cc1ec60d0d-20240607",
+		"react-dom": "19.0.0-rc-cc1ec60d0d-20240607",
 		"tsconfig": "workspace:*",
 		"vitest": "^1.4.0"
+	},
+	"peerDependencies": {
+		"react": "^19.0.0",
+		"react-dom": "^19.0.0",
+		"@react-three/fiber": "^9.0.0-alpha.7",
+		"three": ">=0.159"
+	},
+	"peerDependenciesMeta": {
+		"@react-three/fiber": {
+			"optional": true
+		},
+		"three": {
+			"optional": true
+		},
+		"react-dom": {
+			"optional": true
+		}
+	},
+	"overrides": {
+		"@types/react": "npm:types-react@rc",
+		"@types/react-dom": "npm:types-react-dom@rc"
 	}
 }
