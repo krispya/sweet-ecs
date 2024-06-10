@@ -51,6 +51,7 @@ camera.lookAt(0, 0, 0);
 schedule.add(syncThreeObjects, { after: 'update', before: render });
 schedule.add(render);
 schedule.add(init, { tag: 'init' });
+schedule.build();
 
 // Init stats
 const { updateStats, measure, create } = initStats({ Bodies: () => CONSTANTS.NBODIES });
