@@ -1,10 +1,10 @@
-import { initStats } from '@app/bench-tools';
 import { Canvas } from '@react-three/fiber';
 import {
 	Acceleration,
 	CONSTANTS,
 	Circle,
 	Color,
+	IsCentralMass,
 	Mass,
 	Position,
 	Velocity,
@@ -14,32 +14,31 @@ import {
 	setInitial,
 	world,
 } from '@sim/n-body';
-import { Component, Entity } from '@sweet-ecs/core';
-import Sweet, { useWorld } from '@sweet-ecs/react';
-import { useEffect, useMemo } from 'react';
+import { Component } from '@sweet-ecs/core';
+import Sweet, { sweet, useWorld } from '@sweet-ecs/react';
+import { useSchedule } from 'directed/react';
+import { useLayoutEffect, useMemo } from 'react';
 import * as THREE from 'three';
-import { ThreeInstances } from './components/ThreeInstances';
+import { Spawner } from './spawner';
 import { syncThreeObjects } from './systems/syncThreeObjects';
 import { useRaf } from './use-raf';
-import { Spawner } from './spawner';
-
-// Add view systems to the schedule
-schedule.add(syncThreeObjects, { after: 'update' });
-// Remove init systems
-// @ts-expect-error - library bug
-schedule.remove(init);
-// @ts-expect-error - library bug
-schedule.remove(setInitial);
-schedule.build();
+import { useStats } from './use-stats';
 
 const BodySpawner = new Spawner(Body);
-console.log(BodySpawner);
-
-console.log(world);
 
 export function App() {
 	const frustumSize = 7000;
 	const aspect = window.innerWidth / window.innerHeight;
+
+	// Add a system to sync the instanced mesh with component data.
+	useSchedule(schedule, syncThreeObjects, { after: 'update' });
+
+	useLayoutEffect(() => {
+		// Remove init systems
+		if (schedule.has(init)) schedule.remove(init);
+		if (schedule.has(setInitial)) schedule.remove(setInitial);
+		schedule.build();
+	}, []);
 
 	return (
 		<Sweet.World src={world}>
@@ -58,51 +57,33 @@ export function App() {
 			>
 				<Bodies />
 				<BodySpawner.Emitter initial={CONSTANTS.NBODIES - 1} />
+				<CentralMass />
 			</Canvas>
 		</Sweet.World>
 	);
 }
 
 function Bodies() {
-	const world = useWorld();
 	const geo = useMemo(() => new THREE.CircleGeometry(CONSTANTS.MAX_RADIUS / 1.5, 12), []);
 	const mat = useMemo(() => new THREE.MeshBasicMaterial(), []);
 
-	return (
-		<instancedMesh
-			ref={(node) => {
-				if (!node) return;
-				const eid = Entity.in(world);
-				Entity.add(new ThreeInstances(node), eid);
-
-				return () => {
-					Entity.destroy(eid);
-				};
-			}}
-			args={[geo, mat, CONSTANTS.NBODIES]}
-		/>
-	);
+	return <sweet.instancedMesh args={[geo, mat, CONSTANTS.NBODIES]} />;
 }
 
 function Body({ components = [] }: { components: (typeof Component | Component)[] }) {
-	const position = useMemo(() => {
-		return new Position(randInRange(-4000, 4000), randInRange(-100, 100));
-	}, []);
-
-	const mass = useMemo(() => {
-		return new Mass(CONSTANTS.BASE_MASS + randInRange(0, CONSTANTS.VAR_MASS));
-	}, []);
+	const position = useMemo(() => new Position(randInRange(-4000, 4000), randInRange(-100, 100)), []); // prettier-ignore
+	const mass = useMemo(() => new Mass(CONSTANTS.BASE_MASS + randInRange(0, CONSTANTS.VAR_MASS)), []); // prettier-ignore
 
 	const circle = useMemo(() => {
-		return new Circle(
-			CONSTANTS.MAX_RADIUS * (mass.value / (CONSTANTS.BASE_MASS + CONSTANTS.VAR_MASS)) + 1
-		);
+		return new Circle(() => {
+			return { radius: CONSTANTS.MAX_RADIUS * (mass.value / (CONSTANTS.BASE_MASS + CONSTANTS.VAR_MASS)) + 1 }}); // prettier-ignore
 	}, [mass]);
 
 	const velocity = useMemo(() => {
-		const { x, y } = calcStableVelocity(position.x, position.y, mass.value);
-		return new Velocity(x, y);
-	}, [mass.value, position.x, position.y]);
+		return new Velocity(() => {
+			return calcStableVelocity(position.x, position.y, mass.value);
+		});
+	}, [mass, position]);
 
 	return (
 		<Sweet.Entity
@@ -111,22 +92,26 @@ function Body({ components = [] }: { components: (typeof Component | Component)[
 	);
 }
 
+function CentralMass() {
+	const position = useMemo(() => new Position(), []);
+	const velocity = useMemo(() => new Velocity(), []);
+	const mass = useMemo(() => new Mass(CONSTANTS.CENTRAL_MASS), []);
+	const circle = useMemo(() => new Circle(CONSTANTS.MAX_RADIUS / 1.5), []);
+
+	return <Body components={[IsCentralMass, position, velocity, mass, circle]} />;
+}
+
 // Simulation runs a schedule.
 function Simulation() {
-	const statsAPI = useMemo(() => initStats({ Bodies: () => CONSTANTS.NBODIES }), []);
 	const world = useWorld();
-
-	useEffect(() => {
-		statsAPI.create();
-		return () => statsAPI.destroy();
-	});
+	const statsApi = useStats({ Bodies: () => CONSTANTS.NBODIES });
 
 	useRaf(() => {
-		statsAPI.measure(() => {
+		statsApi.measure(() => {
 			schedule.run({ world });
 		});
-		statsAPI.updateStats();
-	}, [world, statsAPI]);
+		statsApi.updateStats();
+	}, [world, statsApi]);
 
 	return null;
 }
