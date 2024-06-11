@@ -5,8 +5,8 @@ export type ComponentArgs<T extends typeof Component> = ConstructorParameters<T>
 	: [ConstructorParameters<T>];
 
 export type ComponentProps<T extends typeof Component | Component> = T extends typeof Component
-	? Partial<InstanceType<T>>
-	: Partial<T>;
+	? Omit<InstanceType<T>, keyof Component>
+	: Omit<T, keyof Component>;
 
 export type OmitConstructor<T> = {
 	[K in keyof T]: T[K] extends new (...args: any[]) => any ? never : T[K];
@@ -66,11 +66,13 @@ export type PropsFromSchema<T extends Schema> = {
 		: T[P];
 };
 
-export type RecosntructedComponent<T extends Component, TSchema extends Schema> = (new (
-	initial?: () => Partial<T>
+export type SoAComponent<T extends Component, TSchema extends Schema> = (new (
+	initialState?: ComponentState<T>
 ) => T) &
 	Omit<OmitConstructor<typeof Component>, 'instances' | 'schema' | 'store'> & {
 		store: Store<TSchema>;
 		schema: TSchema;
 		instances: T[];
 	};
+
+export type ComponentState<T extends Component> = (() => ComponentProps<T>) | ComponentProps<T>;

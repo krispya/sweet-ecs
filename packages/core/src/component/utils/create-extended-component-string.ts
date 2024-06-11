@@ -10,12 +10,25 @@ export function createExtendedComponentString(schema: Schema) {
 		static [$isInitialized] = true;
 		static [$hierarchy] = [];
 
-		constructor(initial) {
+		constructor(initialState) {
 			super();
 			Object.keys(this.constructor.schema).forEach(key => {
 				this[key] = this.constructor.schema[key];
 			});
-			this[$initialState] = initial
+
+			if (typeof initialState === 'function') {
+				this[$initialState] = initialState;	
+			} else if (typeof initialState === 'object') {
+				this[$initialState] = () => initialState;
+			}
+		}
+
+		set(state) {
+			if (typeof state === 'function') state = state();
+			for (const key in state) {
+				instance[key] = state[key];
+			}
+			return this;
 		}
   	`;
 
