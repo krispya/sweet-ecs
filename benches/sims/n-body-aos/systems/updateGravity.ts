@@ -10,10 +10,10 @@ export const updateGravity = ({ world }: { world: World }) => {
 	const eids = world.query([Position, Mass, Acceleration, Velocity]);
 	const { delta } = world.get(Time)!;
 
-	const accelerations = Acceleration.instances as Acceleration[];
-	const velocities = Velocity.instances as Velocity[];
-	const masses = Mass.instances as Mass[];
-	const positions = Position.instances as Position[];
+	const accelerations = Acceleration.getInstances();
+	const velocities = Velocity.getInstances();
+	const masses = Mass.getInstances();
+	const positions = Position.getInstances();
 
 	for (let j = 0; j < eids.length; j++) {
 		const meId = eids[j];

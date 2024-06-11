@@ -1,3 +1,3 @@
 import { Component } from '@sweet-ecs/core';
 
-export class Time extends Component.define({ then: 0, delta: 0 }) {}
+export class Time extends Component.createSoA({ then: 0, delta: 0 }) {}

@@ -1,9 +1,7 @@
 import { Component } from '@sweet-ecs/core';
 
-export class Position extends Component.define({ x: 0, y: 0 }) {
+export class Position extends Component.createSoA({ x: 0, y: 0 }) {
 	constructor(x = 0, y = 0) {
-		super();
-		this.x = x;
-		this.y = y;
+		super(() => ({ x, y }));
 	}
 }

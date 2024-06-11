@@ -8,8 +8,8 @@ export const moveBodies = ({ world }: { world: World }) => {
 	const eids = world.query([Position, Velocity]);
 	const { delta } = world.get(Time)!;
 
-	const positions = Position.instances as Position[];
-	const velocities = Velocity.instances as Velocity[];
+	const positions = Position.getInstances();
+	const velocities = Velocity.getInstances();
 
 	for (let i = 0; i < eids.length; i++) {
 		const eid = eids[i];

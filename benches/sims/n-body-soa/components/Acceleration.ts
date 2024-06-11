@@ -1,3 +1,7 @@
 import { Component } from '@sweet-ecs/core';
 
-export class Acceleration extends Component.define({ x: 0, y: 0 }) {}
+export class Acceleration extends Component.createSoA({ x: 0, y: 0 }) {
+	constructor(x = 0, y = 0) {
+		super(() => ({ x, y }));
+	}
+}

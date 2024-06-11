@@ -9,8 +9,8 @@ import { init } from './init';
 
 export const schedule = new Schedule<{ world: World }>();
 
-schedule.createTag('update');
 schedule.createTag('init');
+schedule.createTag('update', { after: 'init' });
 
 schedule.add(init, { tag: 'init', before: 'update' });
 schedule.add(setInitial, { tag: 'init', after: init, before: 'update' });
