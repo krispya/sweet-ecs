@@ -8,13 +8,6 @@ export function addComponent<T extends typeof Component>(
 	component: T,
 	entityId: number
 ) {
-	// If the constructor requires arguments, throw an error.
-	if (component.length > 0) {
-		throw new Error(
-			`Cannot add component "${component.name}" to entity ${entityId} because it requires arguments.`
-		);
-	}
-
 	initialize(component);
 	addComponentBit(world, component, entityId);
 
