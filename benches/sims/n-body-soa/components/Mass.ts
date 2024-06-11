@@ -1,7 +1,8 @@
-import { Component } from '@sweet-ecs/core';
+import { Component, ComponentState } from '@sweet-ecs/core';
 
 export class Mass extends Component.createSoA({ value: 0 }) {
-	constructor(value = 0) {
-		super(() => ({ value }));
+	constructor(initialState?: ComponentState<Mass> | number) {
+		if (typeof initialState === 'number') initialState = { value: initialState };
+		super(initialState);
 	}
 }

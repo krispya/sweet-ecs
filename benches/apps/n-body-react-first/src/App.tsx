@@ -26,6 +26,8 @@ import { useStats } from './use-stats';
 
 const BodySpawner = new Spawner(Body);
 
+console.log(Position.length);
+
 export function App() {
 	const frustumSize = 7000;
 	const aspect = window.innerWidth / window.innerHeight;
@@ -71,7 +73,7 @@ function Bodies() {
 }
 
 function Body({ components = [] }: { components: (typeof Component | Component)[] }) {
-	const position = useMemo(() => new Position(randInRange(-4000, 4000), randInRange(-100, 100)), []); // prettier-ignore
+	const position = useMemo(() => new Position({ x: randInRange(-4000, 4000), y: randInRange(-100, 100) }), []); // prettier-ignore
 	const mass = useMemo(() => new Mass(CONSTANTS.BASE_MASS + randInRange(0, CONSTANTS.VAR_MASS)), []); // prettier-ignore
 
 	const circle = useMemo(() => {

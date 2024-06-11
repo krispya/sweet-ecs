@@ -1,7 +1,10 @@
-import { Component } from '@sweet-ecs/core';
+import { Component, ComponentState } from '@sweet-ecs/core';
 
 export class Position extends Component {
-	constructor(public x = 0, public y = 0) {
-		super();
+	declare x: number;
+	declare y: number;
+
+	constructor(initialState: ComponentState<Position> = { x: 0, y: 0 }) {
+		super(initialState);
 	}
 }

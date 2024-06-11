@@ -1,11 +1,8 @@
-import { Component } from '@sweet-ecs/core';
+import { Component, ComponentState } from '@sweet-ecs/core';
 
 export class Circle extends Component.createSoA({ radius: 0 }) {
-	constructor(initialState: (() => { radius: number }) | number = 0) {
-		if (typeof initialState === 'function') {
-			super(initialState);
-		} else {
-			super(() => ({ radius: initialState }));
-		}
+	constructor(initialState?: ComponentState<Circle> | number) {
+		if (typeof initialState === 'number') initialState = { radius: initialState };
+		super(initialState);
 	}
 }

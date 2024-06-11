@@ -1,20 +1,10 @@
-import { Component } from '@sweet-ecs/core';
+import { Component, ComponentState } from '@sweet-ecs/core';
 
 export class Velocity extends Component {
-	x = 0;
-	y = 0;
+	declare x: number;
+	declare y: number;
 
-	constructor(
-		initialState: (() => { x: number; y: number }) | { x: number; y: number } = { x: 0, y: 0 }
-	) {
-		super();
-
-		if (typeof initialState === 'function') {
-			this.x = initialState().x;
-			this.y = initialState().y;
-		} else {
-			this.x = initialState.x;
-			this.y = initialState.y;
-		}
+	constructor(initialState: ComponentState<Velocity> = { x: 0, y: 0 }) {
+		super(initialState);
 	}
 }
