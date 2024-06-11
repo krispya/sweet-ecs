@@ -80,7 +80,7 @@ describe('World', () => {
 	it('can add resources', () => {
 		const world = new World();
 
-		class Time extends Component.define({ current: 0, delta: 0 }) {}
+		class Time extends Component.createSoA({ current: 0, delta: 0 }) {}
 
 		world.add(Time);
 		const time = world.get(Time);
@@ -94,7 +94,7 @@ describe('World', () => {
 	it('can add resources instances', () => {
 		const world = new World();
 
-		class Time extends Component.define({ current: 0, delta: 0 }) {}
+		class Time extends Component.createSoA({ current: 0, delta: 0 }) {}
 
 		const time = new Time();
 		world.add(time);
@@ -105,7 +105,7 @@ describe('World', () => {
 	it('can remove resources', () => {
 		const world = new World();
 
-		class Time extends Component.define({ current: 0, delta: 0 }) {}
+		class Time extends Component.createSoA({ current: 0, delta: 0 }) {}
 
 		world.add(Time);
 		const time = world.get(Time);

@@ -66,7 +66,9 @@ export type PropsFromSchema<T extends Schema> = {
 		: T[P];
 };
 
-export type RecosntructedComponent<T extends Component, TSchema extends Schema> = (new () => T) &
+export type RecosntructedComponent<T extends Component, TSchema extends Schema> = (new (
+	initial?: () => Partial<T>
+) => T) &
 	Omit<OmitConstructor<typeof Component>, 'instances' | 'schema' | 'store'> & {
 		store: Store<TSchema>;
 		schema: TSchema;

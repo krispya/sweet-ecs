@@ -19,7 +19,7 @@ describe('Component', () => {
 	});
 
 	it('creates with define', () => {
-		class Test extends Component.define({
+		class Test extends Component.createSoA({
 			number: 2,
 			string: 'hello',
 			array: [] as number[],
@@ -45,7 +45,7 @@ describe('Component', () => {
 	});
 
 	it('supports AoS', () => {
-		class Test extends Component.define({ number: 0, instance: Foo }) {}
+		class Test extends Component.createSoA({ number: 0, instance: Foo }) {}
 
 		const eid = Entity.in(world);
 		addComponent(world, Test, eid);
@@ -60,7 +60,7 @@ describe('Component', () => {
 	});
 
 	it('supports SoA', () => {
-		class Test extends Component.define({ number: 0 }) {}
+		class Test extends Component.createSoA({ number: 0 }) {}
 
 		const eid = Entity.in(world);
 		addComponent(world, Test, eid);
@@ -72,7 +72,7 @@ describe('Component', () => {
 	});
 
 	it('adds to an entity', () => {
-		class Test extends Component.define({ number: 0 }) {}
+		class Test extends Component.createSoA({ number: 0 }) {}
 
 		const eid = Entity.in(world);
 		addComponent(world, Test, eid);
@@ -83,7 +83,7 @@ describe('Component', () => {
 	});
 
 	it('removes from an entity', () => {
-		class Test extends Component.define({ number: 0 }) {}
+		class Test extends Component.createSoA({ number: 0 }) {}
 
 		const eid = Entity.in(world);
 		addComponent(world, Test, eid);
@@ -98,7 +98,7 @@ describe('Component', () => {
 	});
 
 	it('resizes buffer stores when world resizes', () => {
-		class Test extends Component.define({ f64: { type: 'float64' } }) {}
+		class Test extends Component.createSoA({ f64: { type: 'float64' } }) {}
 
 		const eid = Entity.in(world);
 		addComponent(world, Test, eid);
@@ -123,10 +123,9 @@ describe('Component', () => {
 	});
 
 	it('adds a component instance to an entity', () => {
-		class Test extends Component.define({ number: 11 }) {
+		class Test extends Component.createSoA({ number: 11 }) {
 			constructor(number: number) {
-				super();
-				this.number = number;
+				super(() => ({ number }));
 			}
 		}
 
@@ -137,6 +136,7 @@ describe('Component', () => {
 		expect(hasComponent(world, Test, eid)).toBe(true);
 		expect(Test.get(eid)).toBe(instance);
 		expect(instance.number).toBe(1);
+		expect(Test.store.number[eid]).toBe(1);
 	});
 
 	it('initializes properties on add', () => {
