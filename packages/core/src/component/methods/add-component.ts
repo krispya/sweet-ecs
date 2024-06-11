@@ -2,6 +2,7 @@ import { addComponent as addComponentBit, IsA } from 'bitecs';
 import { World } from '../../world/world';
 import { Component } from '../component';
 import { $isInitialized, $hierarchy, $initialState } from '../symbols';
+import { setSoADefaults } from '../utils/set-soa-defaults';
 
 export function addComponent<T extends typeof Component>(
 	world: World,
@@ -54,19 +55,6 @@ function initialize(component: typeof Component) {
 		while (Object.hasOwn(proto, $isInitialized) === true && proto !== Component) {
 			component[$hierarchy].push(proto);
 			proto = Object.getPrototypeOf(proto);
-		}
-	}
-}
-
-function setSoADefaults<T extends typeof Component = typeof Component>(
-	component: T,
-	entityId: number
-) {
-	for (const key in component.normalizedSchema) {
-		if (component.normalizedSchema[key].type === 'constructor') {
-			component.store[key][entityId] = new component.normalizedSchema[key].default();
-		} else {
-			component.store[key][entityId] = component.normalizedSchema[key].default;
 		}
 	}
 }
