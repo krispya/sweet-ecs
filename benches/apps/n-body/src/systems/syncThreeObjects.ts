@@ -14,9 +14,7 @@ export const syncThreeObjects = ({ world }: { world: World }) => {
 	const eids = world.query([Position, Circle, Color]);
 	const instanceId = world.query([ThreeInstances])[0];
 
-	const instancedMesh = ThreeInstances.instances[instanceId].value;
-
-	console.log('syncThreeObjects', eids.length);
+	const instancedMesh = ThreeInstances.getInstances()[instanceId].value;
 
 	for (let i = 0; i < eids.length; i++) {
 		const eid = eids[i];
