@@ -7,7 +7,7 @@ import {
 	ComponentState,
 	ComponentProps,
 } from './types';
-import { createExtendedComponentString } from './utils/create-extended-component-string';
+import { createSoAComponent } from './utils/create-soa-component';
 import { createStore } from './utils/create-store';
 import { isWorker } from './utils/is-worker';
 import { normalizeSchema } from './utils/normalize-schema';
@@ -70,15 +70,20 @@ export class Component<T = Record<string, any>> {
 	// compared to using `defineProperties` on the prototype. So we eval it. However, this
 	// requires all the functions and properties to be in the same scope so it is inlined.
 	static createSoA<T = {}, TSchema extends Schema = {}>(schema: TSchema = {} as TSchema) {
-		type ComponentInstance = Component & PropsFromSchema<TSchema> & T;
-
-		const component = eval(createExtendedComponentString(schema));
+		const component = createSoAComponent<T, TSchema>(
+			schema,
+			Component,
+			$isInitialized,
+			$hierarchy,
+			$initialState,
+			$entityId
+		);
 		component.schema = schema;
 		component.normalizedSchema = normalizeSchema(schema);
 		// Don't create a store for workers. Instead, we hydrate.
 		if (!isWorker()) component.store = createStore(schema);
 
-		return component as unknown as SoAComponent<ComponentInstance, TSchema>;
+		return component;
 	}
 
 	static getInstances<T extends typeof Component>(this: T) {

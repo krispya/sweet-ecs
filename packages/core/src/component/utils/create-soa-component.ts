@@ -1,8 +1,21 @@
-import { Schema } from '../types';
+import { Component, Component as ComponentCore } from '../component';
+import { PropsFromSchema, Schema, SoAComponent } from '../types';
 
-export function createExtendedComponentString(schema: Schema) {
+type ComponentInstance<T = {}, TSchema extends Schema = {}> = Component &
+	PropsFromSchema<TSchema> &
+	T;
+
+export function createSoAComponent<T = {}, TSchema extends Schema = {}>(
+	schema: TSchema,
+	Component: typeof ComponentCore,
+	$isInitialized: symbol,
+	$hierarchy: symbol,
+	$initialState: symbol,
+	$entityId: symbol
+): SoAComponent<ComponentInstance<T, TSchema>, TSchema> {
 	let classDefinition = `
-	class ExtendedComponent extends Component {
+	'use strict';
+	class SoAComponent extends Component {
 		static schema = {};
 		static normalizedSchema = {};
 		static store = {};
@@ -46,8 +59,20 @@ export function createExtendedComponentString(schema: Schema) {
 	}
 
 	classDefinition += `};
-  	ExtendedComponent;
+  	return SoAComponent;
   	`;
 
-	return classDefinition;
+	// return classDefinition;
+	return new Function(
+		'schema',
+		'Component',
+		'$isInitialized',
+		'$hierarchy',
+		'$initialState',
+		'$entityId',
+		classDefinition
+	)(schema, Component, $isInitialized, $hierarchy, $initialState, $entityId) as SoAComponent<
+		ComponentInstance<T, TSchema>,
+		TSchema
+	>;
 }
