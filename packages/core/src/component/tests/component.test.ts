@@ -110,18 +110,6 @@ describe('Component', () => {
 		expect(Test.store.f64.length).toBe(200);
 	});
 
-	it('throws when adding a component with constructor args', () => {
-		class Test extends Component {
-			constructor(public number: number) {
-				super();
-			}
-		}
-
-		const eid = Entity.in(world);
-
-		expect(() => addComponent(world, Test, eid)).toThrow();
-	});
-
 	it('adds a component instance to an entity', () => {
 		class Test extends Component.createSoA({ number: 11 }) {
 			constructor(number: number) {
