@@ -5,6 +5,9 @@ type ComponentInstance<T = {}, TSchema extends Schema = {}> = Component &
 	PropsFromSchema<TSchema> &
 	T;
 
+// Declaraing the accessors on the class definition gives a large performance boost
+// compared to using `defineProperties` on the prototype. So we eval it.
+
 export function createSoAComponent<T = {}, TSchema extends Schema = {}>(
 	schema: TSchema,
 	Component: typeof ComponentCore,

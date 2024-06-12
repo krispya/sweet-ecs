@@ -66,9 +66,6 @@ export class Component<T = Record<string, any>> {
 		return instance;
 	}
 
-	// Declaraing the accessors on the class definition gives a large performance boost
-	// compared to using `defineProperties` on the prototype. So we eval it. However, this
-	// requires all the functions and properties to be in the same scope so it is inlined.
 	static createSoA<T = {}, TSchema extends Schema = {}>(schema: TSchema = {} as TSchema) {
 		const component = createSoAComponent<T, TSchema>(
 			schema,
