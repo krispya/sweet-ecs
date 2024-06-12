@@ -1,7 +1,6 @@
 import React from 'react';
-import { Entity } from '../entity/entity';
 import { SweetNode } from './types/types';
-import { World } from '../world/world';
+import { Entity, World } from '@sweet-ecs/react';
 
 const REACT_ELEMENT_TYPE = Symbol.for('react.transitional.element');
 

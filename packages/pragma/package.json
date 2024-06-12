@@ -1,0 +1,47 @@
+{
+	"name": "@sweet-ecs/pragma",
+	"version": "0.0.1",
+	"description": "Experimental React pragma for Sweet ECS",
+	"license": "ISC",
+	"type": "module",
+	"main": "./src/index.ts",
+	"types": "./src/index.ts",
+	"exports": {
+		".": {
+			"default": "./src/index.ts",
+			"types": "./src/index.ts"
+		},
+		"./jsx-runtime": {
+			"default": "./src/index.ts",
+			"types": "./src/index.ts"
+		},
+		"./jsx-dev-runtime": {
+			"default": "./src/index.ts",
+			"types": "./src/index.ts"
+		}
+	},
+	"scripts": {
+		"test": "vitest"
+	},
+	"dependencies": {
+		"@sweet-ecs/core": "workspace:*"
+	},
+	"devDependencies": {
+		"@types/react": "npm:types-react@rc",
+		"@types/three": "^0.159.0",
+		"react": "19.0.0-rc-cc1ec60d0d-20240607",
+		"tsconfig": "workspace:*",
+		"vitest": "^1.4.0"
+	},
+	"peerDependencies": {
+		"@sweet-ecs/core": "workspace:*",
+		"@sweet-ecs/react": "workspace:*",
+		"@react-three/fiber": "^9.0.0-alpha.7",
+		"react": "^19.0.0",
+		"three": ">=0.159"
+	},
+	"overrides": {
+		"@types/react": "npm:types-react@rc",
+		"@types/react-dom": "npm:types-react-dom@rc"
+	}
+}
