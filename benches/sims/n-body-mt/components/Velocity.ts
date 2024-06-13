@@ -1,6 +1,7 @@
-import { Component } from '@sweet-ecs/core';
+import { Component, ComponentState } from '@sweet-ecs/core';
 
-export class Velocity extends Component.createSoA({
-	x: { type: 'float64' },
-	y: { type: 'float64' },
-}) {}
+export class Velocity extends Component.createSoA({ x: { type: 'f64' }, y: { type: 'f64' } }) {
+	constructor(initialState?: ComponentState<Velocity>) {
+		super(initialState);
+	}
+}

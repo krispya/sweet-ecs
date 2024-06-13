@@ -1,3 +1,8 @@
-import { Component } from '@sweet-ecs/core';
+import { Component, ComponentState } from '@sweet-ecs/core';
 
-export class Circle extends Component.createSoA({ radius: { type: 'float64' } }) {}
+export class Circle extends Component.createSoA({ radius: { type: 'f64' } }) {
+	constructor(initialState?: ComponentState<Circle> | number) {
+		if (typeof initialState === 'number') initialState = { radius: initialState };
+		super(initialState);
+	}
+}

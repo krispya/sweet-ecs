@@ -10,3 +10,5 @@ export { updateTime } from './systems/updateTime';
 export { world } from './world';
 export { CONSTANTS } from './constants';
 export { schedule } from './systems/schedule';
+
+export { randInRange } from './utils/randInRange';
