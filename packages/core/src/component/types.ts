@@ -24,6 +24,16 @@ type SchemaTypeMap = {
 	uint16: Uint16Array;
 	uint8: Uint8Array;
 	uint8clamped: Uint8ClampedArray;
+	// Shortened aliases
+	f64: Float64Array;
+	f32: Float32Array;
+	i32: Int32Array;
+	i16: Int16Array;
+	i8: Int8Array;
+	ui32: Uint32Array;
+	ui16: Uint16Array;
+	ui8: Uint8Array;
+	ui8c: Uint8ClampedArray;
 	// Native types mapping
 	number: number[];
 	string: string[];

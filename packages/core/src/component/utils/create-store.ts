@@ -46,9 +46,18 @@ const TypedArrayMap = {
 	uint16: Uint16Array,
 	uint8: Uint8Array,
 	uint8clamped: Uint8ClampedArray,
+	f64: Float64Array,
+	f32: Float32Array,
+	i32: Int32Array,
+	i16: Int16Array,
+	i8: Int8Array,
+	ui32: Uint32Array,
+	ui16: Uint16Array,
+	ui8: Uint8Array,
+	ui8c: Uint8ClampedArray,
 };
 
 function isTypedArray(field: NormalizedSchemaField) {
 	// prettier-ignore
-	return field.type === 'float64' || field.type === 'float32' || field.type === 'int32' || field.type === 'int16' || field.type === 'int8' || field.type === 'uint32' || field.type === 'uint16' || field.type === 'uint8' || field.type === 'uint8clamped';
+	return field.type === 'float64' || field.type === 'float32' || field.type === 'int32' || field.type === 'int16' || field.type === 'int8' || field.type === 'uint32' || field.type === 'uint16' || field.type === 'uint8' || field.type === 'uint8clamped' || field.type === 'f64' || field.type === 'f32' || field.type === 'i32' || field.type === 'i16' || field.type === 'i8' || field.type === 'ui32' || field.type === 'ui16' || field.type === 'ui8' || field.type === 'ui8c'
 }
