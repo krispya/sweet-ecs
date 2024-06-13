@@ -15,18 +15,16 @@ import {
 	world,
 } from '@sim/n-body';
 import { Component } from '@sweet-ecs/core';
-import Sweet, { sweet, useWorld } from '@sweet-ecs/react';
+import * as Sweet from '@sweet-ecs/react';
+import { sweet, useWorld } from '@sweet-ecs/react';
 import { useSchedule } from 'directed/react';
 import { useLayoutEffect, useMemo } from 'react';
 import * as THREE from 'three';
-import { Spawner } from './spawner';
 import { syncThreeObjects } from './systems/syncThreeObjects';
 import { useRaf } from './use-raf';
 import { useStats } from './use-stats';
 
-const BodySpawner = new Spawner(Body);
-
-console.log(Position.length);
+const BodySpawner = new Sweet.Spawner(Body);
 
 export function App() {
 	const frustumSize = 7000;

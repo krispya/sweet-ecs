@@ -3,6 +3,7 @@ export { useWorld } from './world/use-world';
 export { WorldContext } from './world/world-context';
 export { Entity } from './entity/entity';
 export { Component } from './component/component';
+export { Spawner } from './spawner/spawner';
 
 // Views
 import { sweet as sweetThree } from './view/three/index';
