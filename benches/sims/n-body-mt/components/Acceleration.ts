@@ -1,6 +1,6 @@
 import { Component } from '@sweet-ecs/core';
 
-export class Acceleration extends Component.define({
+export class Acceleration extends Component.createSoA({
 	x: { type: 'float64' },
 	y: { type: 'float64' },
 }) {}

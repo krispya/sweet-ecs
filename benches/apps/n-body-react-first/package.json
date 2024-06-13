@@ -12,7 +12,7 @@
 	"dependencies": {
 		"@app/bench-tools": "workspace:*",
 		"@react-three/fiber": "^9.0.0-alpha.7",
-		"@sim/n-body": "workspace:@sim/n-body-aos@*",
+		"@sim/n-body": "workspace:@sim/n-body-soa@*",
 		"@sweet-ecs/core": "workspace:*",
 		"@sweet-ecs/react": "workspace:*",
 		"react": "19.0.0-rc-cc1ec60d0d-20240607",

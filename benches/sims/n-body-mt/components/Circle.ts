@@ -1,3 +1,3 @@
 import { Component } from '@sweet-ecs/core';
 
-export class Circle extends Component.define({ radius: { type: 'float64' } }) {}
+export class Circle extends Component.createSoA({ radius: { type: 'float64' } }) {}

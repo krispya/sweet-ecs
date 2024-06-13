@@ -194,8 +194,8 @@ importers:
         specifier: ^9.0.0-alpha.7
         version: 9.0.0-beta.0(react-dom@19.0.0-rc-cc1ec60d0d-20240607(react@19.0.0-rc-cc1ec60d0d-20240607))(react@19.0.0-rc-cc1ec60d0d-20240607)(three@0.162.0)(types-react@19.0.0-rc.0)
       '@sim/n-body':
-        specifier: workspace:@sim/n-body-aos@*
-        version: link:../../sims/n-body-aos
+        specifier: workspace:@sim/n-body-soa@*
+        version: link:../../sims/n-body-soa
       '@sweet-ecs/core':
         specifier: workspace:*
         version: link:../../../packages/core

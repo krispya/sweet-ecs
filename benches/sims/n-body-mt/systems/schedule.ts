@@ -19,3 +19,5 @@ schedule.add(updateTime, { tag: 'update' });
 schedule.add(updateGravity, { after: updateTime, tag: 'update' });
 schedule.add(moveBodies, { after: updateGravity, tag: 'update' });
 schedule.add(updateColor, { after: moveBodies, tag: 'update' });
+
+schedule.build();

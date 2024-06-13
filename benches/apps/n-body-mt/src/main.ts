@@ -44,15 +44,17 @@ window.addEventListener('resize', onWindowResize);
 camera.position.set(0, 0, 100);
 camera.lookAt(0, 0, 0);
 
-const { updateStats, measure } = initStats({
+const { updateStats, measure, create } = initStats({
 	Bodies: () => CONSTANTS.NBODIES,
 	Threads: () => window.navigator.hardwareConcurrency,
 });
+create();
 
 // Add view systems to the schedule
 schedule.add(syncThreeObjects, { after: 'update', before: render });
 schedule.add(render);
 schedule.add(init, { tag: 'init' });
+schedule.build();
 
 // Run the simulation
 const main = async () => {
