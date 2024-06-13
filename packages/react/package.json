@@ -10,14 +10,6 @@
 		".": {
 			"default": "./src/index.ts",
 			"types": "./src/index.ts"
-		},
-		"./jsx-runtime": {
-			"default": "./src/pragma/index.ts",
-			"types": "./src/pragma/index.ts"
-		},
-		"./jsx-dev-runtime": {
-			"default": "./src/pragma/index.ts",
-			"types": "./src/pragma/index.ts"
 		}
 	},
 	"scripts": {
