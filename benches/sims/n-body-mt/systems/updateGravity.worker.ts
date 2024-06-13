@@ -1,5 +1,16 @@
-import { UpdateGravityComponents, UpdateGravityInput } from './updateGravity.common';
-const STICKY = 10000;
+import { Store } from '@sweet-ecs/core';
+import { CONSTANTS } from '../constants';
+
+type GravityComponents = {
+	read: { Position: Store; Mass: Store };
+	write: { Velocity: Store; Acceleration: Store };
+};
+
+type Props = {
+	delta: number;
+	workerEntities: Uint32Array;
+	bodyEntities: Uint32Array;
+} & GravityComponents;
 
 function updateGravityWorker({
 	delta,
@@ -7,7 +18,7 @@ function updateGravityWorker({
 	bodyEntities,
 	read: { Position, Mass },
 	write: { Velocity, Acceleration },
-}: UpdateGravityInput & UpdateGravityComponents) {
+}: Props) {
 	for (let j = 0; j < workerEntities.length; j++) {
 		const meId = workerEntities[j];
 		Acceleration.x[meId] = 0;
@@ -21,7 +32,7 @@ function updateGravityWorker({
 			const dy = +Position.y[currentId] - +Position.y[meId];
 			let distanceSquared = dx * dx + dy * dy;
 
-			if (distanceSquared < STICKY) distanceSquared = STICKY; // Apply stickiness
+			if (distanceSquared < CONSTANTS.STICKY) distanceSquared = CONSTANTS.STICKY; // Apply stickiness
 
 			const distance = Math.sqrt(distanceSquared);
 			const forceMagnitude = (+Mass.value[meId] * +Mass.value[currentId]) / distanceSquared;
@@ -35,14 +46,14 @@ function updateGravityWorker({
 	}
 }
 
-let components: UpdateGravityComponents;
+let components: GravityComponents;
 
-onmessage = (event: MessageEvent<UpdateGravityComponents | UpdateGravityInput>) => {
+onmessage = (event: MessageEvent<any>) => {
 	if ('read' in event.data && 'write' in event.data) {
-		components = event.data as UpdateGravityComponents;
+		components = event.data;
 		postMessage('init-done');
 	} else {
-		const data = event.data as UpdateGravityInput;
+		const data = event.data;
 		updateGravityWorker({ ...data, ...components });
 		postMessage('system-done');
 	}

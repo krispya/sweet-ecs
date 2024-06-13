@@ -1,54 +1,54 @@
-import { UpdateGravityComponents } from './updateGravity.common.js';
 import { getThreadCount, Worker } from '@sim/bench-tools';
-import { Component, World } from '@sweet-ecs/core';
-import { Workers } from '../components/Workers.js';
+import { Component, Store, World } from '@sweet-ecs/core';
 import { Time } from '../components/Time.js';
+import { Workers } from '../components/Workers.js';
 import { Acceleration, Mass, Position, Velocity } from '../index.js';
 
-export const updateGravityMain = ({
+export const createUpdateGravity = ({
 	entityQuery,
 	partitionQuery,
 	components,
+	url,
 }: {
 	entityQuery: (typeof Component)[];
 	partitionQuery: (typeof Component)[];
-	components: UpdateGravityComponents;
+	components: {
+		read: Record<string, Store>;
+		write: Record<string, Store>;
+	};
+	url: URL;
 }) => {
-	const workerFile = 'updateGravity.worker.ts';
-
 	return async ({ world }: { world: World }) => {
 		const { workers } = world.get(Workers)!;
 		const { delta } = world.get(Time)!;
 
-		// initialize workers with components
-		// TODO: initialize max workers once and select system in worker?
-		if (!workers[workerFile]) {
-			const _workers = (workers[workerFile] = Array(getThreadCount())
-				.fill(null)
-				.map(() => new Worker(new URL(workerFile, import.meta.url))) as Worker[]);
+		// Initialize workers with components.
+		if (!workers[url.href]) {
+			workers[url.href] = Array.from({ length: getThreadCount() }, () => new Worker(url, { type: 'module' })); //prettier-ignore
 
-			await Promise.all(
-				_workers.map(
-					(worker) =>
-						new Promise<void>((resolve) => {
-							worker.onmessage = () => resolve();
-							// TODO: somehow pass queries here too
-							worker.postMessage(components);
-						})
-				)
-			);
+			// Initialize the worker process.
+			const initWorker = (worker: Worker) =>
+				new Promise<void>((resolve) => {
+					worker.onmessage = () => resolve();
+					worker.postMessage(components);
+				});
+
+			const initPromises = workers[url.href].map(initWorker);
+			await Promise.all(initPromises);
 		}
 
-		// run worker
-		const _workers = workers[workerFile];
+		// Run workers.
+		// Get all of the queries. Since they are SABs, sending them to a worker is very fast.
 		const bodyEntities = world.query(entityQuery);
 		const partitionEntities = world.query(partitionQuery);
-		const numberOfPartitions = _workers.length;
+
+		// Partition the entities per worker.
+		const numberOfPartitions = workers[url.href].length;
 		const entitiesPerPartition = Math.ceil(bodyEntities.length / numberOfPartitions);
 
-		// TODO: atomic wait/notify
+		// Send all the data to the workers and wait for them to finish.
 		await Promise.all(
-			_workers.map(
+			workers[url.href].map(
 				(worker, i) =>
 					new Promise<void>((resolve) => {
 						worker.onmessage = () => resolve();
@@ -62,11 +62,12 @@ export const updateGravityMain = ({
 	};
 };
 
-export const updateGravity = updateGravityMain({
+export const updateGravity = createUpdateGravity({
 	entityQuery: [Position, Mass, Velocity, Acceleration],
 	partitionQuery: [Position, Mass, Velocity, Acceleration],
 	components: {
 		read: { Position: Position.store, Mass: Mass.store },
 		write: { Velocity: Velocity.store, Acceleration: Acceleration.store },
 	},
+	url: new URL('updateGravity.worker.ts', import.meta.url),
 });
