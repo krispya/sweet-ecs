@@ -18,7 +18,7 @@ import { Component } from '@sweet-ecs/core';
 import * as Sweet from '@sweet-ecs/react';
 import { sweet, useWorld } from '@sweet-ecs/react';
 import { useSchedule } from 'directed/react';
-import { useEffect, useLayoutEffect, useMemo, useRef } from 'react';
+import { useLayoutEffect, useMemo } from 'react';
 import * as THREE from 'three';
 import { syncThreeObjects } from './systems/syncThreeObjects';
 import { useRaf } from './use-raf';
@@ -106,29 +106,12 @@ function Simulation() {
 	const world = useWorld();
 	const statsApi = useStats({ Bodies: () => CONSTANTS.NBODIES });
 
-	// useRaf(async () => {
-	// 	await statsApi.measure(async () => {
-	// 		await schedule.run({ world });
-	// 	});
-	// 	statsApi.updateStats();
-	// }, [world, statsApi]);
-
-	const rafRef = useRef<number>(0);
-
-	useEffect(() => {
-		const loop = async () => {
-			await statsApi.measure(async () => {
-				await schedule.run({ world });
-			});
-			statsApi.updateStats();
-			rafRef.current = requestAnimationFrame(loop);
-		};
-		loop();
-
-		return () => {
-			cancelAnimationFrame(rafRef.current);
-		};
-	}, []);
+	useRaf(async () => {
+		await statsApi.measure(async () => {
+			await schedule.run({ world });
+		});
+		statsApi.updateStats();
+	}, [world, statsApi]);
 
 	return null;
 }
