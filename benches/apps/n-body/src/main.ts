@@ -58,9 +58,9 @@ const { updateStats, measure, create } = initStats({ Bodies: () => CONSTANTS.NBO
 create();
 
 // Run the simulation
-const main = () => {
-	measure(() => {
-		schedule.run({ world });
+const main = async () => {
+	await measure(async () => {
+		await schedule.run({ world });
 		updateStats();
 	});
 	requestAnimationFrame(main);
