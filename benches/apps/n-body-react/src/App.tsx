@@ -51,9 +51,9 @@ function Simulation() {
 	const world = useWorld();
 	const statsApi = useStats({ Bodies: () => CONSTANTS.NBODIES });
 
-	useRaf(() => {
-		statsApi.measure(() => {
-			schedule.run({ world });
+	useRaf(async () => {
+		await statsApi.measure(async () => {
+			await schedule.run({ world });
 		});
 		statsApi.updateStats();
 	}, [world, statsApi]);
