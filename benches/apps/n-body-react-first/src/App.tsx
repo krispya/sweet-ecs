@@ -71,19 +71,12 @@ function Bodies() {
 }
 
 function Body({ components = [] }: { components: (typeof Component | Component)[] }) {
-	const position = useMemo(() => new Position({ x: randInRange(-4000, 4000), y: randInRange(-100, 100) }), []); // prettier-ignore
-	const mass = useMemo(() => new Mass(CONSTANTS.BASE_MASS + randInRange(0, CONSTANTS.VAR_MASS)), []); // prettier-ignore
-
-	const circle = useMemo(() => {
-		return new Circle(() => {
-			return { radius: CONSTANTS.MAX_RADIUS * (mass.value / (CONSTANTS.BASE_MASS + CONSTANTS.VAR_MASS)) + 1 }}); // prettier-ignore
-	}, [mass]);
-
-	const velocity = useMemo(() => {
-		return new Velocity(() => {
-			return calcStableVelocity(position.x, position.y, mass.value);
-		});
-	}, [mass, position]);
+	const position = new Position({ x: randInRange(-4000, 4000), y: randInRange(-100, 100) });
+	const mass = new Mass(CONSTANTS.BASE_MASS + randInRange(0, CONSTANTS.VAR_MASS));
+	const velocity = new Velocity(() => calcStableVelocity(position.x, position.y, mass.value));
+	const circle = new Circle(() => ({
+		radius: CONSTANTS.MAX_RADIUS * (mass.value / (CONSTANTS.BASE_MASS + CONSTANTS.VAR_MASS)) + 1,
+	}));
 
 	return (
 		<Sweet.Entity
@@ -93,10 +86,10 @@ function Body({ components = [] }: { components: (typeof Component | Component)[
 }
 
 function CentralMass() {
-	const position = useMemo(() => new Position(), []);
-	const velocity = useMemo(() => new Velocity(), []);
-	const mass = useMemo(() => new Mass(CONSTANTS.CENTRAL_MASS), []);
-	const circle = useMemo(() => new Circle(CONSTANTS.MAX_RADIUS / 1.5), []);
+	const position = new Position();
+	const velocity = new Velocity();
+	const mass = new Mass(CONSTANTS.CENTRAL_MASS);
+	const circle = new Circle(CONSTANTS.MAX_RADIUS / 1.5);
 
 	return <Body components={[IsCentralMass, position, velocity, mass, circle]} />;
 }

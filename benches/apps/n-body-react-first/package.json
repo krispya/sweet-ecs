@@ -12,9 +12,11 @@
 	"dependencies": {
 		"@app/bench-tools": "workspace:*",
 		"@react-three/fiber": "^9.0.0-alpha.7",
-		"@sim/n-body": "workspace:@sim/n-body-soa@*",
+		"@sim/n-body": "workspace:@sim/n-body-aos@*",
 		"@sweet-ecs/core": "workspace:*",
 		"@sweet-ecs/react": "workspace:*",
+		"babel-plugin-react-compiler": "0.0.0-experimental-938cd9a-20240601",
+		"eslint-plugin-react-compiler": "0.0.0-experimental-51a85ea-20240601",
 		"react": "19.0.0-rc-cc1ec60d0d-20240607",
 		"react-dom": "19.0.0-rc-cc1ec60d0d-20240607",
 		"three": "^0.162.0"
