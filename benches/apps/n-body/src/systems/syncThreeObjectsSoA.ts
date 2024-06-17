@@ -28,13 +28,13 @@ export const syncThreeObjects = ({ world }: { world: World }) => {
 
 		dummy.updateMatrix();
 
-		instancedMesh.setMatrixAt(eid, dummy.matrix);
+		instancedMesh.setMatrixAt(i, dummy.matrix);
 
 		const r = normalize(colors.r[eid], 0, 255);
 		const g = normalize(colors.g[eid], 0, 255);
 		const b = normalize(colors.b[eid], 0, 255);
 		dummyColor.setRGB(r, g, b);
-		instancedMesh.setColorAt(eid, dummyColor);
+		instancedMesh.setColorAt(i, dummyColor);
 	}
 
 	instancedMesh.instanceMatrix.needsUpdate = true;
