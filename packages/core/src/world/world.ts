@@ -9,7 +9,9 @@ import {
 	addPrefab,
 	defineWorld,
 	registerWorld,
-	setRemovedRecycleThreshold,
+	QueryResult,
+	enableManualEntityRecycling,
+	enableBufferedQueries,
 } from 'bitecs';
 import { ResizeCallback } from './types';
 import { universe, universeResizeCallbacks } from '../universe/universe';
@@ -21,32 +23,39 @@ import { Component } from '../component/component';
 
 export interface World extends bitWorld {}
 
-setRemovedRecycleThreshold(0);
+type WorldOptions = {
+	size?: number;
+	manualRecycling?: boolean;
+	bufferedQueries?: boolean;
+};
 
 export class World {
 	#resizeCallbacks: ResizeCallback[] = [];
 	#id: number;
 	#onRegisterCallbacks: (() => void)[] = [];
 	#isRegistered: boolean;
-	#size?: number;
+	#size: number = -1;
 
-	constructor(size?: number);
-	constructor(size?: number, pure = false) {
-		this.#size = size;
-
+	constructor(options?: WorldOptions);
+	constructor(options?: WorldOptions, pure = false) {
 		if (pure) {
-			defineWorld(this, size);
+			defineWorld(this, options?.size);
 			this.#isRegistered = false;
 			this.#id = -1;
 		} else {
-			createWorld(this, size);
+			createWorld(this, options?.size);
 			this.#isRegistered = true;
+			this.#size = this[SYMBOLS.$size];
 
 			// A Prefab is ignored by queries, so we make one here for the world.
 			this.#id = addPrefab(this);
 
 			universeResizeCallbacks.forEach((cb) => cb(this, universe.getSize()));
 		}
+
+		// Set options.
+		if (options?.manualRecycling) enableManualEntityRecycling(this);
+		if (options?.bufferedQueries) enableBufferedQueries(this);
 	}
 
 	reset() {
@@ -54,8 +63,8 @@ export class World {
 		this.#id = addPrefab(this);
 	}
 
-	query(components: (typeof Component)[]): Uint32Array;
-	query(components: Queue): Uint32Array;
+	query(components: (typeof Component)[]): QueryResult<typeof this>;
+	query(components: Queue): QueryResult<typeof this>;
 	query(args: any) {
 		return queryBit(this, args);
 	}
@@ -156,8 +165,8 @@ export class World {
 		universeResizeCallbacks.forEach((cb) => cb(this, universe.getSize()));
 	}
 
-	static define(size?: number): World {
+	static define(options?: WorldOptions): World {
 		// @ts-expect-error
-		return new World(size, true);
+		return new World(options, true);
 	}
 }
