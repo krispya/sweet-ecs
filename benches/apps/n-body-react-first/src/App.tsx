@@ -18,7 +18,7 @@ import { Component } from '@sweet-ecs/core';
 import * as Sweet from '@sweet-ecs/react';
 import { sweet, useWorld } from '@sweet-ecs/react';
 import { useSchedule } from 'directed/react';
-import { useLayoutEffect, useMemo } from 'react';
+import { useLayoutEffect } from 'react';
 import * as THREE from 'three';
 import { syncThreeObjects } from './systems/syncThreeObjects';
 import { useRaf } from './use-raf';
@@ -64,8 +64,8 @@ export function App() {
 }
 
 function Bodies() {
-	const geo = useMemo(() => new THREE.CircleGeometry(CONSTANTS.MAX_RADIUS / 1.5, 12), []);
-	const mat = useMemo(() => new THREE.MeshBasicMaterial(), []);
+	const geo = new THREE.CircleGeometry(CONSTANTS.MAX_RADIUS / 1.5, 12);
+	const mat = new THREE.MeshBasicMaterial();
 
 	return <sweet.instancedMesh args={[geo, mat, CONSTANTS.NBODIES]} />;
 }
