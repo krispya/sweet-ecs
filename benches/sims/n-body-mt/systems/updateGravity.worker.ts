@@ -1,5 +1,8 @@
 import { Store } from '@sweet-ecs/core';
-import { CONSTANTS } from '../constants';
+// import { CONSTANTS } from '../constants'; // Node can't handle type module right now.
+const CONSTANTS = {
+	STICKY: 10000,
+};
 
 type GravityComponents = {
 	read: { Position: Store; Mass: Store };
