@@ -1,5 +1,5 @@
 import { Circle, Color, Position } from '@sim/n-body';
-import { ThreeInstances } from '../components/ThreeInstances';
+import { InstancedMesh } from '../components/ThreeInstances';
 import * as THREE from 'three';
 import { World } from '@sweet-ecs/core';
 
@@ -12,9 +12,9 @@ const dummyColor = new THREE.Color();
 
 export const syncThreeObjects = ({ world }: { world: World }) => {
 	const eids = world.query([Position, Circle, Color]);
-	const instanceId = world.query([ThreeInstances])[0];
+	const instanceId = world.query([InstancedMesh])[0];
 
-	const instancedMesh = ThreeInstances.getInstances()[instanceId].value;
+	const instancedMesh = InstancedMesh.getInstances()[instanceId].object;
 	const positions = Position.store;
 	const circles = Circle.store;
 	const colors = Color.store;

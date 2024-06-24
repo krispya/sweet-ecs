@@ -5,12 +5,13 @@ import './styles.css';
 import { syncThreeObjects } from './systems/syncThreeObjects';
 import { render } from './systems/render';
 import { init } from './systems/init';
+import { AutoInstanceWebGLRenderer } from './auto-instance-webgl-renderer/auto-instance-webgl-renderer';
 
 // Configure the simulation
 // CONSTANTS.NBODIES = 2000;
 
 // Renderer
-export const renderer = new THREE.WebGLRenderer({
+export const renderer = new AutoInstanceWebGLRenderer({
 	antialias: true,
 	powerPreference: 'high-performance',
 });
@@ -49,7 +50,7 @@ camera.lookAt(0, 0, 0);
 
 // Add view systems to the schedule
 schedule.add(syncThreeObjects, { after: 'update', before: render });
-schedule.add(render);
+schedule.add(render, { after: 'update' });
 schedule.add(init, { tag: 'init' });
 schedule.build();
 

@@ -1,9 +1,8 @@
 import { Component } from '@sweet-ecs/core';
 import * as THREE from 'three';
 
-export class ThreeInstances extends Component {
-	constructor(public value: THREE.InstancedMesh) {
+export class InstancedMesh extends Component {
+	constructor(public object: THREE.InstancedMesh) {
 		super();
-		this.value = value;
 	}
 }
