@@ -18,7 +18,7 @@ export const createUpdateGravity = ({
 	};
 	url: URL;
 }) => {
-	return async ({ world }: { world: World }) => {
+	return async ({ world }: { world: World<{ bufferedQueries: true }> }) => {
 		const { workers } = world.get(Workers)!;
 		const { delta } = world.get(Time)!;
 
