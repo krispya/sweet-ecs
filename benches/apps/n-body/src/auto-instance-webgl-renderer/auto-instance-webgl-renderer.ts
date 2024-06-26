@@ -8,10 +8,12 @@ import {
 	WebGLRenderer,
 	WebGLRendererParameters,
 } from 'three';
+import { createTwin } from './utils/create-twin';
 import { detachMeshInstance } from './utils/detach-mesh-instance';
 import { hashMesh } from './utils/hash-mesh';
-import { wrapBufferGeometryMethods } from './utils/wrap-buffer-geometry-methods';
 import { nearestPowerOfTwo } from './utils/nearest-power-of-two';
+import { wrapBufferGeometryMethods } from './utils/wrap-buffer-geometry-methods';
+import { BoundMatrix4 } from './bound-matrix/bound-matrix';
 
 export type AutoInstanceWebGLRendererParaemters = WebGLRendererParameters & {
 	threshold?: number;
@@ -20,8 +22,8 @@ export type AutoInstanceWebGLRendererParaemters = WebGLRendererParameters & {
 export class AutoInstanceWebGLRenderer extends WebGLRenderer {
 	registry = new Map<string, { set: Set<Mesh>; array: Mesh[] }>();
 	twins = new Map<Object3D, Object3D>();
-	instancedScene = new Scene();
-	threshold = 3;
+	transformedScene = new Scene();
+	threshold = 2;
 
 	constructor(parameters?: AutoInstanceWebGLRendererParaemters) {
 		super(parameters);
@@ -50,6 +52,12 @@ export class AutoInstanceWebGLRenderer extends WebGLRenderer {
 
 				// Create instanced scene from the registry of meshes.
 				for (const [key, meshes] of this.registry.entries()) {
+					// If there aren't enough meshes to instance, create twins instead.
+					if (meshes.array.length < this.threshold) {
+						for (const mesh of meshes.array) createTwin(mesh, this);
+						continue;
+					}
+
 					// Use the first mesh to create the instanced mesh.
 					const mesh = meshes.array[0];
 					const instancedMesh = new InstancedMesh(
@@ -68,6 +76,7 @@ export class AutoInstanceWebGLRenderer extends WebGLRenderer {
 
 						// Set the matrix of the instanced mesh to the matrix of the mesh.
 						instancedMesh.setMatrixAt(i, mesh.matrix);
+						mesh.matrix = new BoundMatrix4(instancedMesh, i);
 
 						// Copy the geoemetry resources from the instanced mesh so CPU memory gets GCed.
 						const stableGeoProps = { name: mesh.geometry.name, uuid: mesh.geometry.uuid };
@@ -90,17 +99,21 @@ export class AutoInstanceWebGLRenderer extends WebGLRenderer {
 						};
 					}
 
-					this.instancedScene.add(instancedMesh);
+					this.transformedScene.add(instancedMesh);
 				}
 
 				console.log('scene', scene);
-				console.log('instancedScene', this.instancedScene);
+				console.log('instancedScene', this.transformedScene);
 				console.log('init: geometries', this.info.memory.geometries);
 
 				scene.userData.isInstanced = true;
 			}
 
-			superRender(this.instancedScene, camera);
+			// Update matrices of scene.
+			scene.updateMatrixWorld();
+
+			// Render the instanced scene.
+			superRender(this.transformedScene, camera);
 		};
 	}
 }

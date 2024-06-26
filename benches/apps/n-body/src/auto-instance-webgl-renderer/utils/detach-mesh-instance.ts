@@ -1,6 +1,7 @@
 import { InstancedMesh, Matrix4, Mesh } from 'three';
 import { AutoInstanceWebGLRenderer } from '../auto-instance-webgl-renderer';
 import { resetBufferGeometryMethods } from './wrap-buffer-geometry-methods';
+import { createTwin } from './create-twin';
 
 const lastMatrix = new Matrix4();
 
@@ -32,8 +33,5 @@ export function detachMeshInstance(
 	meshes.set.delete(mesh);
 	meshes.array.splice(mesh.userData.instanceId, 1);
 
-	// Add to the instance scene so that it now gets rendered.
-	const twin = new Mesh(mesh.geometry, mesh.material);
-	renderer.twins.set(mesh, twin);
-	renderer.instancedScene.add(twin);
+	createTwin(mesh, renderer);
 }
