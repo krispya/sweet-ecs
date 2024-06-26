@@ -13,7 +13,7 @@ import {
 	enableManualEntityRecycling,
 	enableBufferedQueries,
 } from 'bitecs';
-import { ResizeCallback } from './types';
+import { ResizeCallback, HasBufferQueries } from './types';
 import { universe, universeResizeCallbacks } from '../universe/universe';
 import { addComponent, addComponentInstance } from '../component/methods/add-component';
 import { removeComponent } from '../component/methods/remove-component';
@@ -29,15 +29,15 @@ type WorldOptions = {
 	bufferedQueries?: boolean;
 };
 
-export class World {
+export class World<TOptions extends WorldOptions = {}> {
 	#resizeCallbacks: ResizeCallback[] = [];
 	#id: number;
 	#onRegisterCallbacks: (() => void)[] = [];
 	#isRegistered: boolean;
 	#size: number = -1;
 
-	constructor(options?: WorldOptions);
-	constructor(options?: WorldOptions, pure = false) {
+	constructor(options?: TOptions);
+	constructor(options?: TOptions, pure = false) {
 		if (pure) {
 			defineWorld(this, options?.size);
 			this.#isRegistered = false;
@@ -63,10 +63,10 @@ export class World {
 		this.#id = addPrefab(this);
 	}
 
-	query(components: (typeof Component)[]): QueryResult<typeof this>;
-	query(components: Queue): QueryResult<typeof this>;
+	query(components: (typeof Component)[]): QueryResult<typeof this, HasBufferQueries<typeof this>>;
+	query(components: Queue): QueryResult<typeof this, HasBufferQueries<typeof this>>;
 	query(args: any) {
-		return queryBit(this, args);
+		return queryBit(this, args) as QueryResult<typeof this, HasBufferQueries<typeof this>>;
 	}
 
 	get size() {

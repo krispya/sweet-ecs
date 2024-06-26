@@ -18,13 +18,14 @@ export const createUpdateGravity = ({
 	};
 	url: URL;
 }) => {
-	return async ({ world }: { world: World }) => {
+	return async ({ world }: { world: World<{ bufferedQueries: true }> }) => {
 		const { workers } = world.get(Workers)!;
 		const { delta } = world.get(Time)!;
 
 		// Initialize workers with components.
 		if (!workers[url.href]) {
-			workers[url.href] = Array.from({ length: getThreadCount() }, () => new Worker(url, { type: 'module' })); //prettier-ignore
+			// Note: Using type module breaks the Node implementation, which is using web-worker.
+			workers[url.href] = Array.from({ length: getThreadCount() }, () => new Worker(url));
 
 			// Initialize the worker process.
 			const initWorker = (worker: Worker) =>

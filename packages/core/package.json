@@ -9,7 +9,9 @@
 	"scripts": {
 		"test": "vitest"
 	},
-	"dependencies": {},
+	"dependencies": {
+		"bitecs": "NateTheGreatt/bitECS#v0.0.1-alpha.3"
+	},
 	"devDependencies": {
 		"tsconfig": "workspace:*",
 		"vitest": "^1.4.0"

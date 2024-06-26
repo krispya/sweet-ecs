@@ -7,3 +7,9 @@ export type SweetWorkerScope = WorkerGlobalScope &
 		queryBuffers: Record<string, SharedArrayBuffer>;
 		componentToKeyMap: Map<typeof Component, string>;
 	};
+
+export type HasBufferQueries<TWorld extends World> = TWorld extends World<infer TOptions>
+	? TOptions extends { bufferedQueries: true }
+		? true
+		: false
+	: never;
