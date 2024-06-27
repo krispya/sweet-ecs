@@ -8,6 +8,8 @@ export function createTwin(mesh: Mesh, renderer: AutoInstanceWebGLRenderer) {
 	// Copy matrices from the original mesh by ref so that the twin is always synced.
 	twin.matrix = mesh.matrix;
 	twin.matrixWorld = mesh.matrixWorld;
+	twin.matrixAutoUpdate = false;
+	twin.userData.twinOf = mesh;
 
 	renderer.twins.set(mesh, twin);
 	renderer.transformedScene.add(twin);

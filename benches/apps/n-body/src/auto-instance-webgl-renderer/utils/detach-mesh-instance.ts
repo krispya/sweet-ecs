@@ -34,6 +34,7 @@ export function detachMeshInstance(
 	meshes.set.delete(mesh);
 	meshes.array.splice(mesh.userData.instanceId, 1);
 
+	// Create twin.
 	unbindMatrix4(mesh.matrix);
 	createTwin(mesh, renderer);
 }
