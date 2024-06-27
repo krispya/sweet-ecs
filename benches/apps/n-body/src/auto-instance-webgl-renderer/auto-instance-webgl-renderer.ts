@@ -3,13 +3,13 @@ import {
 	Camera,
 	InstancedBufferAttribute,
 	InstancedMesh,
-	Material,
 	Mesh,
 	Object3D,
 	Scene,
 	WebGLRenderer,
 	WebGLRendererParameters,
 } from 'three';
+import { MeshRegistry } from './types';
 import { bindBufferAttribute } from './utils/bind-buffer-attribute';
 import { bindMatrix4 } from './utils/bind-matrix4';
 import { createTwin } from './utils/create-twin';
@@ -25,7 +25,7 @@ export type AutoInstanceWebGLRendererParaemters = WebGLRendererParameters & {
 export const builtinAttributes = ['position', 'uv', 'normal'];
 
 export class AutoInstanceWebGLRenderer extends WebGLRenderer {
-	registry = new Map<string, { set: Set<Mesh>; array: Mesh[] }>();
+	registry = new Map<string, MeshRegistry>();
 	twins = new Map<Object3D, Object3D>();
 	transformedScene = new Scene();
 	threshold = 2;
@@ -62,11 +62,21 @@ export class AutoInstanceWebGLRenderer extends WebGLRenderer {
 			const hash = hashMesh(child);
 
 			if (!this.registry.has(hash)) {
-				this.registry.set(hash, { set: new Set(), array: [] });
+				this.registry.set(hash, { set: new Set(), array: [], isShared: true });
 			}
 
-			this.registry.get(hash)!.set.add(child);
-			this.registry.get(hash)!.array.push(child);
+			const meshRegistry = this.registry.get(hash)!;
+
+			let isShared = false;
+			if (meshRegistry.set.size > 0) {
+				const first = meshRegistry.array[0];
+				isShared = first.geometry === child.geometry && first.material === child.material;
+			}
+
+			meshRegistry.set.add(child);
+			meshRegistry.array.push(child);
+			meshRegistry.isShared = isShared;
+
 			child.userData.hash = hash;
 		});
 
@@ -80,9 +90,13 @@ export class AutoInstanceWebGLRenderer extends WebGLRenderer {
 
 			// Use the first mesh to create the instanced mesh.
 			const mesh = meshes.array[0];
+			const cloneMaterial = Array.isArray(mesh.material)
+				? mesh.material.map((m) => m.clone())
+				: mesh.material.clone();
+
 			const instancedMesh = new InstancedMesh(
 				mesh.geometry.clone(),
-				(mesh.material as Material).clone(),
+				cloneMaterial,
 				nearestPowerOfTwo(meshes.array.length)
 			);
 			instancedMesh.count = meshes.array.length;

@@ -25,7 +25,7 @@ export function detachMeshInstance(
 		unbindBufferAttribute(mesh.geometry.attributes[name] as BufferAttribute);
 	}
 
-	// Copy the materials.
+	// Copy the
 	if (!Array.isArray(mesh.material) && !Array.isArray(instancedMesh.material)) {
 		mesh.material.copy(instancedMesh.material);
 	}
@@ -47,7 +47,6 @@ export function detachMeshInstance(
 
 	// Create twin.
 	unbindMatrix4(mesh.matrix);
-	// unbindAllAttributes(mesh);
 	createTwin(mesh, renderer);
 }
 
