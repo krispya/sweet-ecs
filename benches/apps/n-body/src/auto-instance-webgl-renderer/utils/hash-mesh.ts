@@ -7,12 +7,12 @@ export function hashMesh(mesh: Mesh): string {
 	// morph attributes, and draw range.
 	if (mesh.geometry.index) {
 		keyItems.push(mesh.geometry.index.array.length);
-		keyItems.push(sampleArray(mesh.geometry.index.array, 3));
+		keyItems.push(sampleArray(mesh.geometry.index.array, 5));
 	}
 
+	// Attributes are allowed to have different values so we don't sample them.
 	for (const attribute of Object.values(mesh.geometry.attributes)) {
 		keyItems.push(attribute.array.length);
-		// keyItems.push(sampleArray(attribute.array, 3));
 	}
 
 	for (const morphAttribute of Object.values(mesh.geometry.morphAttributes)) {
