@@ -162,7 +162,8 @@ export function unbindMatrix4(matrix: Matrix4) {
 		delete matrix[key as keyof Matrix4];
 	}
 
-	matrix.elements = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
+	const elements = Array.from(matrix.elements);
+	matrix.elements = elements;
 
 	return matrix;
 }

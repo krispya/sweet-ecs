@@ -25,5 +25,20 @@ export function bindBufferAttribute(
 		set(value: boolean) {
 			instanceAttribute.needsUpdate = value;
 		},
+		configurable: true,
 	});
+}
+
+export function unbindBufferAttribute(attribute: BufferAttribute) {
+	// Replace the accessor with the original needsUpdate property.
+	Object.defineProperty(attribute, 'needsUpdate', {
+		value: attribute.needsUpdate,
+		writable: true,
+		configurable: true,
+	});
+
+	// Reset the array.
+	attribute.array = attribute.array.slice();
+
+	return attribute;
 }
