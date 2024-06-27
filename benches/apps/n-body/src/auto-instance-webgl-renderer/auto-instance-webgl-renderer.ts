@@ -1,5 +1,7 @@
 import {
+	BufferAttribute,
 	Camera,
+	InstancedBufferAttribute,
 	InstancedMesh,
 	Material,
 	Mesh,
@@ -8,12 +10,13 @@ import {
 	WebGLRenderer,
 	WebGLRendererParameters,
 } from 'three';
+import { bindMatrix4 } from './utils/bind-matrix4';
 import { createTwin } from './utils/create-twin';
 import { detachMeshInstance } from './utils/detach-mesh-instance';
 import { hashMesh } from './utils/hash-mesh';
 import { nearestPowerOfTwo } from './utils/nearest-power-of-two';
 import { wrapBufferGeometryMethods } from './utils/wrap-buffer-geometry-methods';
-import { BoundMatrix4 } from './bound-matrix/bound-matrix';
+import { bindBufferAttribute } from './utils/bind-buffer-attribute';
 
 export type AutoInstanceWebGLRendererParaemters = WebGLRendererParameters & {
 	threshold?: number;
@@ -68,6 +71,19 @@ export class AutoInstanceWebGLRenderer extends WebGLRenderer {
 					instancedMesh.count = meshes.array.length;
 					instancedMesh.name = key;
 
+					// For each attribute in the geometry, create a new buffer attribute for the instanced mesh.
+					const attributes = Object.keys(mesh.geometry.attributes);
+					for (const attribute of attributes) {
+						if (attribute === 'position' || attribute === 'uv' || attribute === 'normal') continue; //prettier-ignore
+
+						const buffer = mesh.geometry.getAttribute(attribute);
+						const instanceBuffer = new InstancedBufferAttribute(
+							new Float32Array(buffer.array.length * instancedMesh.count),
+							buffer.itemSize
+						);
+						instancedMesh.geometry.setAttribute(attribute, instanceBuffer);
+					}
+
 					for (let i = 0; i < meshes.array.length; i++) {
 						const mesh = meshes.array[i];
 
@@ -76,7 +92,19 @@ export class AutoInstanceWebGLRenderer extends WebGLRenderer {
 
 						// Set the matrix of the instanced mesh to the matrix of the mesh.
 						instancedMesh.setMatrixAt(i, mesh.matrix);
-						mesh.matrix = new BoundMatrix4(instancedMesh, i);
+						bindMatrix4(instancedMesh, i, mesh.matrix);
+
+						// Copy the attributes from the mesh to the instanced mesh.
+						const attributes = Object.keys(mesh.geometry.attributes);
+						for (const attribute of attributes) {
+							if (attribute === 'position' || attribute === 'uv' || attribute === 'normal') continue; //prettier-ignore
+
+							const buffer = mesh.geometry.getAttribute(attribute) as BufferAttribute;
+							const instanceBuffer = instancedMesh.geometry.getAttribute(
+								attribute
+							) as InstancedBufferAttribute;
+							bindBufferAttribute(instanceBuffer, i, buffer);
+						}
 
 						// Copy the geoemetry resources from the instanced mesh so CPU memory gets GCed.
 						const stableGeoProps = { name: mesh.geometry.name, uuid: mesh.geometry.uuid };

@@ -1,7 +1,6 @@
 import { Circle, Color, Position } from '@sim/n-body';
-import { InstancedMesh } from '../components/ThreeInstances';
-import * as THREE from 'three';
 import { World } from '@sweet-ecs/core';
+import * as THREE from 'three';
 import { Mesh } from '../components/Mesh';
 
 const normalize = (x: number, min: number, max: number) => (x - min) / (max - min);
@@ -31,20 +30,9 @@ export const syncThreeObjects = ({ world }: { world: World }) => {
 		const b = normalize(color.b, 0, 255);
 		dummyColor.setRGB(r, g, b);
 
-		// dummy.position.set(position.x, position.y, 0);
-
-		// const radius = normalize(circle.radius, 0, 60);
-		// dummy.scale.set(radius, radius, radius);
-
-		// dummy.updateMatrix();
-
-		// // instancedMesh.setMatrixAt(i, dummy.matrix);
-
-		// const r = normalize(color.r, 0, 255);
-		// const g = normalize(color.g, 0, 255);
-		// const b = normalize(color.b, 0, 255);
-		// dummyColor.setRGB(r, g, b);
-		// // instancedMesh.setColorAt(i, dummyColor);
+		const colorAttribute = mesh.geometry.getAttribute('color') as THREE.BufferAttribute;
+		colorAttribute.setXYZ(i, r, g, b);
+		colorAttribute.needsUpdate = true;
 	}
 };
 

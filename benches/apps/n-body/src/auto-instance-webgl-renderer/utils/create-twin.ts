@@ -9,8 +9,6 @@ export function createTwin(mesh: Mesh, renderer: AutoInstanceWebGLRenderer) {
 	twin.matrix = mesh.matrix;
 	twin.matrixWorld = mesh.matrixWorld;
 
-	console.log(twin.matrix);
-
 	renderer.twins.set(mesh, twin);
 	renderer.transformedScene.add(twin);
 }

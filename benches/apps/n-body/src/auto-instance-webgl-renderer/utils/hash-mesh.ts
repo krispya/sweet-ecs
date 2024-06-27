@@ -12,7 +12,7 @@ export function hashMesh(mesh: Mesh): string {
 
 	for (const attribute of Object.values(mesh.geometry.attributes)) {
 		keyItems.push(attribute.array.length);
-		keyItems.push(sampleArray(attribute.array, 3));
+		// keyItems.push(sampleArray(attribute.array, 3));
 	}
 
 	for (const morphAttribute of Object.values(mesh.geometry.morphAttributes)) {

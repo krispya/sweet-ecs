@@ -2,6 +2,7 @@ import { InstancedMesh, Matrix4, Mesh } from 'three';
 import { AutoInstanceWebGLRenderer } from '../auto-instance-webgl-renderer';
 import { resetBufferGeometryMethods } from './wrap-buffer-geometry-methods';
 import { createTwin } from './create-twin';
+import { unbindMatrix4 } from './bind-matrix4';
 
 const lastMatrix = new Matrix4();
 
@@ -33,5 +34,6 @@ export function detachMeshInstance(
 	meshes.set.delete(mesh);
 	meshes.array.splice(mesh.userData.instanceId, 1);
 
+	unbindMatrix4(mesh.matrix);
 	createTwin(mesh, renderer);
 }
