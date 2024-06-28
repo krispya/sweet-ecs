@@ -15,7 +15,7 @@ import { detachMeshInstance } from './utils/detach-mesh-instance';
 import { hashMesh } from './utils/hash-mesh';
 import { nearestPowerOfTwo } from './utils/nearest-power-of-two';
 import { wrapBufferGeometryMethods } from './utils/wrap-buffer-geometry-methods';
-import { wrapBufferAttribute } from './wrap-buffer-attribute';
+import { wrapBufferAttribute } from './utils/wrap-buffer-attribute';
 
 export type AutoInstanceWebGLRendererParaemters = WebGLRendererParameters & {
 	threshold?: number;

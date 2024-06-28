@@ -3,7 +3,7 @@ import { AutoInstanceWebGLRenderer } from '../auto-instance-webgl-renderer';
 import { bindMatrix4, unbindMatrix4 } from './bind-matrix4';
 import { createTwin } from './create-twin';
 import { resetBufferGeometryMethods } from './wrap-buffer-geometry-methods';
-import { resetBufferAttribute } from '../wrap-buffer-attribute';
+import { resetBufferAttribute } from './wrap-buffer-attribute';
 
 const lastMatrix = new Matrix4();
 
