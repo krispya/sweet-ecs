@@ -14,10 +14,11 @@ schedule.createTag('init');
 
 schedule.add(init, { tag: 'init', before: 'update' });
 schedule.add(setInitial, { tag: 'init', after: init, before: 'update' });
+schedule.add(updateGravity.init, { tag: 'init', after: setInitial, before: 'update' });
 
 schedule.add(updateTime, { tag: 'update' });
-schedule.add(updateGravity, { after: updateTime, tag: 'update' });
-schedule.add(moveBodies, { after: updateGravity, tag: 'update' });
+schedule.add(updateGravity.run, { after: updateTime, tag: 'update' });
+schedule.add(moveBodies, { after: updateGravity.run, tag: 'update' });
 schedule.add(updateColor, { after: moveBodies, tag: 'update' });
 
 schedule.build();

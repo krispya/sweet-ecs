@@ -3,6 +3,7 @@ import { Entity, World } from '@sweet-ecs/core';
 import * as THREE from 'three';
 import { ThreeInstances } from '../components/ThreeInstances';
 import { scene } from '../scene';
+import { camera, renderer } from '../main';
 
 let inited = false;
 
@@ -20,6 +21,9 @@ export function init({ world }: { world: World }) {
 	scene.add(instancedMesh);
 
 	Entity.add(new ThreeInstances(instancedMesh), eid);
+
+	// Compile Three shaders.
+	renderer.compile(scene, camera);
 
 	inited = true;
 }
