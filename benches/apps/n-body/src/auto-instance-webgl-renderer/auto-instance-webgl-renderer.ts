@@ -78,7 +78,7 @@ export class AutoInstanceWebGLRenderer extends WebGLRenderer {
 				bindMatrix4(instancedMesh, i, mesh.matrixWorld);
 
 				// If mesh resources are shared, don't touch them.
-				if (!meshRegistry.isShared) {
+				if (!meshRegistry.isShared.geometry) {
 					// Copy the geoemetry resources from the instanced mesh so CPU memory gets GCed.
 					const persistentGeoProps = {
 						name: mesh.geometry.name,
@@ -90,13 +90,16 @@ export class AutoInstanceWebGLRenderer extends WebGLRenderer {
 					Object.assign(mesh.geometry, persistentGeoProps);
 
 					// Wrap all methods that mutate the geometry so they break instancing when invoked.
-					wrapBufferGeometryMethods(mesh.geometry, () => detachMeshInstance(this, mesh, instancedMesh)); //prettier-ignore
+					wrapBufferGeometryMethods(mesh.geometry, () => detachMeshInstance(this, mesh, instancedMesh, meshRegistry.isShared)); //prettier-ignore
 
 					// Wrap all buffer attributes.
 					for (const name in mesh.geometry.attributes) {
 						const attribute = mesh.geometry.attributes[name] as BufferAttribute;
-						wrapBufferAttribute(attribute, () => detachMeshInstance(this, mesh, instancedMesh)); //prettier-ignore
+						wrapBufferAttribute(attribute, () => detachMeshInstance(this, mesh, instancedMesh, meshRegistry.isShared)); //prettier-ignore
 					}
+				}
+
+				if (!meshRegistry.isShared.material) {
 				}
 
 				// Dispose gets replaced so that it no longer disposes of resources.
@@ -130,8 +133,11 @@ function createInstancedMeshFromRegistry(meshRegistry: MeshRegistry) {
 	let geometry = mesh.geometry;
 	let material = mesh.material;
 
-	if (!meshRegistry.isShared) {
+	if (!meshRegistry.isShared.geometry) {
 		geometry = mesh.geometry.clone();
+	}
+
+	if (!meshRegistry.isShared.material) {
 		material = Array.isArray(mesh.material)
 			? mesh.material.map((m) => m.clone())
 			: mesh.material.clone();
@@ -156,15 +162,23 @@ function createMeshRegistry(scene: Scene, registry: Map<string, MeshRegistry>) {
 		const hash = hashMesh(child);
 
 		if (!registry.has(hash)) {
-			registry.set(hash, { set: new Set(), array: [], isShared: true, hash });
+			registry.set(hash, {
+				set: new Set(),
+				array: [],
+				isShared: { geometry: true, material: true },
+				hash,
+			});
 		}
 
 		const meshRegistry = registry.get(hash)!;
 
-		let isShared = false;
+		let isShared = { geometry: false, material: false };
 		if (meshRegistry.set.size > 0) {
 			const first = meshRegistry.array[0];
-			isShared = first.geometry === child.geometry && first.material === child.material;
+			isShared = {
+				geometry: first.geometry === child.geometry,
+				material: first.material === child.material,
+			};
 		}
 
 		meshRegistry.set.add(child);

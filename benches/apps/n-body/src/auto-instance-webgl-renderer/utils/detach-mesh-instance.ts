@@ -10,7 +10,8 @@ const lastMatrix = new Matrix4();
 export function detachMeshInstance(
 	renderer: AutoInstanceWebGLRenderer,
 	mesh: Mesh,
-	instancedMesh: InstancedMesh
+	instancedMesh: InstancedMesh,
+	isShared: { geometry: boolean; material: boolean }
 ) {
 	const meshes = renderer.registry.get(mesh.userData.hash)!;
 
@@ -22,12 +23,18 @@ export function detachMeshInstance(
 		resetBufferAttribute(attribute);
 	}
 
-	// Copy the geometry.
-	mesh.geometry.copy(instancedMesh.geometry);
+	// Copy the geometry if it is not shared.
+	if (!isShared.geometry) mesh.geometry.copy(instancedMesh.geometry);
 
-	// Copy the material.
-	if (!Array.isArray(mesh.material) && !Array.isArray(instancedMesh.material)) {
-		mesh.material.copy(instancedMesh.material);
+	// Copy the material if it is not shared.
+	if (!isShared.material) {
+		if (!Array.isArray(mesh.material) && !Array.isArray(instancedMesh.material)) {
+			mesh.material.copy(instancedMesh.material);
+		} else if (Array.isArray(mesh.material) && Array.isArray(instancedMesh.material)) {
+			for (let i = 0; i < mesh.material.length; i++) {
+				mesh.material[i].copy(instancedMesh.material[i]);
+			}
+		}
 	}
 
 	// Unbind the matrix before the ID is swapped.
