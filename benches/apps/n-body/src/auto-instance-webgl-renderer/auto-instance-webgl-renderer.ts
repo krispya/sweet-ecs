@@ -46,7 +46,7 @@ export class AutoInstanceWebGLRenderer extends WebGLRenderer {
 
 	init(scene: Scene, camera: Camera) {
 		this.initScene(scene);
-		this.compile(scene, camera);
+		this.compile(this.transformedScene, camera);
 	}
 
 	initScene(scene: Scene) {
