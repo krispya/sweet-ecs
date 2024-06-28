@@ -1,4 +1,7 @@
-import { Mesh, TypedArray } from 'three';
+import { Color, Euler, Material, Mesh, Texture, TypedArray } from 'three';
+
+// prettier-ignore
+const excludedMaterialProps = ['uuid', 'name', 'userData', 'version', 'isMeshBasicMaterial', 'isMaterial'];
 
 export function hashMesh(mesh: Mesh): string {
 	const keyItems: any[] = [];
@@ -25,9 +28,41 @@ export function hashMesh(mesh: Mesh): string {
 	keyItems.push(mesh.geometry.drawRange.start);
 	keyItems.push(mesh.geometry.drawRange.count);
 
-	// TODO: Material!
+	// Next, we hash the material.
+	if (Array.isArray(mesh.material)) {
+		for (const material of mesh.material) {
+			hashMaterial(material, keyItems);
+		}
+	} else {
+		hashMaterial(mesh.material, keyItems);
+	}
 
 	return keyItems.join('-');
+}
+
+function hashMaterial(material: Material, keyItems: any[]) {
+	for (const prop of Object.keys(material)) {
+		if (excludedMaterialProps.includes(prop)) continue;
+
+		const value = material[prop as keyof Material];
+
+		if (value instanceof Color) {
+			keyItems.push(value.getHex());
+			continue;
+		}
+
+		if (value instanceof Euler) {
+			keyItems.push(...value.toArray());
+			continue;
+		}
+
+		if (value instanceof Texture) {
+			keyItems.push(value.id);
+			continue;
+		}
+
+		keyItems.push(material[prop as keyof Material]);
+	}
 }
 
 function sampleArray(array: number[] | TypedArray, sampleRate: number, precision = 4): number[] {
