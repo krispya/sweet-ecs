@@ -30,9 +30,11 @@ export const syncThreeObjects = ({ world }: { world: World }) => {
 		const b = normalize(color.b, 0, 255);
 		dummyColor.setRGB(r, g, b);
 
-		const colorAttribute = mesh.geometry.getAttribute('color') as THREE.BufferAttribute;
-		colorAttribute.setXYZ(0, r, g, b);
-		colorAttribute.needsUpdate = true;
+		// const colorAttribute = mesh.geometry.getAttribute('color') as THREE.BufferAttribute;
+		// colorAttribute.setXYZ(0, r, g, b);
+		// colorAttribute.needsUpdate = true;
+
+		// mesh.material.color.copy(dummyColor);
 	}
 };
 

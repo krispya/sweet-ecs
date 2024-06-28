@@ -16,6 +16,7 @@ export function init({ world }: { world: World }) {
 		const geometry = new THREE.CircleGeometry(CONSTANTS.MAX_RADIUS / 1.5, 12);
 		geometry.name = 'body-geometry';
 		geometry.setAttribute('color', new THREE.BufferAttribute(new Float32Array(3), 3));
+		geometry.attributes.color.setXYZ(0, 1, 1, 1);
 
 		const material = new THREE.MeshBasicMaterial({
 			color: new THREE.Color().setRGB(1, 1, 1),

@@ -1,5 +1,7 @@
 import { BufferAttribute, InstancedBufferAttribute } from 'three';
 
+export const builtinAttributes = ['position', 'uv', 'normal', 'color'];
+
 export function bindBufferAttribute(
 	instanceAttribute: InstancedBufferAttribute,
 	id: number,
