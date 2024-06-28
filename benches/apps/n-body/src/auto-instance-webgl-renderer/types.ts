@@ -4,4 +4,5 @@ export interface MeshRegistry {
 	set: Set<Mesh>;
 	array: Mesh[];
 	isShared: boolean;
+	hash: string;
 }
