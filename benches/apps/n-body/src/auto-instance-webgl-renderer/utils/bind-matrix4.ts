@@ -153,6 +153,20 @@ export function bindMatrix4(instancedMesh: InstancedMesh, id: number, matrix: Ma
 		return Matrix4.prototype.transpose.call(matrix);
 	};
 
+	matrix.multiplyMatrices = function multiplyMatrices(
+		...args: Parameters<Matrix4['multiplyMatrices']>
+	): Matrix4 {
+		instancedMesh.instanceMatrix.needsUpdate = true;
+		return Matrix4.prototype.multiplyMatrices.call(matrix, ...args);
+	};
+
+	matrix.multiplyScalar = function multiplyScalar(
+		...args: Parameters<Matrix4['multiplyScalar']>
+	): Matrix4 {
+		instancedMesh.instanceMatrix.needsUpdate = true;
+		return Matrix4.prototype.multiplyScalar.call(matrix, ...args);
+	};
+
 	return matrix;
 }
 

@@ -1,6 +1,6 @@
 import { BufferAttribute, BufferGeometry, InstancedMesh, Matrix4, Mesh } from 'three';
 import { AutoInstanceWebGLRenderer, builtinAttributes } from '../auto-instance-webgl-renderer';
-import { unbindMatrix4 } from './bind-matrix4';
+import { bindMatrix4, unbindMatrix4 } from './bind-matrix4';
 import { createTwin } from './create-twin';
 import { resetBufferGeometryMethods } from './wrap-buffer-geometry-methods';
 import { unbindBufferAttribute } from './bind-buffer-attribute';
@@ -25,10 +25,13 @@ export function detachMeshInstance(
 		unbindBufferAttribute(mesh.geometry.attributes[name] as BufferAttribute);
 	}
 
-	// Copy the
+	// Copy the material.
 	if (!Array.isArray(mesh.material) && !Array.isArray(instancedMesh.material)) {
 		mesh.material.copy(instancedMesh.material);
 	}
+
+	// Unbind the matrix before the ID is swapped.
+	unbindMatrix4(mesh.matrixWorld);
 
 	// Remove the instance. Reduce the count and swap.
 	const lastId = instancedMesh.count - 1;
@@ -36,17 +39,20 @@ export function detachMeshInstance(
 	instancedMesh.getMatrixAt(lastId, lastMatrix);
 	instancedMesh.setMatrixAt(mesh.userData.instanceId, lastMatrix);
 	instancedMesh.count = lastId;
+	instancedMesh.instanceMatrix.needsUpdate = true;
 
 	// Swap the last mesh with the mesh we are detaching.
 	meshes.array[mesh.userData.instanceId] = lastMesh;
 	lastMesh.userData.instanceId = mesh.userData.instanceId;
 
+	// Rebind the world matrix.
+	bindMatrix4(instancedMesh, mesh.userData.instanceId, lastMesh.matrixWorld);
+
 	// Remove from the registry.
 	meshes.set.delete(mesh);
-	meshes.array.splice(mesh.userData.instanceId, 1);
+	meshes.array.pop();
 
 	// Create twin.
-	unbindMatrix4(mesh.matrix);
 	createTwin(mesh, renderer);
 }
 

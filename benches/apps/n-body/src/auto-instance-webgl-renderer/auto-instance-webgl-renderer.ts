@@ -55,6 +55,9 @@ export class AutoInstanceWebGLRenderer extends WebGLRenderer {
 	}
 
 	initScene(scene: Scene) {
+		this.transformedScene.matrixWorldAutoUpdate = false;
+		this.transformedScene.matrixAutoUpdate = false;
+
 		// Create a registry of meshes that can be instanced.
 		scene.traverse((child) => {
 			if (!(child instanceof Mesh) || child instanceof InstancedMesh) return;
@@ -123,8 +126,8 @@ export class AutoInstanceWebGLRenderer extends WebGLRenderer {
 				mesh.userData.instanceId = i;
 
 				// Set the matrix of the instanced mesh to the matrix of the mesh.
-				instancedMesh.setMatrixAt(i, mesh.matrix);
-				bindMatrix4(instancedMesh, i, mesh.matrix);
+				instancedMesh.setMatrixAt(i, mesh.matrixWorld);
+				bindMatrix4(instancedMesh, i, mesh.matrixWorld);
 
 				// Copy the attributes from the mesh to the instanced mesh.
 				const attributes = Object.keys(mesh.geometry.attributes);
