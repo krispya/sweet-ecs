@@ -33,8 +33,5 @@ export function init({ world }: { world: World }) {
 	// Frontload initing the renderer.
 	renderer.init(scene, camera);
 
-	// Compile Three shaders.
-	renderer.compile(scene, camera);
-
 	inited = true;
 }
