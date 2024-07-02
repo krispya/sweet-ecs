@@ -10,7 +10,7 @@
 	},
 	"dependencies": {
 		"@app/bench-tools": "workspace:*",
-		"@sim/n-body": "workspace:@sim/n-body-aos@*",
+		"@sim/n-body": "workspace:@sim/n-body-mt@*",
 		"@sweet-ecs/core": "workspace:*",
 		"three": "^0.162.0"
 	},

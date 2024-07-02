@@ -2,12 +2,15 @@ import {
 	BufferAttribute,
 	Camera,
 	InstancedMesh,
+	Material,
 	Mesh,
 	Object3D,
 	Scene,
 	WebGLRenderer,
 	WebGLRendererParameters,
 } from 'three';
+import { DerivedBufferGeometry } from './instanced-uniform-mesh/derived-objects/derived-buffer-geometry';
+import { InstancedUniformsMesh } from './instanced-uniform-mesh/instanced-uniform-mesh';
 import { MeshRegistry } from './types';
 import { bindMatrix4 } from './utils/bind-matrix4';
 import { createTwin } from './utils/create-twin';
@@ -16,6 +19,7 @@ import { hashMesh } from './utils/hash-mesh';
 import { nearestPowerOfTwo } from './utils/nearest-power-of-two';
 import { wrapBufferAttribute } from './utils/wrap-buffer-attribute';
 import { wrapBufferGeometryMethods } from './utils/wrap-buffer-geometry-methods';
+import { createInstancedUniformsDerivedMaterial } from './instanced-uniform-mesh/derived-objects/instanced-uniform-derived-material';
 
 export type AutoInstanceWebGLRendererParaemters = WebGLRendererParameters & {
 	threshold?: number;
@@ -38,6 +42,16 @@ export class AutoInstanceWebGLRenderer extends WebGLRenderer {
 
 			// Update matrices of scene.
 			scene.updateMatrixWorld();
+
+			// For each mesh in the scene, set the diffuse uniform on the InstancedUniformMesh in transformedScene
+			// with setUniformAt and the instanced ID in userData
+			scene.traverse((object) => {
+				if (!(object instanceof Mesh)) return;
+
+				const instanceId = object.userData.instanceId;
+				const instancedMesh = object.userData.boundMesh as InstancedUniformsMesh;
+				instancedMesh.setUniformAt('diffuse', instanceId, object.material.color);
+			});
 
 			// Render the instanced scene.
 			superRender(this.transformedScene, camera);
@@ -72,6 +86,7 @@ export class AutoInstanceWebGLRenderer extends WebGLRenderer {
 
 				// Save the instance ID.
 				mesh.userData.instanceId = i;
+				mesh.userData.boundMesh = instancedMesh;
 
 				// Set the matrix of the instanced mesh to the matrix of the mesh.
 				instancedMesh.setMatrixAt(i, mesh.matrixWorld);
@@ -120,7 +135,6 @@ export class AutoInstanceWebGLRenderer extends WebGLRenderer {
 
 		console.log('scene', scene);
 		console.log('instancedScene', this.transformedScene);
-		console.log('init: geometries', this.info.memory.geometries);
 
 		scene.userData.isInstanced = true;
 	}
@@ -131,21 +145,19 @@ function createInstancedMeshFromRegistry(meshRegistry: MeshRegistry) {
 	const mesh = meshRegistry.array[0];
 
 	let geometry = mesh.geometry;
-	let material = mesh.material;
+	let material = mesh.material as Material;
 
 	if (!meshRegistry.isShared.geometry) {
 		geometry = mesh.geometry.clone();
 	}
 
 	if (!meshRegistry.isShared.material) {
-		material = Array.isArray(mesh.material)
-			? mesh.material.map((m) => m.clone())
-			: mesh.material.clone();
+		material = Array.isArray(mesh.material) ? mesh.material[0].clone() : mesh.material.clone();
 	}
 
-	const instancedMesh = new InstancedMesh(
-		geometry,
-		material,
+	const instancedMesh = new InstancedUniformsMesh(
+		new DerivedBufferGeometry(geometry),
+		createInstancedUniformsDerivedMaterial(material),
 		nearestPowerOfTwo(meshRegistry.array.length)
 	);
 

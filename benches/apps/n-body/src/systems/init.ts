@@ -17,13 +17,13 @@ export function init({ world }: { world: World }) {
 	geometry.setAttribute('color', new THREE.BufferAttribute(new Float32Array(3), 3));
 	geometry.attributes.color.setXYZ(0, 1, 1, 1);
 
-	const material = new THREE.MeshBasicMaterial({
-		color: new THREE.Color().setRGB(1, 1, 1),
-		vertexColors: true,
-	});
-	material.name = 'body-material';
-
 	for (const eid of eids) {
+		const material = new THREE.MeshBasicMaterial({
+			color: new THREE.Color().setRGB(1, 1, 1),
+			vertexColors: true,
+		});
+		material.name = 'body-material';
+
 		const mesh = new THREE.Mesh(geometry, material);
 
 		scene.add(mesh);

@@ -2,6 +2,7 @@ import { Circle, Color, Position } from '@sim/n-body';
 import { World } from '@sweet-ecs/core';
 import * as THREE from 'three';
 import { Mesh } from '../components/Mesh';
+import { renderer } from '../main';
 
 const normalize = (x: number, min: number, max: number) => (x - min) / (max - min);
 
@@ -34,7 +35,12 @@ export const syncThreeObjects = ({ world }: { world: World }) => {
 		// colorAttribute.setXYZ(0, r, g, b);
 		// colorAttribute.needsUpdate = true;
 
-		// mesh.material.color.copy(dummyColor);
+		(mesh.material as THREE.MeshBasicMaterial).color.copy(dummyColor);
+		// (mesh.material as THREE.MeshBasicMaterial).alphaTest = 0.5;
+		// (mesh.material as THREE.MeshBasicMaterial).needsUpdate = true;
+
+		// const materialProperties = renderer.properties.get(mesh.material);
+		// console.log(materialProperties);
 	}
 };
 
