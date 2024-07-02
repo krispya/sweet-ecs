@@ -36,8 +36,8 @@ export function createInstancedUniformsDerivedMaterial<T extends Material>(
 						'g'
 					);
 					const referenceFinder = new RegExp(`\\b${name}\\b`, 'g');
-					const attrName = `troika_attr_${name}`;
-					const varyingName = `troika_vary_${name}`;
+					const attrName = `pmndrs_attr_${name}`;
+					const varyingName = `pmndrs_vary_${name}`;
 					vertexDeclarations.push(`attribute ${type} ${attrName};`);
 					if (vertType) {
 						vertexShader = vertexShader.replace(declarationFinder, '');

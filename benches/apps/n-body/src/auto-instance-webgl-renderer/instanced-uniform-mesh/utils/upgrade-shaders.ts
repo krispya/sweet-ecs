@@ -70,21 +70,21 @@ export function upgradeShaders<T extends DerivedMaterial<any>>(
 	// Inject a function for the vertexTransform and rename all usages of position/normal/uv
 	if (vertexTransform) {
 		// Hoist these defs to the very top so they work in other function defs
-		vertexShader = `vec3 troika_position_${key};
-vec3 troika_normal_${key};
-vec2 troika_uv_${key};
+		vertexShader = `vec3 pmndrs_position_${key};
+vec3 pmndrs_normal_${key};
+vec2 pmndrs_uv_${key};
 ${vertexShader}
 `;
 		vertexDefs = `${vertexDefs}
-void troikaVertexTransform${key}(inout vec3 position, inout vec3 normal, inout vec2 uv) {
+void pmndrsVertexTransform${key}(inout vec3 position, inout vec3 normal, inout vec2 uv) {
   ${vertexTransform}
 }
 `;
 		vertexMainIntro = `
-troika_position_${key} = vec3(position);
-troika_normal_${key} = vec3(normal);
-troika_uv_${key} = vec2(uv);
-troikaVertexTransform${key}(troika_position_${key}, troika_normal_${key}, troika_uv_${key});
+pmndrs_position_${key} = vec3(position);
+pmndrs_normal_${key} = vec3(normal);
+pmndrs_uv_${key} = vec2(uv);
+pmndrsVertexTransform${key}(pmndrs_position_${key}, pmndrs_normal_${key}, pmndrs_uv_${key});
 ${vertexMainIntro}
 `;
 		vertexShader = vertexShader.replace(
@@ -92,14 +92,14 @@ ${vertexMainIntro}
 			(_match, match1, index, fullStr) => {
 				return /\battribute\s+vec[23]\s+$/.test(fullStr.substr(0, index))
 					? match1
-					: `troika_${match1}_${key}`;
+					: `pmndrs_${match1}_${key}`;
 			}
 		);
 
 		// Three r152 introduced the MAP_UV token, replace it too if it's pointing to the main 'uv'
 		// Perhaps the other textures too going forward?
 		if (!(material.map && material.map.channel > 0)) {
-			vertexShader = vertexShader.replace(/\bMAP_UV\b/g, `troika_uv_${key}`);
+			vertexShader = vertexShader.replace(/\bMAP_UV\b/g, `pmndrs_uv_${key}`);
 		}
 	}
 
@@ -111,6 +111,7 @@ ${vertexMainIntro}
 		vertexMainIntro,
 		vertexMainOutro
 	);
+
 	fragmentShader = injectIntoShaderCode(
 		fragmentShader,
 		key,
@@ -137,12 +138,12 @@ function injectIntoShaderCode(
 			voidMainRegExp,
 			`
 ${defs}
-void troikaOrigMain${id}() {`
+void pmndrsOrigMain${id}() {`
 		);
 		shaderCode += `
 void main() {
   ${intro}
-  troikaOrigMain${id}();
+  pmndrsOrigMain${id}();
   ${outro}
 }`;
 	}
