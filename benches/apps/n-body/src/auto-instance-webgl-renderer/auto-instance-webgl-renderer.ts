@@ -73,7 +73,8 @@ export class AutoInstanceWebGLRenderer extends WebGLRenderer {
 		// Create instanced scene from the registry of meshes.
 		for (const [, meshRegistry] of this.registry.entries()) {
 			// If there aren't enough meshes to instance, create twins instead.
-			if (meshRegistry.array.length < this.threshold) {
+			const isMaterialArrayWithoutSahred = meshRegistry.isMaterialArray && !meshRegistry.isShared.material; //prettier-ignore
+			if (meshRegistry.array.length < this.threshold || isMaterialArrayWithoutSahred) {
 				for (const mesh of meshRegistry.array) createTwin(mesh, this);
 				continue;
 			}
@@ -144,22 +145,35 @@ function createInstancedMeshFromRegistry(meshRegistry: MeshRegistry) {
 	// Use the first mesh to create the instanced mesh.
 	const mesh = meshRegistry.array[0];
 
+	let isShared = true;
 	let geometry = mesh.geometry;
-	let material = mesh.material as Material;
+	let material = mesh.material;
 
 	if (!meshRegistry.isShared.geometry) {
 		geometry = mesh.geometry.clone();
+		isShared = false;
 	}
 
 	if (!meshRegistry.isShared.material) {
-		material = Array.isArray(mesh.material) ? mesh.material[0].clone() : mesh.material.clone();
+		material = (mesh.material as Material).clone();
+		isShared = false;
 	}
 
-	const instancedMesh = new InstancedUniformsMesh(
-		new DerivedBufferGeometry(geometry),
-		createInstancedUniformsDerivedMaterial(material),
-		nearestPowerOfTwo(meshRegistry.array.length)
-	);
+	let instancedMesh: InstancedMesh;
+
+	if (isShared) {
+		instancedMesh = new InstancedMesh(
+			geometry,
+			material,
+			nearestPowerOfTwo(meshRegistry.array.length)
+		);
+	} else {
+		instancedMesh = new InstancedUniformsMesh(
+			new DerivedBufferGeometry(geometry),
+			createInstancedUniformsDerivedMaterial(material as Material),
+			nearestPowerOfTwo(meshRegistry.array.length)
+		);
+	}
 
 	instancedMesh.count = meshRegistry.array.length;
 	instancedMesh.name = meshRegistry.hash;
@@ -179,6 +193,7 @@ function createMeshRegistry(scene: Scene, registry: Map<string, MeshRegistry>) {
 				array: [],
 				isShared: { geometry: true, material: true },
 				hash,
+				isMaterialArray: Array.isArray(child.material),
 			});
 		}
 

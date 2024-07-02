@@ -8,4 +8,5 @@ export interface MeshRegistry {
 		material: boolean;
 	};
 	hash: string;
+	isMaterialArray: boolean;
 }
