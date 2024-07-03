@@ -20,12 +20,12 @@ import { createTwin } from './utils/create-twin';
 import { detachMeshInstance } from './utils/detach-mesh-instance';
 import { wrapBufferAttribute } from './utils/wrap-buffer-attribute';
 import { wrapBufferGeometryMethods } from './utils/wrap-buffer-geometry-methods';
-import { UniformValue } from './instanced-uniform-mesh/types';
-import { bindMaterial } from './utils/bind-material';
 
 export type AutoInstanceWebGLRendererParaemters = WebGLRendererParameters & {
 	threshold?: number;
 };
+
+const excludedProps = ['uuid', 'type', 'version', 'userData'];
 
 export class AutoInstanceWebGLRenderer extends WebGLRenderer {
 	registry = new Map<string, MeshRegistry>();
@@ -45,17 +45,135 @@ export class AutoInstanceWebGLRenderer extends WebGLRenderer {
 			// Update matrices of scene.
 			scene.updateMatrixWorld();
 
-			// scene.traverse((object) => {
-			// 	if (!(object instanceof Mesh)) return;
-
-			// 	const instanceId = object.userData.instanceId;
-			// 	const instancedMesh = object.userData.boundMesh as InstancedUniformsMesh;
-			// 	instancedMesh.setUniformAt('diffuse', instanceId, object.material.color);
-			// });
-
-			// Preprocess main scene.
+			// Preprocess the main scene for material changes.
+			// Inlined for brrr.
 			scene.traverse((object) => {
-				if (object instanceof Mesh) processMaterial(object);
+				if (!(object instanceof Mesh)) return;
+				const mesh = object as Mesh;
+				// Skip twins as they pass through.
+				if (mesh.userData.twin) return;
+
+				const instanceId = mesh.userData.instanceId;
+				const instancedMesh = mesh.userData.boundMesh;
+
+				// Skip instances that share a material since they don't have per-uniform attributes.
+				if (!(instancedMesh instanceof InstancedUniformsMesh)) return;
+
+				const material = mesh.material as Material;
+				const instancedMaterial = instancedMesh.material as Material;
+
+				if (
+					material instanceof MeshBasicMaterial &&
+					instancedMaterial instanceof MeshBasicMaterial
+				) {
+					const color = material.color;
+					if (!color.equals(instancedMaterial.color)) {
+						instancedMesh.setUniformAt('diffuse', instanceId, color);
+					}
+
+					const opacity = material.opacity;
+					if (opacity !== instancedMaterial.opacity) {
+						instancedMesh.setUniformAt('opacity', instanceId, opacity);
+					}
+
+					const alphaTest = material.alphaTest;
+					if (alphaTest !== instancedMaterial.alphaTest) {
+						instancedMesh.setUniformAt('alphaTest', instanceId, alphaTest);
+					}
+
+					// Test non-uniform properties.
+					if (
+						material.alphaHash !== instancedMaterial.alphaHash ||
+						material.alphaMap !== instancedMaterial.alphaMap ||
+						material.alphaToCoverage !== instancedMaterial.alphaToCoverage ||
+						material.aoMap !== instancedMaterial.aoMap ||
+						material.aoMapIntensity !== instancedMaterial.aoMapIntensity ||
+						material.blendAlpha !== instancedMaterial.blendAlpha ||
+						material.blendDst !== instancedMaterial.blendDst ||
+						material.blendDstAlpha !== instancedMaterial.blendDstAlpha ||
+						material.blendEquation !== instancedMaterial.blendEquation ||
+						material.blendEquationAlpha !== instancedMaterial.blendEquationAlpha ||
+						material.blendSrc !== instancedMaterial.blendSrc ||
+						material.blendSrcAlpha !== instancedMaterial.blendSrcAlpha ||
+						material.blending !== instancedMaterial.blending ||
+						material.clipIntersection !== instancedMaterial.clipIntersection ||
+						material.clipShadows !== instancedMaterial.clipShadows ||
+						material.clippingPlanes !== instancedMaterial.clippingPlanes ||
+						material.colorWrite !== instancedMaterial.colorWrite ||
+						material.combine !== instancedMaterial.combine ||
+						material.depthFunc !== instancedMaterial.depthFunc ||
+						material.depthTest !== instancedMaterial.depthTest ||
+						material.depthWrite !== instancedMaterial.depthWrite ||
+						material.dithering !== instancedMaterial.dithering ||
+						material.envMap !== instancedMaterial.envMap ||
+						!material.envMapRotation.equals(instancedMaterial.envMapRotation) ||
+						material.fog !== instancedMaterial.fog ||
+						material.forceSinglePass !== instancedMaterial.forceSinglePass ||
+						material.lightMap !== instancedMaterial.lightMap ||
+						material.lightMapIntensity !== instancedMaterial.lightMapIntensity ||
+						material.map !== instancedMaterial.map ||
+						material.polygonOffset !== instancedMaterial.polygonOffset ||
+						material.polygonOffsetFactor !== instancedMaterial.polygonOffsetFactor ||
+						material.polygonOffsetUnits !== instancedMaterial.polygonOffsetUnits ||
+						material.precision !== instancedMaterial.precision ||
+						material.premultipliedAlpha !== instancedMaterial.premultipliedAlpha ||
+						material.reflectivity !== instancedMaterial.reflectivity ||
+						material.refractionRatio !== instancedMaterial.refractionRatio ||
+						material.shadowSide !== instancedMaterial.shadowSide ||
+						material.side !== instancedMaterial.side ||
+						material.specularMap !== instancedMaterial.specularMap ||
+						material.stencilFail !== instancedMaterial.stencilFail ||
+						material.stencilFunc !== instancedMaterial.stencilFunc ||
+						material.stencilFuncMask !== instancedMaterial.stencilFuncMask ||
+						material.stencilRef !== instancedMaterial.stencilRef ||
+						material.stencilWrite !== instancedMaterial.stencilWrite ||
+						material.stencilZFail !== instancedMaterial.stencilZFail ||
+						material.stencilZPass !== instancedMaterial.stencilZPass ||
+						material.toneMapped !== instancedMaterial.toneMapped ||
+						material.transparent !== instancedMaterial.transparent ||
+						material.vertexColors !== instancedMaterial.vertexColors ||
+						material.visible !== instancedMaterial.visible ||
+						material.wireframe !== instancedMaterial.wireframe ||
+						material.wireframeLinecap !== instancedMaterial.wireframeLinecap ||
+						material.wireframeLinejoin !== instancedMaterial.wireframeLinejoin ||
+						material.wireframeLinewidth !== instancedMaterial.wireframeLinewidth
+					) {
+						detachMeshInstance(this, mesh, instancedMesh);
+						return;
+					}
+				} else {
+					// For generic materials we detach if any property changes.
+					// TODO: Support all uniforms regardless.
+					const keys = Object.keys(material) as (keyof Material)[];
+					for (let i = 0; i < keys.length; i++) {
+						const key = keys[i];
+						if (excludedProps.includes(key)) continue;
+
+						const materialValue = material[key];
+						const instancedMaterialValue = instancedMaterial[key];
+
+						if (
+							materialValue instanceof Color &&
+							instancedMaterialValue instanceof Color
+						) {
+							if (!materialValue.equals(instancedMaterialValue)) {
+								detachMeshInstance(this, mesh, instancedMesh);
+								return;
+							}
+						} else if (
+							materialValue instanceof Euler &&
+							instancedMaterialValue instanceof Euler
+						) {
+							if (!materialValue.equals(instancedMaterialValue)) {
+								detachMeshInstance(this, mesh, instancedMesh);
+								return;
+							}
+						} else if (materialValue !== instancedMaterialValue) {
+							detachMeshInstance(this, mesh, instancedMesh);
+							return;
+						}
+					}
+				}
 			});
 
 			// Render the instanced scene.
@@ -131,10 +249,6 @@ export class AutoInstanceWebGLRenderer extends WebGLRenderer {
 					}
 				}
 
-				if (!meshRegistry.isShared.material) {
-					bindMaterial(mesh.material as Material);
-				}
-
 				// Dispose gets replaced so that it no longer disposes of resources.
 				// A dispose callback never gets attached since we never render the virtual object 3D.
 				// Still, we want to simulate it so we clean up all the same properties.
@@ -156,76 +270,4 @@ export class AutoInstanceWebGLRenderer extends WebGLRenderer {
 
 		scene.userData.isInstanced = true;
 	}
-}
-
-const allow = ['color', 'opacity', 'alphaTest', 'emissive'];
-const uniformMap = {
-	color: 'diffuse',
-	opacity: 'opacity',
-	emissive: 'emissive',
-	alphaTest: 'alphaTest',
-};
-const exclude = ['uuid', 'id', 'userData', 'version'];
-
-function processMaterial(mesh: Mesh) {
-	// Skip twins as they pass through.
-	if (mesh.userData.twin) return;
-
-	const instanceId = mesh.userData.instanceId;
-	const instancedMesh = mesh.userData.boundMesh;
-
-	// Skip instances that share a material since they don't have per-uniform attributes.
-	if (!(instancedMesh instanceof InstancedUniformsMesh)) return;
-
-	const material = mesh.material as Material;
-	const instancedMaterial = instancedMesh.material as Material;
-
-	for (let i = 0; i < allow.length; i++) {
-		const prop = allow[i];
-		const materialValue = material[prop as keyof Material];
-		const instancedMaterialValue = instancedMaterial[prop as keyof Material];
-
-		if (materialValue !== instancedMaterialValue) {
-			instancedMesh.setUniformAt(
-				uniformMap[prop as keyof typeof uniformMap],
-				instanceId,
-				materialValue as UniformValue
-			);
-		}
-	}
-
-	// Loop over properties of the material and compare to the instanced material.
-	// If the prop is different, log it.
-	// for (const prop in material) {
-	// 	if (exclude.includes(prop)) continue;
-
-	// 	const materialValue = material[prop as keyof Material];
-	// 	const instancedMaterialValue = instancedMaterial[prop as keyof Material];
-
-	// 	if (materialValue !== instancedMaterialValue) {
-	// 		if (
-	// 			materialValue instanceof Color &&
-	// 			materialValue.equals(instancedMaterialValue as Color)
-	// 		) {
-	// 			continue;
-	// 		}
-
-	// 		if (
-	// 			materialValue instanceof Euler &&
-	// 			materialValue.equals(instancedMaterialValue as Euler)
-	// 		) {
-	// 			continue;
-	// 		}
-
-	// 		if (allow.includes(prop)) {
-	// 			instancedMesh.setUniformAt(
-	// 				uniformMap[prop as keyof typeof uniformMap],
-	// 				instanceId,
-	// 				materialValue as Color
-	// 			);
-	// 		} else {
-	// 			console.error('material breaking instancing', prop);
-	// 		}
-	// 	}
-	// }
 }
