@@ -69,6 +69,12 @@ export class AutoInstanceWebGLRenderer extends WebGLRenderer {
 	}
 
 	initScene(scene: Scene) {
+		// Bind common properties.
+		this.renderScene.fog = scene.fog;
+		this.renderScene.background = scene.background;
+		this.renderScene.environment = scene.environment;
+		this.renderScene.overrideMaterial = scene.overrideMaterial;
+
 		this.renderScene.matrixWorldAutoUpdate = false;
 		this.renderScene.matrixAutoUpdate = false;
 
