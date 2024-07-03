@@ -14,5 +14,5 @@ export function createTwin(mesh: Mesh, renderer: AutoInstanceWebGLRenderer) {
 	twin.userData.twinOf = mesh;
 
 	renderer.twins.set(mesh, twin);
-	renderer.transformedScene.add(twin);
+	renderer.renderScene.add(twin);
 }

@@ -1,25 +1,27 @@
 import {
 	BufferAttribute,
 	Camera,
-	InstancedMesh,
+	Color,
+	Euler,
 	Material,
 	Mesh,
+	MeshBasicMaterial,
 	Object3D,
 	Scene,
 	WebGLRenderer,
 	WebGLRendererParameters,
 } from 'three';
-import { DerivedBufferGeometry } from './instanced-uniform-mesh/derived-objects/derived-buffer-geometry';
 import { InstancedUniformsMesh } from './instanced-uniform-mesh/instanced-uniform-mesh';
 import { MeshRegistry } from './types';
 import { bindMatrix4 } from './utils/bind-matrix4';
+import { createInstancedMeshFromRegistry } from './utils/create-instanced-mesh-from-registry';
+import { createMeshRegistry } from './utils/create-mesh-registry';
 import { createTwin } from './utils/create-twin';
 import { detachMeshInstance } from './utils/detach-mesh-instance';
-import { hashMesh } from './utils/hash-mesh';
-import { nearestPowerOfTwo } from './utils/nearest-power-of-two';
 import { wrapBufferAttribute } from './utils/wrap-buffer-attribute';
 import { wrapBufferGeometryMethods } from './utils/wrap-buffer-geometry-methods';
-import { createInstancedUniformsDerivedMaterial } from './instanced-uniform-mesh/derived-objects/instanced-uniform-derived-material';
+import { UniformValue } from './instanced-uniform-mesh/types';
+import { bindMaterial } from './utils/bind-material';
 
 export type AutoInstanceWebGLRendererParaemters = WebGLRendererParameters & {
 	threshold?: number;
@@ -28,7 +30,7 @@ export type AutoInstanceWebGLRendererParaemters = WebGLRendererParameters & {
 export class AutoInstanceWebGLRenderer extends WebGLRenderer {
 	registry = new Map<string, MeshRegistry>();
 	twins = new Map<Object3D, Object3D>();
-	transformedScene = new Scene();
+	renderScene = new Scene();
 	threshold = 2;
 
 	constructor(parameters?: AutoInstanceWebGLRendererParaemters) {
@@ -43,29 +45,32 @@ export class AutoInstanceWebGLRenderer extends WebGLRenderer {
 			// Update matrices of scene.
 			scene.updateMatrixWorld();
 
-			// For each mesh in the scene, set the diffuse uniform on the InstancedUniformMesh in transformedScene
-			// with setUniformAt and the instanced ID in userData
-			scene.traverse((object) => {
-				if (!(object instanceof Mesh)) return;
+			// scene.traverse((object) => {
+			// 	if (!(object instanceof Mesh)) return;
 
-				const instanceId = object.userData.instanceId;
-				const instancedMesh = object.userData.boundMesh as InstancedUniformsMesh;
-				instancedMesh.setUniformAt('diffuse', instanceId, object.material.color);
+			// 	const instanceId = object.userData.instanceId;
+			// 	const instancedMesh = object.userData.boundMesh as InstancedUniformsMesh;
+			// 	instancedMesh.setUniformAt('diffuse', instanceId, object.material.color);
+			// });
+
+			// Preprocess main scene.
+			scene.traverse((object) => {
+				if (object instanceof Mesh) processMaterial(object);
 			});
 
 			// Render the instanced scene.
-			superRender(this.transformedScene, camera);
+			superRender(this.renderScene, camera);
 		};
 	}
 
 	init(scene: Scene, camera: Camera) {
 		this.initScene(scene);
-		this.compile(this.transformedScene, camera);
+		this.compile(this.renderScene, camera);
 	}
 
 	initScene(scene: Scene) {
-		this.transformedScene.matrixWorldAutoUpdate = false;
-		this.transformedScene.matrixAutoUpdate = false;
+		this.renderScene.matrixWorldAutoUpdate = false;
+		this.renderScene.matrixAutoUpdate = false;
 
 		// Create a registry of meshes that can be instanced.
 		createMeshRegistry(scene, this.registry);
@@ -116,6 +121,7 @@ export class AutoInstanceWebGLRenderer extends WebGLRenderer {
 				}
 
 				if (!meshRegistry.isShared.material) {
+					bindMaterial(mesh.material as Material);
 				}
 
 				// Dispose gets replaced so that it no longer disposes of resources.
@@ -131,87 +137,84 @@ export class AutoInstanceWebGLRenderer extends WebGLRenderer {
 				};
 			}
 
-			this.transformedScene.add(instancedMesh);
+			this.renderScene.add(instancedMesh);
 		}
 
 		console.log('scene', scene);
-		console.log('instancedScene', this.transformedScene);
+		console.log('instancedScene', this.renderScene);
 
 		scene.userData.isInstanced = true;
 	}
 }
 
-function createInstancedMeshFromRegistry(meshRegistry: MeshRegistry) {
-	// Use the first mesh to create the instanced mesh.
-	const mesh = meshRegistry.array[0];
+const allow = ['color', 'opacity', 'alphaTest', 'emissive'];
+const uniformMap = {
+	color: 'diffuse',
+	opacity: 'opacity',
+	emissive: 'emissive',
+	alphaTest: 'alphaTest',
+};
+const exclude = ['uuid', 'id', 'userData', 'version'];
 
-	let isShared = true;
-	let geometry = mesh.geometry;
-	let material = mesh.material;
+function processMaterial(mesh: Mesh) {
+	// Skip twins as they pass through.
+	if (mesh.userData.twin) return;
 
-	if (!meshRegistry.isShared.geometry) {
-		geometry = mesh.geometry.clone();
-		isShared = false;
-	}
+	const instanceId = mesh.userData.instanceId;
+	const instancedMesh = mesh.userData.boundMesh;
 
-	if (!meshRegistry.isShared.material) {
-		material = (mesh.material as Material).clone();
-		isShared = false;
-	}
+	// Skip instances that share a material since they don't have per-uniform attributes.
+	if (!(instancedMesh instanceof InstancedUniformsMesh)) return;
 
-	let instancedMesh: InstancedMesh;
+	const material = mesh.material as Material;
+	const instancedMaterial = instancedMesh.material as Material;
 
-	if (isShared) {
-		instancedMesh = new InstancedMesh(
-			geometry,
-			material,
-			nearestPowerOfTwo(meshRegistry.array.length)
-		);
-	} else {
-		instancedMesh = new InstancedUniformsMesh(
-			new DerivedBufferGeometry(geometry),
-			createInstancedUniformsDerivedMaterial(material as Material),
-			nearestPowerOfTwo(meshRegistry.array.length)
-		);
-	}
+	for (let i = 0; i < allow.length; i++) {
+		const prop = allow[i];
+		const materialValue = material[prop as keyof Material];
+		const instancedMaterialValue = instancedMaterial[prop as keyof Material];
 
-	instancedMesh.count = meshRegistry.array.length;
-	instancedMesh.name = meshRegistry.hash;
-
-	return instancedMesh;
-}
-
-function createMeshRegistry(scene: Scene, registry: Map<string, MeshRegistry>) {
-	scene.traverse((child) => {
-		if (!(child instanceof Mesh) || child instanceof InstancedMesh) return;
-
-		const hash = hashMesh(child);
-
-		if (!registry.has(hash)) {
-			registry.set(hash, {
-				set: new Set(),
-				array: [],
-				isShared: { geometry: true, material: true },
-				hash,
-				isMaterialArray: Array.isArray(child.material),
-			});
+		if (materialValue !== instancedMaterialValue) {
+			instancedMesh.setUniformAt(
+				uniformMap[prop as keyof typeof uniformMap],
+				instanceId,
+				materialValue as UniformValue
+			);
 		}
+	}
 
-		const meshRegistry = registry.get(hash)!;
+	// Loop over properties of the material and compare to the instanced material.
+	// If the prop is different, log it.
+	// for (const prop in material) {
+	// 	if (exclude.includes(prop)) continue;
 
-		let isShared = { geometry: false, material: false };
-		if (meshRegistry.set.size > 0) {
-			const first = meshRegistry.array[0];
-			isShared = {
-				geometry: first.geometry === child.geometry,
-				material: first.material === child.material,
-			};
-		}
+	// 	const materialValue = material[prop as keyof Material];
+	// 	const instancedMaterialValue = instancedMaterial[prop as keyof Material];
 
-		meshRegistry.set.add(child);
-		meshRegistry.array.push(child);
-		meshRegistry.isShared = isShared;
+	// 	if (materialValue !== instancedMaterialValue) {
+	// 		if (
+	// 			materialValue instanceof Color &&
+	// 			materialValue.equals(instancedMaterialValue as Color)
+	// 		) {
+	// 			continue;
+	// 		}
 
-		child.userData.hash = hash;
-	});
+	// 		if (
+	// 			materialValue instanceof Euler &&
+	// 			materialValue.equals(instancedMaterialValue as Euler)
+	// 		) {
+	// 			continue;
+	// 		}
+
+	// 		if (allow.includes(prop)) {
+	// 			instancedMesh.setUniformAt(
+	// 				uniformMap[prop as keyof typeof uniformMap],
+	// 				instanceId,
+	// 				materialValue as Color
+	// 			);
+	// 		} else {
+	// 			console.error('material breaking instancing', prop);
+	// 		}
+	// 	}
+	// }
 }

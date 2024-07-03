@@ -3,32 +3,15 @@
 
 import {
 	BufferAttribute,
-	Color,
 	InstancedBufferAttribute,
 	InstancedMesh,
 	InterleavedBufferAttribute,
 	Material,
-	Matrix3,
-	Matrix4,
-	Quaternion,
-	Vector2,
-	Vector3,
-	Vector4,
 } from 'three';
 import { DerivedBufferGeometry } from './derived-objects/derived-buffer-geometry';
 import { InstancedUniformDerivedMaterial } from './derived-objects/types';
+import { UniformValue } from './types';
 import { getShadersForMaterial } from './utils/get-shaders-for-material';
-
-type UniformValue =
-	| number
-	| Vector2
-	| Vector3
-	| Vector4
-	| Color
-	| any[]
-	| Matrix3
-	| Matrix4
-	| Quaternion;
 
 export class InstancedUniformsMesh<T extends Material = Material> extends InstancedMesh {
 	private _maxCount: number;
@@ -91,6 +74,16 @@ export class InstancedUniformsMesh<T extends Material = Material> extends Instan
 
 		setAttributeValue(attr, index, value);
 		attr.needsUpdate = true;
+	}
+
+	getUniformAt(name: string, index: number): number[] | null {
+		const attr = this.geometry.attributes[`pmndrs_attr_${name}`] as BufferAttribute;
+		if (!attr) return null;
+
+		const size = attr.itemSize;
+		const start = index * size;
+		const end = start + size;
+		return Array.from(attr.array.slice(start, end));
 	}
 
 	/**
