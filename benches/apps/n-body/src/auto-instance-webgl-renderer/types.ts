@@ -9,4 +9,5 @@ export interface MeshRegistry {
 	};
 	hash: string;
 	isMaterialArray: boolean;
+	isIgnored: boolean;
 }

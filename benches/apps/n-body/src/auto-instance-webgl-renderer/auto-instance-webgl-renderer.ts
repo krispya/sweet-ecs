@@ -83,9 +83,14 @@ export class AutoInstanceWebGLRenderer extends WebGLRenderer {
 
 		// Create instanced scene from the registry of meshes.
 		for (const [, meshRegistry] of this.registry.entries()) {
-			// If there aren't enough meshes to instance, create twins instead.
+			// If there aren't enough meshes to instance, the material is an array that can't be shared
+			// in a single IstancedMesh, or the mesh is flagged as ignored, create twins instead.
 			const isMaterialArrayWithoutSahred = meshRegistry.isMaterialArray && !meshRegistry.isShared.material; //prettier-ignore
-			if (meshRegistry.array.length < this.threshold || isMaterialArrayWithoutSahred) {
+			if (
+				meshRegistry.array.length < this.threshold ||
+				isMaterialArrayWithoutSahred ||
+				meshRegistry.isIgnored
+			) {
 				for (const mesh of meshRegistry.array) createTwin(mesh, this);
 				continue;
 			}

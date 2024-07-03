@@ -15,6 +15,7 @@ export function createMeshRegistry(scene: Scene, registry: Map<string, MeshRegis
 				isShared: { geometry: true, material: true },
 				hash,
 				isMaterialArray: Array.isArray(child.material),
+				isIgnored: !!child.userData.ignore,
 			});
 		}
 
