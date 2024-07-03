@@ -1,18 +1,27 @@
-import { Mesh } from 'three';
+import { Mesh, Object3D } from 'three';
 import { AutoInstanceWebGLRenderer } from '../auto-instance-webgl-renderer';
 
-export function createTwin(mesh: Mesh, renderer: AutoInstanceWebGLRenderer) {
-	const twin = new Mesh(mesh.geometry, mesh.material);
-	mesh.userData.instanceId = -1;
-	mesh.userData.twin = twin;
+export function createTwin<T extends Object3D>(target: T, renderer: AutoInstanceWebGLRenderer) {
+	let twin: T;
+
+	if (target.constructor === Mesh) {
+		twin = new Mesh((target as Mesh).geometry, (target as Mesh).material) as unknown as T;
+	} else {
+		// @ts-expect-error
+		twin = new target.constructor();
+		twin.copy(target);
+	}
+
+	target.userData.instanceId = -1;
+	target.userData.twin = twin;
 
 	// Copy matrices from the original mesh by ref so that the twin is always synced.
-	twin.matrix = mesh.matrix;
-	twin.matrixWorld = mesh.matrixWorld;
+	twin.matrix = target.matrix;
+	twin.matrixWorld = target.matrixWorld;
 	twin.matrixAutoUpdate = false;
 	twin.matrixWorldAutoUpdate = false;
-	twin.userData.twinOf = mesh;
+	twin.userData.twinOf = target;
 
-	renderer.twins.set(mesh, twin);
+	renderer.twins.set(target, twin);
 	renderer.renderScene.add(twin);
 }

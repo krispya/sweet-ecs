@@ -197,7 +197,7 @@ export class AutoInstanceWebGLRenderer extends WebGLRenderer {
 		this.renderScene.matrixAutoUpdate = false;
 
 		// Create a registry of meshes that can be instanced.
-		createMeshRegistry(scene, this.registry);
+		createMeshRegistry(scene, this.registry, this);
 
 		// Create instanced scene from the registry of meshes.
 		for (const [, meshRegistry] of this.registry.entries()) {

@@ -1,39 +1,48 @@
-import { Scene, Mesh, InstancedMesh } from 'three';
+import { Mesh, Scene } from 'three';
 import { MeshRegistry } from '../types';
 import { hashMesh } from './hash-mesh';
+import { AutoInstanceWebGLRenderer } from '../auto-instance-webgl-renderer';
+import { createTwin } from './create-twin';
 
-export function createMeshRegistry(scene: Scene, registry: Map<string, MeshRegistry>) {
+export function createMeshRegistry(
+	scene: Scene,
+	registry: Map<string, MeshRegistry>,
+	renderer: AutoInstanceWebGLRenderer
+) {
 	scene.traverse((child) => {
-		if (!(child instanceof Mesh) || child instanceof InstancedMesh) return;
+		if (child instanceof Mesh) {
+			const hash = hashMesh(child);
 
-		const hash = hashMesh(child);
+			if (!registry.has(hash)) {
+				registry.set(hash, {
+					set: new Set(),
+					array: [],
+					isShared: { geometry: true, material: true },
+					hash,
+					isMaterialArray: Array.isArray(child.material),
+					isIgnored: !!child.userData.ignore,
+				});
+			}
 
-		if (!registry.has(hash)) {
-			registry.set(hash, {
-				set: new Set(),
-				array: [],
-				isShared: { geometry: true, material: true },
-				hash,
-				isMaterialArray: Array.isArray(child.material),
-				isIgnored: !!child.userData.ignore,
-			});
+			const meshRegistry = registry.get(hash)!;
+
+			let isShared = { geometry: false, material: false };
+			if (meshRegistry.set.size > 0) {
+				const first = meshRegistry.array[0];
+				isShared = {
+					geometry: first.geometry === child.geometry,
+					material: first.material === child.material,
+				};
+			}
+
+			meshRegistry.set.add(child);
+			meshRegistry.array.push(child);
+			meshRegistry.isShared = isShared;
+
+			child.userData.hash = hash;
+		} else {
+			// Create a twin
+			createTwin(child, renderer);
 		}
-
-		const meshRegistry = registry.get(hash)!;
-
-		let isShared = { geometry: false, material: false };
-		if (meshRegistry.set.size > 0) {
-			const first = meshRegistry.array[0];
-			isShared = {
-				geometry: first.geometry === child.geometry,
-				material: first.material === child.material,
-			};
-		}
-
-		meshRegistry.set.add(child);
-		meshRegistry.array.push(child);
-		meshRegistry.isShared = isShared;
-
-		child.userData.hash = hash;
 	});
 }
