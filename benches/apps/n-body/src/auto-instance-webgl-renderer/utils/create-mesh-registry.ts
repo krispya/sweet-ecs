@@ -10,6 +10,9 @@ export function createMeshRegistry(
 	renderer: AutoInstanceWebGLRenderer
 ) {
 	scene.traverse((child) => {
+		// Don't process the scene itself.
+		if (child instanceof Scene) return;
+
 		if (child instanceof Mesh) {
 			const hash = hashMesh(child);
 
@@ -41,7 +44,7 @@ export function createMeshRegistry(
 
 			child.userData.hash = hash;
 		} else {
-			// Create a twin
+			// Create a twin.
 			createTwin(child, renderer);
 		}
 	});
