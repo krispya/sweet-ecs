@@ -1,11 +1,23 @@
-import { Mesh, Object3D } from 'three';
+import { InstancedMesh, Mesh, Object3D } from 'three';
 import { TurboWebGLRenderer } from '../turbo-webgl-renderer';
+import { bindInstancedMesh } from './bind-instanced-mesh';
 
 export function createTwin<T extends Object3D>(target: T, renderer: TurboWebGLRenderer) {
 	let twin: T;
 
 	if (target.constructor === Mesh) {
-		twin = new Mesh((target as Mesh).geometry, (target as Mesh).material) as unknown as T;
+		const mesh = target as Mesh;
+		twin = new Mesh(mesh.geometry, mesh.material) as unknown as T;
+	} else if (target.constructor === InstancedMesh) {
+		const instancedMesh = target as InstancedMesh;
+		const twinInstancedMesh = new InstancedMesh(
+			instancedMesh.geometry,
+			instancedMesh.material,
+			0
+		);
+		bindInstancedMesh(instancedMesh, twinInstancedMesh);
+
+		twin = twinInstancedMesh as unknown as T;
 	} else {
 		// @ts-expect-error
 		twin = new target.constructor();
