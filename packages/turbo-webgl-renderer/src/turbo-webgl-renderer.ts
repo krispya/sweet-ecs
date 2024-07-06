@@ -246,19 +246,19 @@ export class TurboWebGLRenderer extends WebGLRenderer {
 						const attribute = mesh.geometry.attributes[name] as BufferAttribute;
 						wrapBufferAttribute(attribute, () => detachMeshInstance(this, mesh, instancedMesh, meshRegistry.isShared)); //prettier-ignore
 					}
-				}
 
-				// Dispose gets replaced so that it no longer disposes of resources.
-				// A dispose callback never gets attached since we never render the virtual object 3D.
-				// Still, we want to simulate it so we clean up all the same properties.
-				const superDispose = mesh.geometry.dispose;
-				mesh.geometry.dispose = function dispose() {
-					const geometry = mesh.geometry;
-					if (geometry.index) geometry.index = null;
-					if (geometry.attributes) geometry.attributes = {};
-					if (geometry.morphAttributes) geometry.morphAttributes = {};
-					superDispose();
-				};
+					// Dispose gets replaced so that it no longer disposes of resources.
+					// A dispose callback never gets attached since we never render the virtual object 3D.
+					// Still, we want to simulate it so we clean up all the same properties.
+					const superDispose = mesh.geometry.dispose;
+					mesh.geometry.dispose = function dispose() {
+						const geometry = mesh.geometry;
+						if (geometry.index) geometry.index = null;
+						if (geometry.attributes) geometry.attributes = {};
+						if (geometry.morphAttributes) geometry.morphAttributes = {};
+						superDispose();
+					};
+				}
 			}
 
 			this.renderScene.add(instancedMesh);
