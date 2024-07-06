@@ -1,7 +1,5 @@
 import { Color, Euler, Material, Mesh, Texture, TypedArray } from 'three';
-
-// prettier-ignore
-const excludedMaterialProps = ['uuid', 'name', 'userData', 'version', 'isMeshBasicMaterial', 'isMaterial'];
+import { EXCLUDED_MAT_PROPS, UNIFORM_MAT_PROPS } from '../constants';
 
 export function hashMesh(mesh: Mesh): string {
 	const keyItems: any[] = [];
@@ -42,7 +40,12 @@ export function hashMesh(mesh: Mesh): string {
 
 function hashMaterial(material: Material, keyItems: any[]) {
 	for (const prop of Object.keys(material)) {
-		if (excludedMaterialProps.includes(prop)) continue;
+		if (EXCLUDED_MAT_PROPS.includes(prop)) continue;
+
+		if (UNIFORM_MAT_PROPS.includes(prop)) {
+			keyItems.push(prop);
+			return;
+		}
 
 		const value = material[prop as keyof Material];
 

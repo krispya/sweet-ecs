@@ -20,12 +20,11 @@ import { createTwin } from './utils/create-twin';
 import { detachMeshInstance } from './utils/detach-mesh-instance';
 import { wrapBufferAttribute } from './utils/wrap-buffer-attribute';
 import { wrapBufferGeometryMethods } from './utils/wrap-buffer-geometry-methods';
+import { EXCLUDED_MAT_PROPS } from './constants';
 
 export type AutoInstanceWebGLRendererParaemters = WebGLRendererParameters & {
 	threshold?: number;
 };
-
-const excludedProps = ['uuid', 'type', 'version', 'userData'];
 
 export class AutoInstanceWebGLRenderer extends WebGLRenderer {
 	registry = new Map<string, MeshRegistry>();
@@ -147,7 +146,7 @@ export class AutoInstanceWebGLRenderer extends WebGLRenderer {
 					const keys = Object.keys(material) as (keyof Material)[];
 					for (let i = 0; i < keys.length; i++) {
 						const key = keys[i];
-						if (excludedProps.includes(key)) continue;
+						if (EXCLUDED_MAT_PROPS.includes(key)) continue;
 
 						const materialValue = material[key];
 						const instancedMaterialValue = instancedMaterial[key];
