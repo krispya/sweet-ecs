@@ -22,17 +22,17 @@ import { wrapBufferAttribute } from './utils/wrap-buffer-attribute';
 import { wrapBufferGeometryMethods } from './utils/wrap-buffer-geometry-methods';
 import { EXCLUDED_MAT_PROPS } from './constants';
 
-export type AutoInstanceWebGLRendererParaemters = WebGLRendererParameters & {
+export type TurboWebGLRendererParaemters = WebGLRendererParameters & {
 	threshold?: number;
 };
 
-export class AutoInstanceWebGLRenderer extends WebGLRenderer {
+export class TurboWebGLRenderer extends WebGLRenderer {
 	registry = new Map<string, MeshRegistry>();
 	twins = new Map<Object3D, Object3D>();
 	renderScene = new Scene();
 	threshold = 2;
 
-	constructor(parameters?: AutoInstanceWebGLRendererParaemters) {
+	constructor(parameters?: TurboWebGLRendererParaemters) {
 		super(parameters);
 		if (parameters?.threshold) this.threshold = parameters.threshold;
 

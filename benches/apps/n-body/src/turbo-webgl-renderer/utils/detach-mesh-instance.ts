@@ -1,5 +1,5 @@
 import { BufferAttribute, InstancedMesh, Matrix4, Mesh } from 'three';
-import { AutoInstanceWebGLRenderer } from '../auto-instance-webgl-renderer';
+import { TurboWebGLRenderer } from '../turbo-webgl-renderer';
 import { bindMatrix4, unbindMatrix4 } from './bind-matrix4';
 import { createTwin } from './create-twin';
 import { resetBufferGeometryMethods } from './wrap-buffer-geometry-methods';
@@ -8,7 +8,7 @@ import { resetBufferAttribute } from './wrap-buffer-attribute';
 const lastMatrix = new Matrix4();
 
 export function detachMeshInstance(
-	renderer: AutoInstanceWebGLRenderer,
+	renderer: TurboWebGLRenderer,
 	mesh: Mesh,
 	instancedMesh: InstancedMesh,
 	isShared: { geometry: boolean; material: boolean } = { geometry: false, material: false }

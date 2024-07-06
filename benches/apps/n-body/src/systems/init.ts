@@ -24,6 +24,9 @@ export function init({ world }: { world: World }) {
 		});
 		material.name = 'body-material';
 
+		// Set unique color for each body.
+		material.color.setHSL(Math.random(), 1, 0.5);
+
 		const mesh = new THREE.Mesh(geometry, material);
 
 		scene.add(mesh);

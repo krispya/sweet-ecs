@@ -1,7 +1,7 @@
 import { Mesh, Object3D } from 'three';
-import { AutoInstanceWebGLRenderer } from '../auto-instance-webgl-renderer';
+import { TurboWebGLRenderer } from '../turbo-webgl-renderer';
 
-export function createTwin<T extends Object3D>(target: T, renderer: AutoInstanceWebGLRenderer) {
+export function createTwin<T extends Object3D>(target: T, renderer: TurboWebGLRenderer) {
 	let twin: T;
 
 	if (target.constructor === Mesh) {

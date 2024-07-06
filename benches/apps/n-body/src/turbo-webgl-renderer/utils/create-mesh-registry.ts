@@ -1,13 +1,13 @@
 import { Mesh, Scene } from 'three';
 import { MeshRegistry } from '../types';
 import { hashMesh } from './hash-mesh';
-import { AutoInstanceWebGLRenderer } from '../auto-instance-webgl-renderer';
+import { TurboWebGLRenderer } from '../turbo-webgl-renderer';
 import { createTwin } from './create-twin';
 
 export function createMeshRegistry(
 	scene: Scene,
 	registry: Map<string, MeshRegistry>,
-	renderer: AutoInstanceWebGLRenderer
+	renderer: TurboWebGLRenderer
 ) {
 	scene.traverse((child) => {
 		// Don't process the scene itself.
