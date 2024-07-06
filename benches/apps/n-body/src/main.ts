@@ -5,7 +5,7 @@ import './styles.css';
 import { syncThreeObjects } from './systems/syncThreeObjects';
 import { render } from './systems/render';
 import { init } from './systems/init';
-import { TurboWebGLRenderer } from './turbo-webgl-renderer/turbo-webgl-renderer';
+import { TurboWebGLRenderer } from 'turbo-webgl-renderer';
 
 // Configure the simulation
 // CONSTANTS.NBODIES = 2000;

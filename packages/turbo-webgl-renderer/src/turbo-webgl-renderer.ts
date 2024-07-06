@@ -11,6 +11,7 @@ import {
 	WebGLRenderer,
 	WebGLRendererParameters,
 } from 'three';
+import { EXCLUDED_MAT_PROPS } from './constants';
 import { InstancedUniformsMesh } from './instanced-uniform-mesh/instanced-uniform-mesh';
 import { MeshRegistry } from './types';
 import { bindMatrix4 } from './utils/bind-matrix4';
@@ -20,7 +21,6 @@ import { createTwin } from './utils/create-twin';
 import { detachMeshInstance } from './utils/detach-mesh-instance';
 import { wrapBufferAttribute } from './utils/wrap-buffer-attribute';
 import { wrapBufferGeometryMethods } from './utils/wrap-buffer-geometry-methods';
-import { EXCLUDED_MAT_PROPS } from './constants';
 
 export type TurboWebGLRendererParaemters = WebGLRendererParameters & {
 	threshold?: number;
