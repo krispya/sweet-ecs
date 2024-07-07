@@ -2,7 +2,6 @@ import { Circle, Color, Position } from '@sim/n-body';
 import { World } from '@sweet-ecs/core';
 import * as THREE from 'three';
 import { Mesh } from '../components/Mesh';
-import { renderer } from '../main';
 
 const normalize = (x: number, min: number, max: number) => (x - min) / (max - min);
 
