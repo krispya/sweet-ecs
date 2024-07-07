@@ -5,8 +5,7 @@ type ComponentInstance<T = {}, TSchema extends Schema = {}> = Component &
 	PropsFromSchema<TSchema> &
 	T;
 
-// Declaraing the accessors on the class definition gives a large performance boost
-// compared to using `defineProperties` on the prototype. So we eval it.
+// Evaling the class definition with static keys optimizes performance.
 
 export function createSoAComponent<T = {}, TSchema extends Schema = {}>(
 	schema: TSchema,
@@ -28,16 +27,31 @@ export function createSoAComponent<T = {}, TSchema extends Schema = {}>(
 
 		constructor(initialState) {
 			super();
-			Object.keys(this.constructor.schema).forEach(key => {
-				this[key] = this.constructor.schema[key];
-			});
 
-			if (typeof initialState === 'function') {
-				this[$initialState] = initialState;	
-			} else if (typeof initialState === 'object') {
-				this[$initialState] = () => initialState;
+			if (initialState !== undefined) {
+				if (typeof initialState === 'function') {
+					this[$initialState] = initialState;	
+				} else if (typeof initialState === 'object') {
+					this[$initialState] = () => initialState;
+				}
 			}
-		}
+		`;
+
+	// Add getters/setters to the instance so they are enumberable.
+	for (const key in schema) {
+		classDefinition += `Object.defineProperty(this, '${key}', {
+			get() {
+				return this.constructor.store['${key}'][this[$entityId]];
+			},
+			set(value) {
+				this.constructor.store['${key}'][this[$entityId]] = value;
+			},
+			enumerable: true,
+		});
+		`;
+	}
+
+	classDefinition += `}
 
 		set(state) {
 			if (typeof state === 'function') state = state();
@@ -46,22 +60,7 @@ export function createSoAComponent<T = {}, TSchema extends Schema = {}>(
 			}
 			return this;
 		}
-  	`;
-
-	// Dynamically add getters and setters for each schema property.
-	for (const key of Object.keys(schema)) {
-		classDefinition += `
-		get ${key}() {
-			return this.constructor.store['${key}'][this[$entityId]];
-		}
-
-		set ${key}(value) {
-			this.constructor.store['${key}'][this[$entityId]] = value;
-		}
-	`;
-	}
-
-	classDefinition += `};
+	};
   	return SoAComponent;
   	`;
 
