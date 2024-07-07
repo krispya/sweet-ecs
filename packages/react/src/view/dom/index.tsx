@@ -19,10 +19,9 @@ try {
 
 export const sweet = {} as SweetElemnets;
 
+// Hardcode the keys for faster iteration speeds vs computed keys.
+// Makes a difference when spawning lots of entities at once.
+
 if (hasReactDom) {
-	for (const key in domComponents) {
-		sweet[key as keyof typeof domComponents] = (props: any) => (
-			<SweetElement type={key as keyof typeof domComponents} {...props} />
-		);
-	}
+	sweet.div = (props: any) => <SweetElement type="div" {...props} />;
 }
