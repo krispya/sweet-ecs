@@ -8,6 +8,7 @@ export const updateTime = ({ world }: { world: World }) => {
 
 	const now = performance.now();
 	const delta = now - time.then;
-	time.delta = delta / 100;
+
+	time.delta = Math.min(delta / 1000, 1 / 30);
 	time.then = now;
 };
