@@ -85,6 +85,9 @@ importers:
       three:
         specifier: ^0.162.0
         version: 0.162.0
+      turbo-webgl-renderer:
+        specifier: workspace:*
+        version: link:../../../packages/turbo-webgl-renderer
     devDependencies:
       '@types/three':
         specifier: ^0.162.0
@@ -125,6 +128,9 @@ importers:
       three:
         specifier: ^0.162.0
         version: 0.162.0
+      turbo-webgl-renderer:
+        specifier: workspace:*
+        version: link:../../../packages/turbo-webgl-renderer
     devDependencies:
       '@types/react':
         specifier: npm:types-react@rc
@@ -198,6 +204,9 @@ importers:
       three:
         specifier: ^0.162.0
         version: 0.162.0
+      turbo-webgl-renderer:
+        specifier: workspace:*
+        version: link:../../../packages/turbo-webgl-renderer
     devDependencies:
       '@types/react':
         specifier: npm:types-react@rc
@@ -382,6 +391,22 @@ importers:
         version: 1.6.0(@types/node@20.14.9)
 
   packages/tsconfig: {}
+
+  packages/turbo-webgl-renderer:
+    dependencies:
+      three:
+        specifier: ^0.162.0
+        version: 0.162.0
+    devDependencies:
+      '@types/three':
+        specifier: ^0.162.0
+        version: 0.162.0
+      tsconfig:
+        specifier: workspace:*
+        version: link:../tsconfig
+      vitest:
+        specifier: ^1.4.0
+        version: 1.6.0(@types/node@20.14.9)
 
 packages:
 
