@@ -41,11 +41,17 @@ export class TurboWebGLRenderer extends WebGLRenderer {
 			// Process the scene the first time we see it.
 			if (!scene.userData?.isInstanced) this.initScene(scene);
 
+			// If there are inbound meshes, create draw nodes.
+			if (this.inbound.size > 0) this.createDrawNodes();
+
 			// Update matrices of scene.
 			scene.updateMatrixWorld();
 
-			// Preprocess the main scene for material changes.
-			// Inlined for brrr.
+			/**
+			 *  Preprocess the main scene for material changes.
+			 *  Inlined so it goes fast. Ugly but necessary.
+			 */
+
 			scene.traverse((object) => {
 				if (!(object instanceof Mesh)) return;
 				const mesh = object as Mesh;
@@ -200,6 +206,12 @@ export class TurboWebGLRenderer extends WebGLRenderer {
 
 		// Create nodes for the draw scene.
 		this.createDrawNodes();
+
+		scene.addEventListener('childadded', ({ child }) => {
+			updateRegistry(child, this.registries, this);
+		});
+
+		scene.addEventListener('childremoved', ({ child }) => {});
 
 		console.log('scene', scene);
 		console.log('instancedScene', this.renderScene);

@@ -18,7 +18,7 @@ import { Component } from '@sweet-ecs/core';
 import * as Sweet from '@sweet-ecs/react';
 import { sweet, useWorld } from '@sweet-ecs/react';
 import { useSchedule } from 'directed/react';
-import { useLayoutEffect } from 'react';
+import { Suspense, use, useLayoutEffect } from 'react';
 import { TurboWebGLRenderer } from 'turbo-webgl-renderer';
 import { syncThreeObjects } from './systems/syncThreeObjects';
 import { useRaf } from './use-raf';
@@ -63,12 +63,22 @@ export function App() {
 					position: [0, 0, 100],
 				}}
 			>
-				<BodySpawner.Emitter initial={CONSTANTS.NBODIES - 1} />
-				<CentralMass />
+				<Suspense>
+					<BodySpawner.Emitter initial={CONSTANTS.NBODIES - 1} />
+					<CentralMass />
+					<SuspendForScience />
+				</Suspense>
 				<Simulation />
 			</Canvas>
 		</Sweet.World>
 	);
+}
+
+const promise = new Promise((resolve) => setTimeout(resolve, 1000));
+
+function SuspendForScience() {
+	use(promise);
+	return null;
 }
 
 function Body({ components = [] }: { components: (typeof Component | Component)[] }) {
