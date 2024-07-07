@@ -28,14 +28,13 @@ export function createSoAComponent<T = {}, TSchema extends Schema = {}>(
 
 		constructor(initialState) {
 			super();
-			Object.keys(this.constructor.schema).forEach(key => {
-				this[key] = this.constructor.schema[key];
-			});
 
-			if (typeof initialState === 'function') {
-				this[$initialState] = initialState;	
-			} else if (typeof initialState === 'object') {
-				this[$initialState] = () => initialState;
+			if (initialState !== undefined) {
+				if (typeof initialState === 'function') {
+					this[$initialState] = initialState;	
+				} else if (typeof initialState === 'object') {
+					this[$initialState] = () => initialState;
+				}
 			}
 		}
 
