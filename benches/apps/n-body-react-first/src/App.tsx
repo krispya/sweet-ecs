@@ -19,7 +19,7 @@ import * as Sweet from '@sweet-ecs/react';
 import { sweet, useWorld } from '@sweet-ecs/react';
 import { useSchedule } from 'directed/react';
 import { useLayoutEffect } from 'react';
-import * as THREE from 'three';
+import { TurboWebGLRenderer } from 'turbo-webgl-renderer';
 import { syncThreeObjects } from './systems/syncThreeObjects';
 import { useRaf } from './use-raf';
 import { useStats } from './use-stats';
@@ -42,8 +42,16 @@ export function App() {
 
 	return (
 		<Sweet.World src={world}>
-			<Simulation />
 			<Canvas
+				gl={(canvas) => {
+					const renderer = new TurboWebGLRenderer({
+						antialias: true,
+						powerPreference: 'high-performance',
+						canvas,
+					});
+
+					return renderer;
+				}}
 				orthographic
 				camera={{
 					left: (-frustumSize * aspect) / 2,
@@ -55,19 +63,12 @@ export function App() {
 					position: [0, 0, 100],
 				}}
 			>
-				<Bodies />
 				<BodySpawner.Emitter initial={CONSTANTS.NBODIES - 1} />
 				<CentralMass />
+				<Simulation />
 			</Canvas>
 		</Sweet.World>
 	);
-}
-
-function Bodies() {
-	const geo = new THREE.CircleGeometry(CONSTANTS.MAX_RADIUS / 1.5, 12);
-	const mat = new THREE.MeshBasicMaterial();
-
-	return <sweet.instancedMesh args={[geo, mat, CONSTANTS.NBODIES]} />;
 }
 
 function Body({ components = [] }: { components: (typeof Component | Component)[] }) {
@@ -79,9 +80,12 @@ function Body({ components = [] }: { components: (typeof Component | Component)[
 	}));
 
 	return (
-		<Sweet.Entity
+		<sweet.mesh
 			components={[position, mass, velocity, circle, Acceleration, Color, ...components]}
-		/>
+		>
+			<circleGeometry args={[CONSTANTS.MAX_RADIUS / 1.5, 12]} />
+			<meshBasicMaterial />
+		</sweet.mesh>
 	);
 }
 

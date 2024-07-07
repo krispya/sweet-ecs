@@ -20,7 +20,8 @@
 		"eslint-plugin-react-compiler": "0.0.0-experimental-51a85ea-20240601",
 		"react": "19.0.0-rc-cc1ec60d0d-20240607",
 		"react-dom": "19.0.0-rc-cc1ec60d0d-20240607",
-		"three": "^0.162.0"
+		"three": "^0.162.0",
+		"turbo-webgl-renderer": "workspace:*"
 	},
 	"devDependencies": {
 		"@types/react": "npm:types-react@rc",
