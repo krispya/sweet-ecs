@@ -1,25 +1,27 @@
 import { Color, Euler, Material, Mesh, Texture, TypedArray } from 'three';
 import { EXCLUDED_MAT_PROPS, UNIFORM_MAT_PROPS } from '../constants';
 
+const keyItems: any[] = [];
+
 export function hashMesh(mesh: Mesh): string {
-	const keyItems: any[] = [];
+	keyItems.length = 0;
 
 	// Starting with geometry, we sample the indices, each attribute,
 	// morph attributes, and draw range.
 	if (mesh.geometry.index) {
 		keyItems.push(mesh.geometry.index.array.length);
-		keyItems.push(sampleArray(mesh.geometry.index.array, 5));
+		sampleArray(keyItems, mesh.geometry.index.array, 5);
 	}
 
 	for (const attribute of Object.values(mesh.geometry.attributes)) {
 		keyItems.push(attribute.array.length);
-		keyItems.push(sampleArray(attribute.array, 3));
+		sampleArray(keyItems, attribute.array, 3);
 	}
 
 	for (const morphAttribute of Object.values(mesh.geometry.morphAttributes)) {
 		for (const attribute of morphAttribute) {
 			keyItems.push(attribute.array.length);
-			keyItems.push(sampleArray(attribute.array, 3));
+			sampleArray(keyItems, attribute.array, 3);
 		}
 	}
 
@@ -50,12 +52,12 @@ function hashMaterial(material: Material, keyItems: any[]) {
 		const value = material[prop as keyof Material];
 
 		if (value instanceof Color) {
-			keyItems.push(value.getHex());
+			keyItems.push(value.getHexString());
 			continue;
 		}
 
 		if (value instanceof Euler) {
-			keyItems.push(...value.toArray());
+			keyItems.push(value.x, value.y, value.z, value.order);
 			continue;
 		}
 
@@ -68,15 +70,26 @@ function hashMaterial(material: Material, keyItems: any[]) {
 	}
 }
 
-function sampleArray(array: number[] | TypedArray, sampleRate: number, precision = 4): number[] {
+function sampleArray(
+	target: string[],
+	array: number[] | TypedArray,
+	sampleRate: number,
+	precision = 4
+) {
 	const length = array.length;
 	if (length <= sampleRate) {
-		return Array.from(array, (value) => parseFloat(value.toFixed(precision)));
+		for (let i = 0; i < length; i++) {
+			const value = array[i].toString();
+			const cutOff = value.substring(0, precision);
+			target.push(cutOff);
+		}
 	}
 
 	const step = Math.floor(length / sampleRate);
-	return Array.from({ length: sampleRate }, (_, index) => {
-		const i = index * step;
-		return parseFloat(array[i].toFixed(precision));
-	});
+	for (let i = 0; i < sampleRate; i++) {
+		const index = i * step;
+		const value = array[index].toString();
+		const cutOff = value.substring(0, precision);
+		target.push(cutOff);
+	}
 }
