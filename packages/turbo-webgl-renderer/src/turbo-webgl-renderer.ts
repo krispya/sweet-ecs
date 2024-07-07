@@ -217,7 +217,7 @@ export class TurboWebGLRenderer extends WebGLRenderer {
 				isMaterialArrayWithoutSahred ||
 				meshRegistry.isIgnored
 			) {
-				for (let i = 0; i < meshRegistry.inbound.length; i++) {
+				for (let i = 0; i < meshRegistry.array.length; i++) {
 					const mesh = meshRegistry.inbound.pop()!;
 					createTwin(mesh, this);
 				}
@@ -229,7 +229,7 @@ export class TurboWebGLRenderer extends WebGLRenderer {
 
 			// Bind each mesh to the instanced mesh.
 			for (let i = 0; i < meshRegistry.inbound.length; i++) {
-				const mesh = meshRegistry.inbound.pop()!;
+				const mesh = meshRegistry.inbound[i];
 
 				// Save the instance ID.
 				mesh.userData.instanceId = i;
@@ -273,6 +273,9 @@ export class TurboWebGLRenderer extends WebGLRenderer {
 					};
 				}
 			}
+
+			// Clear the inbound queue.
+			meshRegistry.inbound.length = 0;
 
 			this.renderScene.add(instancedMesh);
 		}
