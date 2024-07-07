@@ -30,6 +30,7 @@ export class TurboWebGLRenderer extends WebGLRenderer {
 	twins = new Map<Object3D, Object3D>();
 	renderScene = new Scene();
 	threshold = 2;
+	inbound = new Set<MeshRegistry>();
 
 	constructor(parameters?: TurboWebGLRendererParaemters) {
 		super(parameters);
@@ -197,8 +198,17 @@ export class TurboWebGLRenderer extends WebGLRenderer {
 		// Create a registry of meshes that can be instanced.
 		updateRegistry(scene, this.registries, this);
 
-		// Create instanced scene from the registry of meshes.
-		for (const [, meshRegistry] of this.registries.entries()) {
+		// Create nodes for the draw scene.
+		this.createDrawNodes();
+
+		console.log('scene', scene);
+		console.log('instancedScene', this.renderScene);
+
+		scene.userData.isInstanced = true;
+	}
+
+	private createDrawNodes() {
+		for (const meshRegistry of this.inbound) {
 			// If there aren't enough meshes to instance, the material is an array that can't be shared
 			// in a single IstancedMesh, or the mesh is flagged as ignored, create twins instead.
 			const isMaterialArrayWithoutSahred = meshRegistry.isMaterialArray && !meshRegistry.isShared.material; //prettier-ignore
@@ -207,15 +217,19 @@ export class TurboWebGLRenderer extends WebGLRenderer {
 				isMaterialArrayWithoutSahred ||
 				meshRegistry.isIgnored
 			) {
-				for (const mesh of meshRegistry.array) createTwin(mesh, this);
+				for (let i = 0; i < meshRegistry.inbound.length; i++) {
+					const mesh = meshRegistry.inbound.pop()!;
+					createTwin(mesh, this);
+				}
+
 				continue;
 			}
 
 			const instancedMesh = createInstancedMeshFromRegistry(meshRegistry);
 
 			// Bind each mesh to the instanced mesh.
-			for (let i = 0; i < meshRegistry.array.length; i++) {
-				const mesh = meshRegistry.array[i];
+			for (let i = 0; i < meshRegistry.inbound.length; i++) {
+				const mesh = meshRegistry.inbound.pop()!;
 
 				// Save the instance ID.
 				mesh.userData.instanceId = i;
@@ -263,9 +277,7 @@ export class TurboWebGLRenderer extends WebGLRenderer {
 			this.renderScene.add(instancedMesh);
 		}
 
-		console.log('scene', scene);
-		console.log('instancedScene', this.renderScene);
-
-		scene.userData.isInstanced = true;
+		// Clear the inbound queue.
+		this.inbound.clear();
 	}
 }

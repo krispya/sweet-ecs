@@ -6,13 +6,11 @@ import { createTwin } from './create-twin';
 export class MeshRegistry {
 	set: Set<Mesh> = new Set();
 	array: Mesh[] = [];
-	isShared: {
-		geometry: boolean;
-		material: boolean;
-	} = { geometry: false, material: false };
+	isShared = { geometry: false, material: false };
 	hash: string = '';
 	isMaterialArray: boolean = false;
 	isIgnored: boolean = false;
+	inbound: Mesh[] = [];
 
 	constructor(props: Partial<MeshRegistry>) {
 		Object.assign(this, props);
@@ -57,10 +55,14 @@ export function updateRegistry(
 			meshRegistry.set.add(child);
 			meshRegistry.array.push(child);
 			meshRegistry.isShared = isShared;
+			meshRegistry.inbound.push(child);
 
 			child.userData.hash = hash;
+
+			// Add to renderer inbound.
+			renderer.inbound.add(meshRegistry);
 		} else {
-			// Create a twin.
+			// Create a twin for everything else.
 			createTwin(child, renderer);
 		}
 	});
