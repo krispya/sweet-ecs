@@ -29,18 +29,6 @@ export class Component<T = Record<string, any>> {
 	constructor(...args: any[]) {
 		if (typeof args[0] === 'function') Object.assign(this, args[0]());
 		else if (typeof args[0] === 'object') Object.assign(this, args[0]);
-
-		// Make private properties hidden.
-		Object.defineProperties(this, {
-			[$entityId]: {
-				enumerable: false,
-				writable: true,
-			},
-			[$initialState]: {
-				enumerable: false,
-				writable: true,
-			},
-		});
 	}
 
 	getEntityId() {
