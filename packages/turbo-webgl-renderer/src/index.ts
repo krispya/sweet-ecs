@@ -1,2 +1,2 @@
 export { TurboWebGLRenderer } from './turbo-webgl-renderer';
-export * from './types';
+export { MeshRegistry } from './utils/update-registry';

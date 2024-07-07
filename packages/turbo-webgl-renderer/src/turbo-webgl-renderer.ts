@@ -13,10 +13,9 @@ import {
 } from 'three';
 import { EXCLUDED_MAT_PROPS } from './constants';
 import { InstancedUniformsMesh } from './instanced-uniform-mesh/instanced-uniform-mesh';
-import { MeshRegistry } from './types';
 import { bindMatrix4 } from './utils/bind-matrix4';
 import { createInstancedMeshFromRegistry } from './utils/create-instanced-mesh-from-registry';
-import { createMeshRegistry } from './utils/create-mesh-registry';
+import { MeshRegistry, updateRegistry } from './utils/update-registry';
 import { createTwin } from './utils/create-twin';
 import { detachMeshInstance } from './utils/detach-mesh-instance';
 import { wrapBufferAttribute } from './utils/wrap-buffer-attribute';
@@ -27,7 +26,7 @@ export type TurboWebGLRendererParaemters = WebGLRendererParameters & {
 };
 
 export class TurboWebGLRenderer extends WebGLRenderer {
-	registry = new Map<string, MeshRegistry>();
+	registries = new Map<string, MeshRegistry>();
 	twins = new Map<Object3D, Object3D>();
 	renderScene = new Scene();
 	threshold = 2;
@@ -196,10 +195,10 @@ export class TurboWebGLRenderer extends WebGLRenderer {
 		this.renderScene.matrixAutoUpdate = false;
 
 		// Create a registry of meshes that can be instanced.
-		createMeshRegistry(scene, this.registry, this);
+		updateRegistry(scene, this.registries, this);
 
 		// Create instanced scene from the registry of meshes.
-		for (const [, meshRegistry] of this.registry.entries()) {
+		for (const [, meshRegistry] of this.registries.entries()) {
 			// If there aren't enough meshes to instance, the material is an array that can't be shared
 			// in a single IstancedMesh, or the mesh is flagged as ignored, create twins instead.
 			const isMaterialArrayWithoutSahred = meshRegistry.isMaterialArray && !meshRegistry.isShared.material; //prettier-ignore

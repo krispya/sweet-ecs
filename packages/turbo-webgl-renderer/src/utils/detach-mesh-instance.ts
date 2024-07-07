@@ -13,7 +13,7 @@ export function detachMeshInstance(
 	instancedMesh: InstancedMesh,
 	isShared: { geometry: boolean; material: boolean } = { geometry: false, material: false }
 ) {
-	const meshes = renderer.registry.get(mesh.userData.hash)!;
+	const meshes = renderer.registries.get(mesh.userData.hash)!;
 
 	// Reset the methods so there isn't a recusive detaching loop when copying.
 	resetBufferGeometryMethods(mesh.geometry);

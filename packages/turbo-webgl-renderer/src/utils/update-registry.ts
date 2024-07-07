@@ -1,15 +1,30 @@
-import { Mesh, Scene } from 'three';
-import { MeshRegistry } from '../types';
+import { Mesh, Object3D, Scene } from 'three';
 import { hashMesh } from './hash-mesh';
 import { TurboWebGLRenderer } from '../turbo-webgl-renderer';
 import { createTwin } from './create-twin';
 
-export function createMeshRegistry(
-	scene: Scene,
+export class MeshRegistry {
+	set: Set<Mesh> = new Set();
+	array: Mesh[] = [];
+	isShared: {
+		geometry: boolean;
+		material: boolean;
+	} = { geometry: false, material: false };
+	hash: string = '';
+	isMaterialArray: boolean = false;
+	isIgnored: boolean = false;
+
+	constructor(props: Partial<MeshRegistry>) {
+		Object.assign(this, props);
+	}
+}
+
+export function updateRegistry(
+	object3D: Object3D,
 	registry: Map<string, MeshRegistry>,
 	renderer: TurboWebGLRenderer
 ) {
-	scene.traverse((child) => {
+	object3D.traverse((child) => {
 		// Don't process the scene itself.
 		if (child instanceof Scene) return;
 
@@ -17,14 +32,15 @@ export function createMeshRegistry(
 			const hash = hashMesh(child);
 
 			if (!registry.has(hash)) {
-				registry.set(hash, {
-					set: new Set(),
-					array: [],
-					isShared: { geometry: true, material: true },
+				registry.set(
 					hash,
-					isMaterialArray: Array.isArray(child.material),
-					isIgnored: !!child.userData.ignore,
-				});
+					new MeshRegistry({
+						hash,
+						isMaterialArray: Array.isArray(child.material),
+						isIgnored: !!child.userData.ignore,
+						isShared: { geometry: true, material: true },
+					})
+				);
 			}
 
 			const meshRegistry = registry.get(hash)!;
